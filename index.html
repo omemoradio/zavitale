@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZaviTale – מסע אל המבחן</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#000;color:#fff;overflow:hidden;font-family:'Rubik',system-ui,sans-serif;-webkit-user-select:none;user-select:none;touch-action:none}
+#stage{position:absolute;left:50%;top:50%;width:640px;height:540px;transform-origin:center center;transform:translate(-50%,-50%)}
+#cv{position:absolute;left:0;top:0;width:640px;height:540px;image-rendering:pixelated}
+.scene{position:absolute;inset:0;display:none;pointer-events:none}
+.scene.on *{pointer-events:auto}
+.scene.on{display:block}
+.ltr{direction:ltr;unicode-bidi:isolate;margin:0 .08em}
+.pix{font-family:'Press Start 2P',monospace}
+button{font-family:inherit;cursor:pointer}
+.c{visibility:hidden}
+.c.v{visibility:visible}
+.hrt{display:inline-block;width:18px;height:16px;vertical-align:middle}
+.hrt svg{width:100%;height:100%;display:block}
+
+/* generic undertale box */
+.ubox{position:absolute;border:4px solid #fff;background:#000;box-sizing:border-box}
+#dlg{left:32px;top:388px;width:576px;height:136px;padding:14px 22px;font:700 20px/1.5 Rubik;display:none;z-index:5}
+#dlg.on{display:block}
+
+/* title */
+#titleBtns{position:absolute;left:0;right:0;top:300px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.tbtn{background:#000;color:#fff;border:3px solid #fff;font:700 21px Rubik;padding:8px 26px;min-width:260px;display:flex;align-items:center;justify-content:center;gap:10px}
+.tbtn:hover,.tbtn:focus-visible,.tbtn.sel{color:#ff0;border-color:#ff0;outline:none}
+.trow{display:flex;gap:10px}
+.trow .tbtn{min-width:0;font-size:16px;padding:6px 14px}
+#titleHelp{position:absolute;left:0;right:0;bottom:10px;text-align:center;font:500 13px Rubik;color:#888}
+
+/* name */
+#scName .wrapn{position:absolute;left:0;right:0;top:150px;text-align:center}
+#scName h2{font:700 26px Rubik;margin:0 0 24px}
+#nameIn{background:#000;color:#ff0;border:none;border-bottom:3px solid #fff;font:700 34px Rubik;text-align:center;width:300px;outline:none;padding:6px;-webkit-user-select:text;user-select:text}
+#nameOk{margin-top:30px}
+
+/* map */
+#mapHud{position:absolute;left:32px;right:32px;top:8px;height:34px;display:flex;align-items:center;gap:14px;font:700 17px Rubik}
+#mapHud .sp{flex:1}
+.sbtn{background:#000;color:#fff;border:2px solid #fff;font:700 14px Rubik;padding:4px 12px}
+.sbtn:hover{color:#ff0;border-color:#ff0}
+#mapInfo{left:32px;top:402px;width:576px;height:124px;padding:12px 20px;font:700 19px/1.45 Rubik}
+#mapInfo .t1{font-size:22px;color:#ff0}
+#mapInfo .t2{color:#ccc;font-size:16px}
+#mapInfo .go{position:absolute;left:16px;bottom:10px;font-size:15px;color:#fff;background:#000;border:2px solid #ff7f27;color:#ff7f27;padding:6px 14px}
+#mapInfo .go:hover{color:#ff0;border-color:#ff0}
+
+/* battle */
+#qPanel{position:absolute;left:20px;top:4px;width:600px;height:242px;display:none;flex-direction:column;align-items:center;justify-content:flex-start}
+#qPanel.on{display:flex}
+#qText{font:700 21px/1.38 Rubik;text-align:center;min-height:62px;display:flex;align-items:center;justify-content:center;padding:0 8px}
+#qPanel.nosvg #qText{flex:1;font-size:25px}
+#qSvg svg{display:block}
+#bubble{position:absolute;left:400px;top:40px;max-width:190px;background:#fff;color:#000;font:700 16px/1.35 Rubik;padding:8px 12px;border-radius:6px;display:none}
+#bubble::after{content:'';position:absolute;right:100%;top:18px;border:8px solid transparent;border-right-color:#fff}
+#bubble.on{display:block}
+#boxText{position:absolute;left:54px;top:266px;width:532px;height:138px;font:700 19.5px/1.5 Rubik;overflow:hidden}
+#boxText.small{font-size:17px;line-height:1.45}
+#opts{position:absolute;left:46px;top:262px;width:548px;height:146px;display:none;grid-template-columns:1fr 1fr;gap:8px 12px;align-content:center}
+#opts.on{display:grid}
+#opts.one{grid-template-columns:1fr;gap:5px}
+.opt{background:#000;color:#fff;border:2px solid #fff;font:700 20px Rubik;padding:6px 34px 6px 10px;position:relative;text-align:right;min-height:42px;line-height:1.25}
+#opts.one .opt{font-size:15.5px;min-height:30px;padding:4px 34px 4px 8px}
+.opt .hrt{position:absolute;right:8px;top:50%;margin-top:-8px;visibility:hidden}
+.opt.sel{color:#ff0;border-color:#ff0}
+.opt.sel .hrt{visibility:visible}
+.opt.good{color:#3f3!important;border-color:#3f3!important}
+.opt.bad{color:#f44!important;border-color:#f44!important}
+#hud{position:absolute;left:32px;top:418px;width:576px;height:30px;display:flex;align-items:center;gap:10px;font:700 17px Rubik}
+#hud .lv{font-family:'Press Start 2P';font-size:12px}
+.bar{display:inline-block;width:90px;height:18px;background:#c00;position:relative}
+.bar i{position:absolute;right:0;top:0;bottom:0;background:#ff0;width:100%;transition:width .25s}
+#convBar{background:#333;width:100px}
+#convBar i{background:#ffd400}
+#hud .sp{flex:1}
+#monName.ready{color:#ff0}
+#menu{position:absolute;left:32px;top:456px;width:576px;height:60px;display:flex;gap:12px}
+.mbtn{flex:1;background:#000;border:3px solid #ff7f27;color:#ff7f27;font:700 21px Rubik;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;position:relative;padding:0}
+.mbtn small{font:8px 'Press Start 2P';margin-top:5px;opacity:.85}
+.mbtn .hrt{position:absolute;right:10px;top:50%;margin-top:-8px;visibility:hidden}
+.mbtn.sel{border-color:#ff0;color:#ff0}
+.mbtn.sel .hrt{visibility:visible}
+.mbtn.ready{color:#ff0;animation:glow 1s infinite alternate}
+@keyframes glow{from{box-shadow:0 0 0 #ff0}to{box-shadow:0 0 14px #ff0}}
+#menu.off .mbtn{opacity:.35;pointer-events:none}
+#flee{position:absolute;left:8px;top:8px;background:#000;color:#888;border:2px solid #555;font:700 13px Rubik;padding:3px 10px;display:none;z-index:4}
+#flee.on{display:block}
+
+/* game over */
+#overText{position:absolute;left:60px;right:60px;top:300px;text-align:center;font:700 22px/1.6 Rubik}
+#overBtns{position:absolute;left:0;right:0;top:430px;display:none;justify-content:center;gap:14px}
+#overBtns.on{display:flex}
+
+#muteBtn{position:absolute;left:8px;bottom:6px;background:none;border:none;color:#777;font-size:18px;z-index:9;padding:2px 6px}
+
+/* floating toast */
+#toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#000;border:2px solid #ff0;color:#ff0;font:700 15px Rubik;padding:5px 14px;display:none;z-index:20}
+
+/* parent dashboard */
+#parent{position:fixed;inset:0;background:#0b0b12;color:#eee;overflow:auto;display:none;z-index:100;touch-action:auto;-webkit-user-select:text;user-select:text;font:500 15px/1.5 Rubik}
+#parent.on{display:block}
+#parent .pw{max-width:980px;margin:0 auto;padding:22px 18px 60px}
+#parent h1{font:900 26px Rubik;margin:0;display:flex;align-items:center;gap:10px}
+#parent h1 .pix{font-size:13px;color:#ff0}
+#parent h2{font:700 18px Rubik;margin:28px 0 10px;color:#ffd400}
+.ptop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.ptop .sp{flex:1}
+.chip{display:inline-block;border:1px solid #555;border-radius:999px;padding:3px 12px;font-size:13px;color:#ccc}
+.chip.ok{border-color:#3a6;color:#7e7}
+.pbtn{background:#1c1c28;color:#fff;border:1px solid #444;border-radius:8px;padding:7px 14px;font:700 14px Rubik}
+.pbtn:hover{border-color:#ffd400}
+.pbtn.danger{border-color:#733;color:#f99}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.card{background:#151520;border:1px solid #2a2a3a;border-radius:10px;padding:12px 14px}
+.card b{display:block;font:900 26px Rubik;color:#fff}
+.card span{color:#aaa;font-size:13px}
+table.pt{width:100%;border-collapse:collapse;font-size:14px}
+table.pt th{text-align:right;color:#999;font-weight:700;border-bottom:1px solid #333;padding:6px 8px}
+table.pt td{border-bottom:1px solid #222;padding:7px 8px;vertical-align:middle}
+.pbar{height:12px;background:#262636;border-radius:6px;overflow:hidden;min-width:120px;position:relative}
+.pbar i{position:absolute;right:0;top:0;bottom:0;border-radius:6px}
+.rec{background:#1a1a10;border:1px solid #554;border-radius:10px;padding:12px 14px;margin-top:12px}
+.days{display:flex;align-items:flex-end;gap:6px;height:130px;padding-top:10px;direction:ltr}
+.day{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:#888}
+.day .col{width:100%;max-width:34px;background:#2d6cdf;border-radius:4px 4px 0 0;position:relative}
+.day .col i{position:absolute;left:0;right:0;bottom:0;background:#36c36b;border-radius:4px 4px 0 0}
+.day .n{color:#ccc;font-size:11px}
+.legend{font-size:12px;color:#999;margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 2px;vertical-align:middle}
+.muted{color:#888}
+.mist td:nth-child(4){color:#f88}
+.mist td:nth-child(5){color:#8f8}
+#copyArea{width:100%;height:160px;background:#111;color:#eee;border:1px solid #444;margin-top:8px;display:none;font:13px monospace;direction:rtl}
+.note{font-size:13px;color:#999;margin-top:8px}
+.pview{margin-top:18px;display:flex;align-items:center;gap:10px;font-weight:700;background:#151520;border:1px solid #2a2a3a;border-radius:10px;padding:10px 14px}
+.pview select{background:#000;color:#ff0;border:1px solid #555;border-radius:6px;font:700 15px Rubik;padding:4px 8px}
+tr.psel td{background:#1d1d10}
+.pick{padding:4px 10px;font-size:12px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv" width="1280" height="1080"></canvas>
+
+  <div id="scTitle" class="scene">
+    <div id="titleBtns">
+      <button class="tbtn" id="btnStart">התחל</button>
+      <div class="trow">
+        <button class="tbtn" id="btnSound">צליל: פועל</button>
+        <button class="tbtn" id="btnDodge">קרבות התחמקות: פועל</button>
+      </div>
+    </div>
+    <div id="titleHelp">חיצים – תנועה · Z / Enter – בחירה · X – חזרה · אפשר גם ללחוץ ולגעת במסך</div>
+  </div>
+
+  <div id="scName" class="scene">
+    <div class="wrapn">
+      <h2>איך קוראים לגיבור?</h2>
+      <input id="nameIn" maxlength="12" autocomplete="off" value="דיפו">
+      <div><button class="tbtn" id="nameOk" style="margin:30px auto 0">זהו!</button></div>
+    </div>
+  </div>
+
+  <div id="scMap" class="scene">
+    <div id="mapHud"><span id="mapName"></span><span class="pix" id="mapLv" style="font-size:12px"></span><span class="sp"></span><button class="sbtn" id="btnMenu">תפריט</button></div>
+    <div id="mapInfo" class="ubox"></div>
+  </div>
+
+  <div id="scBattle" class="scene">
+    <div id="qPanel"><div id="qText"></div><div id="qSvg"></div></div>
+    <div id="bubble"></div>
+    <div id="boxText"></div>
+    <div id="opts"></div>
+    <div id="hud"><span id="hudName"></span><span class="lv" id="hudLv"></span><span>HP</span><span class="bar" id="hpBar"><i></i></span><span id="hpNum" class="ltr"></span><span class="sp"></span><span id="monName"></span><span class="bar" id="convBar"><i></i></span></div>
+    <div id="menu">
+      <button class="mbtn" data-i="0"><span class="hrt"></span>ענה<small>FIGHT</small></button>
+      <button class="mbtn" data-i="1"><span class="hrt"></span>רמז<small>ACT</small></button>
+      <button class="mbtn" data-i="2"><span class="hrt"></span>פריט<small>ITEM</small></button>
+      <button class="mbtn" data-i="3"><span class="hrt"></span>רחמים<small>MERCY</small></button>
+    </div>
+    <button id="flee">🏃 ברח</button>
+  </div>
+
+  <div id="scOver" class="scene">
+    <div id="overText"></div>
+    <div id="overBtns"><button class="tbtn" id="btnRetry" style="min-width:170px">נסה שוב</button><button class="tbtn" id="btnOverMap" style="min-width:170px">חזרה למפה</button></div>
+  </div>
+
+  <div id="dlg" class="ubox"></div>
+  <div id="toast"></div>
+  <button id="muteBtn" title="צליל">🔊</button>
+</div>
+
+<div id="parent"><div class="pw" id="pw"></div></div>
+
+<script>
+'use strict';
+/* ================= basics ================= */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const stage=$('#stage'), cv=$('#cv'), ctx=cv.getContext('2d');
+const W=640,H=540;
+ctx.scale(2,2); ctx.imageSmoothingEnabled=false;
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function strip(h){const d=document.createElement('div');d.innerHTML=String(h).replace(/<span class="ltr">([^<]*)<\/span>/g,'\u2066$1\u2069');return d.textContent.replace(/\s+/g,' ').trim()}
+
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+
+/* ================= storage ================= */
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const save=Object.assign({name:'',cleared:{},sound:true,dodge:true,introSeen:false},LS.get('dipotale_save',{}));
+function persist(){LS.set('dipotale_save',save)}
+const log=LS.get('dipotale_log_v1',{sessions:{}});
+if(!log.sessions)log.sessions={};
+function newSession(){return{id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),player:save.name||'',start:Date.now(),last:Date.now(),answers:[],battles:[],ver:1}}
+let session=newSession();
+function touchSession(){session.player=save.name;session.last=Date.now();log.sessions[session.id]=session;LS.set('dipotale_log_v1',log);syncSoon()}
+function recAnswer(a){if(session.answers.length>=700)session=newSession();session.answers.push(a);touchSession()}
+function recBattle(b){session.battles.push(b);touchSession()}
+
+/* cloud sync: Firebase (when configured) or the Claude artifact db */
+const FIREBASE_CONFIG=null; /*FIREBASE_CONFIG*/
+let db=null,backend='none',fbAuth=null;const cloud={state:'checking',writable:true,inflight:false,dirty:false,timer:null};
+function loadScript(src){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;el.onload=res;el.onerror=rej;document.head.appendChild(el)})}
+async function initFirebase(){
+  const B='https://www.gstatic.com/firebasejs/10.12.2/';
+  await loadScript(B+'firebase-app-compat.js');await loadScript(B+'firebase-auth-compat.js');await loadScript(B+'firebase-firestore-compat.js');
+  firebase.initializeApp(FIREBASE_CONFIG);fbAuth=firebase.auth();
+  await new Promise(r=>{const u=fbAuth.onAuthStateChanged(()=>{u();r()})});
+  if(!fbAuth.currentUser)await fbAuth.signInAnonymously();
+  return firebase.firestore();
+}
+(async()=>{
+  try{
+    if(FIREBASE_CONFIG){db=await initFirebase();backend='firebase'}
+    else if(window.claude&&typeof window.claude.use==='function'){db=await window.claude.use('db');backend=db?'claude':'none'}
+  }catch(e){db=null;backend='none'}
+  cloud.state=db?'on':'off';if(db&&session.answers.length)syncSoon();
+  if(location.hash==='#parents'&&$('#parent').classList.contains('on'))openParent();
+})();
+function syncSoon(){if(!db||!cloud.writable)return;clearTimeout(cloud.timer);cloud.timer=setTimeout(syncNow,1500)}
+async function syncNow(){
+  if(!db||!cloud.writable)return;
+  if(!session.answers.length&&!session.battles.length)return;
+  if(cloud.inflight){cloud.dirty=true;return}
+  cloud.inflight=true;
+  try{if(backend==='firebase'){if(!fbAuth.currentUser)await fbAuth.signInAnonymously();session.uid=fbAuth.currentUser.uid}
+    await db.collection('sessions').doc(session.id).set(JSON.parse(JSON.stringify(session)));cloud.state='on';cloud.lastSync=Date.now()}
+  catch(e){const c=e&&e.code;if(c==='unavailable'||c==='resource_exhausted'||c==='resource-exhausted'||c==='deadline-exceeded'){setTimeout(syncSoon,3000+Math.random()*3000)}else{cloud.writable=false;cloud.state='readonly'}}
+  finally{cloud.inflight=false;if(cloud.dirty){cloud.dirty=false;syncSoon()}}
+}
+addEventListener('pagehide',()=>{if(db&&cloud.writable)syncNow()});
+
+/* ================= audio ================= */
+let AC=null,master=null,sfxG=null,noiseBuf=null,wantSong=null;
+function audioInit(){
+  if(AC){if(AC.state==='suspended')AC.resume();return}
+  try{
+    AC=new(window.AudioContext||window.webkitAudioContext)();
+    master=AC.createGain();master.gain.value=save.sound?1:0;master.connect(AC.destination);
+    sfxG=AC.createGain();sfxG.gain.value=.7;sfxG.connect(master);
+    noiseBuf=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    if(wantSong){const w=wantSong;wantSong=null;playSong(w)}
+  }catch(e){AC=null}
+}
+addEventListener('pointerdown',audioInit,true);addEventListener('keydown',audioInit,true);
+const NOTE={C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
+function freq(n){const m=n.match(/^([A-G][#b]?)(\d)$/);if(!m)return 440;const midi=12*(+m[2]+1)+NOTE[m[1]];return 440*Math.pow(2,(midi-69)/12)}
+function tone(f,t,dur,type,vol,dest,slide){
+  if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.type=type||'square';
+  o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
+  g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(vol,t+0.006);g.gain.setValueAtTime(vol,t+Math.max(0.01,dur*0.55));g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(dest||sfxG);o.start(t);o.stop(t+dur+0.03);
+}
+function noise(t,dur,vol,hp,dest){if(!AC)return;const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp||1000;const g=AC.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);s.connect(f);f.connect(g);g.connect(dest||sfxG);s.start(t);s.stop(t+dur+.03)}
+const now=()=>AC?AC.currentTime:0;
+let blipPitch=520;
+const SFX={
+  blip(){if(!AC)return;tone(blipPitch*(0.97+Math.random()*.06),now(),0.045,'square',0.05)},
+  move(){tone(660,now(),0.04,'square',0.05)},
+  ok(){const t=now();tone(880,t,0.05,'square',0.06);tone(1320,t+0.05,0.07,'square',0.06)},
+  correct(){const t=now();[523,659,784,1047].forEach((f,i)=>tone(f,t+i*0.06,0.12,'square',0.07))},
+  wrong(){const t=now();tone(196,t,0.18,'sawtooth',0.07);tone(147,t+0.16,0.28,'sawtooth',0.07)},
+  hurt(){const t=now();noise(t,0.15,0.25,600);tone(330,t,0.25,'square',0.08,null,70)},
+  heal(){const t=now();[392,523,659,784,1047,1319].forEach((f,i)=>tone(f,t+i*0.05,0.1,'triangle',0.12))},
+  spare(){const t=now();for(let i=0;i<10;i++)tone(1200+Math.random()*1600,t+i*0.045,0.08,'triangle',0.06)},
+  save(){const t=now();tone(1047,t,0.15,'triangle',0.15);tone(1568,t+0.12,0.2,'triangle',0.15);tone(2093,t+0.26,0.35,'triangle',0.12)},
+  appear(){const t=now();tone(200,t,0.35,'square',0.06,null,900)},
+  shatter(){const t=now();noise(t,0.4,0.3,300);tone(500,t,0.4,'square',0.07,null,60)},
+  step(){tone(300,now(),0.03,'triangle',0.08)}
+};
+
+/* --- tiny sequencer --- */
+const SONGS={
+  title:{bpm:92,loop:true,tracks:[
+    {w:'triangle',v:.16,n:'A4 C5 E5 A5 E5 C5 F4 A4 C5 F5 C5 A4 G4 B4 D5 G5 D5 B4 E4 G#4 B4 E5 B4 G#4'},
+    {w:'triangle',v:.13,n:'A2 - - - - - F2 - - - - - G2 - - - - - E2 - - - - -'}],dr:''},
+  map:{bpm:104,loop:true,tracks:[
+    {w:'square',v:.035,n:'E5 - G5 - A5 - B5 G5 A5 - - - E5 - - - D5 - E5 - G5 - E5 D5 E5 - - - - - . . E5 - G5 - A5 - B5 D6 C6 - B5 - A5 - G5 - A5 - G5 E5 D5 - E5 - A4 - - - - - . .'},
+    {w:'triangle',v:.14,n:'A2 - E3 - A3 - E3 - F2 - C3 - F3 - C3 - G2 - D3 - G3 - D3 - A2 - E3 - A3 - E3 - A2 - E3 - A3 - E3 - F2 - C3 - F3 - C3 - G2 - D3 - G3 - D3 - E2 - B2 - E3 - B2 -'}],dr:'h...h...'},
+  battle:{bpm:152,loop:true,tracks:[
+    {w:'square',v:.045,n:'D5 D5 . A4 . C5 D5 F5 E5 . D5 . C5 . A4 . Bb4 Bb4 . F4 . A4 Bb4 D5 C5 . Bb4 . A4 . G4 . D5 D5 . A4 . C5 D5 F5 G5 . F5 . E5 . D5 . Bb4 . C5 . D5 . E5 . F5 - E5 - C#5 - A4 -'},
+    {w:'triangle',v:.16,n:'D3 D3 D4 D3 . D3 D4 D3 C3 C3 C4 C3 . C3 C4 C3 Bb2 Bb2 Bb3 Bb2 . Bb2 Bb3 Bb2 A2 A2 A3 A2 . A2 A3 A2 D3 D3 D4 D3 . D3 D4 D3 C3 C3 C4 C3 . C3 C4 C3 Bb2 Bb2 Bb3 Bb2 . Bb2 Bb3 Bb2 A2 A2 A3 A2 . A2 A3 A2'}],dr:'k.h.s.h.k.h.s.hh'},
+  boss:{bpm:176,loop:true,tracks:[
+    {w:'square',v:.045,n:'E5 . G5 . B5 . A5 G5 F#5 . G5 . A5 . B5 . C6 . B5 . A5 . G5 . F#5 - - . D5 . F#5 . E5 . G5 . B5 . E6 . D6 . C6 . B5 . A5 . G5 . A5 . B5 . C6 . B5 - - - D#5 - - -'},
+    {w:'triangle',v:.17,n:'E2 E3 E2 E3 E2 E3 E2 E3 D2 D3 D2 D3 D2 D3 D2 D3 C2 C3 C2 C3 C2 C3 C2 C3 B1 B2 B1 B2 B1 B2 B1 B2'},
+    {w:'square',v:.018,n:'B4 E5 G5 E5 B4 E5 G5 E5 A4 D5 F#5 D5 A4 D5 F#5 D5 G4 C5 E5 C5 G4 C5 E5 C5 F#4 B4 D#5 B4 F#4 B4 D#5 B4'}],dr:'khshkkshkhshkksh'},
+  win:{bpm:200,loop:false,tracks:[
+    {w:'square',v:.06,n:'C5 E5 G5 C6 - - G5 C6 - - - - . .'},
+    {w:'triangle',v:.16,n:'C3 - G3 - C4 - G3 - C4 - - - . .'}],dr:''},
+  over:{bpm:66,loop:false,tracks:[
+    {w:'triangle',v:.16,n:'B4 - A4 - G4 - F#4 - E4 - - - - - - - . .'},
+    {w:'triangle',v:.12,n:'E3 - - - C3 - - - B2 - - - E2 - - - . .'}],dr:''}
+};
+const parsed={};
+function parseTrack(str){const toks=str.trim().split(/\s+/);const by={};let cur=null;toks.forEach((tk,i)=>{if(tk==='-'){if(cur)cur.len++}else if(tk==='.'){cur=null}else{cur={len:1,f:freq(tk)};by[i]=cur}});return{by,len:toks.length}}
+let seq={name:null,timer:null,gain:null};
+function playSong(name){
+  if(!AC){wantSong=name;return}
+  if(seq.name===name)return;stopSong();
+  const S=SONGS[name];if(!S)return;
+  if(!parsed[name])parsed[name]=S.tracks.map(t=>parseTrack(t.n));
+  const g=AC.createGain();g.gain.value=.6;g.connect(master);
+  seq={name,S,P:parsed[name],step:0,t:AC.currentTime+0.08,gain:g,total:Math.max(...parsed[name].map(p=>p.len))};
+  seq.timer=setInterval(schedule,25);
+}
+function schedule(){
+  const s=seq;if(!s.S)return;const spb=60/s.S.bpm/2;
+  while(s.t<AC.currentTime+0.15){
+    if(!s.S.loop&&s.step>=s.total){clearInterval(s.timer);s.timer=null;return}
+    s.P.forEach((p,i)=>{const e=p.by[s.step%p.len];if(e){const tr=s.S.tracks[i];tone(e.f,s.t,e.len*spb*0.9,tr.w,tr.v,s.gain)}});
+    const dr=s.S.dr;if(dr){const c=dr[s.step%dr.length];if(c==='h')noise(s.t,0.04,0.05,7000,s.gain);else if(c==='s')noise(s.t,0.12,0.12,1500,s.gain);else if(c==='k')tone(140,s.t,0.12,'sine',0.35,s.gain,45)}
+    s.step++;s.t+=spb;
+  }
+}
+function stopSong(){if(seq.timer)clearInterval(seq.timer);if(seq.gain&&AC){const g=seq.gain;g.gain.setTargetAtTime(0,AC.currentTime,0.04);setTimeout(()=>{try{g.disconnect()}catch(e){}},600)}seq={name:null,timer:null,gain:null};wantSong=null}
+function setSound(on){save.sound=on;persist();if(master)master.gain.value=on?1:0;$('#muteBtn').textContent=on?'🔊':'🔇';$('#btnSound').textContent='צליל: '+(on?'פועל':'כבוי')}
+
+/* ================= pixel sprites ================= */
+const HEART=['.##...##.','####.####','#########','#########','.#######.','..#####..','...###...','....#....'];
+function heartSVG(col){let r='';HEART.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==='#')r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`}));return `<svg viewBox="0 0 9 8" shape-rendering="crispEdges" fill="${col||'#f00'}">${r}</svg>`}
+$$('.hrt').forEach(e=>e.innerHTML=heartSVG());
+function drawGrid(grid,x,y,s,col,alpha){
+  ctx.save();if(alpha!=null)ctx.globalAlpha=alpha;
+  grid.forEach((row,j)=>{for(let i=0;i<row.length;i++){const c=row[i];if(c==='.'||c===' ')continue;ctx.fillStyle=c==='r'?'#ff3030':c==='y'?'#ffd400':(col||'#fff');ctx.fillRect(Math.round(x+i*s),Math.round(y+j*s),Math.ceil(s),Math.ceil(s))}});
+  ctx.restore();
+}
+const SPR={
+ coord:['........#........','.......###.......','......#####......','........#........','........#........','.....#######.....','....#########....','.#..##.###.##..#.','###.#########.###','#################','###.##.....##.###','.#..#########..#.','.....#######.....','........#........','........#........','.......#.#.......','......#...#......'],
+ signed:['.....######.....','...##########...','..############..','.##############.','.###..####..###.','.###..####..###.','.##############.','.##############.','.####......####.','.##############.','.##############.','.##############.','.##############.','.#.###.##.###.#.','...##...#..##...'],
+ addsub:['..#######..#######..','.#########.#########','.##.###.##.##.###.##','.#########.#########','.####.####.#########','.###...###.##.....##','.####.####.#########','..#######..########.','....#############...','...###############..','..#################.','..##.##.#####.##.##.','..##.##.......##.##.','.###.###.....###.###'],
+ anglename:['#..............#','##............##','.##..........##.','..##........##..','...##########...','..############..','.######..######.','.#####....#####.','.######..######.','.##############.','.###.######.###.','.####......####.','..############..','...##.....##....','..###.....###...'],
+ bisector:['.......##.......','.......##.......','.....######.....','....########....','....#..##..#....','....########....','.....######.....','...##########...','..####.##.####..','..####.##.####..','..####.##.####..','...###.##.###...','....##.##.##....','....##.##.##....','...###....###...'],
+ anglesum:['.......#........','......###.......','.......#........','..############..','..#..........#..','..#.##....##.#..','..#.##....##.#..','..#..........#..','..#...####...#..','..############..','....########....','##.##########.##','##.###.##.###.##','...##########...','....###..###....','....###..###....'],
+ adjacent:['...#####......#####...','..#######....#######..','..#.###.#....#.###.#..','..#######....#######..','..##...##....##...##..','...#####......#####...','....###........###....','.#########..#########.','#.#######.##.#######.#','..#######....#######..','..#######....#######..','...##.##......##.##...','...##.##......##.##...'],
+ vertical:['##................##','####............####','######........######','.######......######.','..######....######..','...######..######...','....####.##.####....','......###..###......','......###..###......','....####.##.####....','...######..######...','..######....######..','.######......######.','######........######','####............####','##................##'],
+ boss:['.##################...','.#................##..','.#.######.........#.#.','.#................####','.#.###########.......#','.#...................#','.#..####.....####....#','.#..#..#.....#..#....#','.#..####.....####....#','.#...................#','.#.......#####.......#','.#......#.....#......#','.#...................#','.#.rrr..r...rrr..r...#','.#...................#','.#.###########.......#','.#...................#','.#####################']
+};
+
+/* ================= topics & monsters ================= */
+const TOPICS=[
+ {k:'coord',name:'מערכת הצירים',sub:'חשבון',icon:'xy',x:478,y:96,
+  mon:{name:'צירון',intro:'* צירון חוסם את הדרך! הוא מצביע לכל הכיוונים בבת אחת.',lines:['קודם x, אחר כך y!','איבדתי את הראשית...','אני בכל הרביעים!','(0, 0) זה הבית שלי.'],spare:'* צירון מצא את הכיוון שלו. הוא כבר לא רוצה להילחם.',glyphs:['x','y','+'],pat:['rain','sides'],tier:1,pitch:600}},
+ {k:'signed',name:'מספרים מכוונים',sub:'נגדיים וערך מוחלט',icon:'±',x:362,y:96,
+  mon:{name:'מינוסיק',intro:'* מינוסיק מרחף לעברך. הוא מרגיש קצת... שלילי היום.',lines:['אני תמיד מתחת לאפס...','הערך המוחלט שלי? חיובי!','מינוס מינוס... פלוס?','הנגדי שלי נמצא בצד השני.'],spare:'* מינוסיק חייך. בפעם הראשונה הוא מרגיש חיובי.',glyphs:['−','|','−5','−1'],pat:['rain','aim'],tier:1,pitch:420}},
+ {k:'addsub',name:'חיבור וחיסור',sub:'מספרים מכוונים',icon:'+−',x:246,y:96,
+  mon:{name:'פלוסמינוס',intro:'* פלוסמינוס מופיע! שני ראשים, ושניהם מתווכחים על הסימן.',lines:['פלוס!','לא, מינוס!','חיסור זה חיבור הנגדי!','סימנים שונים – מחסרים!'],spare:'* שני הראשים של פלוסמינוס סוף סוף מסכימים.',glyphs:['+','−','+3','−7'],pat:['sides','rain','aim'],tier:2,pitch:500}},
+ {k:'anglename',name:'סימון זוויות',sub:'∢ABC – הקודקוד באמצע',icon:'∢',x:116,y:126,
+  mon:{name:'זוויתן',intro:'* זוויתן מזדקר מולך. הקרניים שלו יוצרות זווית מושלמת.',lines:['הקודקוד – באמצע!','קרא לי בשם הנכון.','∢ABC או ∢CBA – שניהם אני.','שלוש אותיות, לא פחות.'],spare:'* זוויתן שמח שקראו לו בשם הנכון.',glyphs:['∢','A','B','C'],pat:['rain','burst'],tier:1,pitch:650}},
+ {k:'bisector',name:'חוצה זווית',sub:'שתי זוויות שוות',icon:'½',x:150,y:240,
+  mon:{name:'אביר החוצה',intro:'* אביר החוצה שולף חרב. הוא חוצה את האוויר לשני חצאים שווים בדיוק.',lines:['חצי לי, חצי לך!','שווה בשווה!','כל זווית – לשניים.','החרב שלי תמיד באמצע.'],spare:'* אביר החוצה מכניס את החרב לנדן ומשתחווה.',glyphs:['½','/','\\'],pat:['sides','aim'],tier:2,pitch:380}},
+ {k:'anglesum',name:'סכום והפרש זוויות',sub:'חיבור וחיסור של זוויות',icon:'∢+',x:280,y:250,
+  mon:{name:'חיבורובוט',intro:'* חיבורובוט מתעורר. ביפ בופ. "מחשב סכומים..."',lines:['ביפ. סכום = חלק + חלק.','בופ. הפרש = שלם − חלק.','מחשב... מחשב...','אהבתי את המעלות שלך.'],spare:'* חיבורובוט מכבה את מערכות הקרב. "ביפ. חבר."',glyphs:['+','°','−'],pat:['rain','burst','sides'],tier:2,pitch:760}},
+ {k:'adjacent',name:'זוויות צמודות',sub:'ביחד 180°',icon:'180',x:410,y:240,
+  mon:{name:'הצמודות',intro:'* הצמודות מתקרבות, יד ביד. הן אף פעם לא נפרדות.',lines:['ביחד אנחנו 180!','אני חדה – היא קהה.','יש לנו שוק משותפת.','אנחנו יוצרות קו ישר!'],spare:'* הצמודות מחבקות אותך. 180 מעלות של חום.',glyphs:['180','°','♥'],pat:['sides','rise','aim'],tier:2,pitch:700}},
+ {k:'vertical',name:'זוויות קודקודיות',sub:'זוויות מול זוויות – שוות',icon:'X',x:532,y:278,
+  mon:{name:'פרפר־X',intro:'* פרפר־X פורש כנפיים. כל כנף שווה בדיוק לכנף שמולה.',lines:['מולי – תאומתי!','ארבע כנפיים, 360 מעלות.','קודקודיות – שוות!','שכנות – צמודות.'],spare:'* פרפר־X עף משם בשמחה.',glyphs:['X','×','∢'],pat:['burst','rain','aim'],tier:3,pitch:820}},
+ {k:'boss',name:'המבחן',sub:'כל הנושאים – בוס סופי!',icon:'!!',x:330,y:328,
+  mon:{name:'המבחן',intro:'* המבחן מתנשא מעליך. אווירה של יום ראשון בבוקר...',lines:['תפתחו את הדף!','יש עוד 10 דקות!','לא להעתיק!','בדקת את התשובה?'],spare:'* המבחן מקבל ציון 100. הוא כבר לא מפחיד.',glyphs:['?','!','∢','−','100'],pat:['rain','sides','aim','burst'],tier:3,pitch:300}}
+];
+const TK={};TOPICS.forEach(t=>TK[t.k]=t);
+const SAVEPT={k:'save',name:'נקודת שמירה',sub:'',icon:'★',x:590,y:96};
+const MAPN=[SAVEPT,...TOPICS];
+const HINTS={
+ coord:['* צירון לוחש לך סוד:',`* בנקודה ${'<span class="ltr">(x, y)</span>'} – קודם x (ימינה/שמאלה), ואחר כך y (למעלה/למטה).`,'* רביע ראשון: <span class="ltr">(+,+)</span> · שני: <span class="ltr">(−,+)</span> · שלישי: <span class="ltr">(−,−)</span> · רביעי: <span class="ltr">(+,−)</span>. סופרים נגד כיוון השעון, מהרביע הימני־עליון.','* נקודה עם <span class="ltr">y = 0</span> נמצאת על ציר ה־x. נקודה עם <span class="ltr">x = 0</span> – על ציר ה־y.'],
+ signed:['* מספר נגדי: אותו מרחק מאפס, בצד השני. הנגדי של <span class="ltr">−5</span> הוא 5.','* ערך מוחלט = המרחק מאפס. הוא אף פעם לא שלילי: <span class="ltr">|−7| = 7</span>.','* על ציר המספרים – מי שימינה, גדול יותר. לכן <span class="ltr">−2 > −9</span>.'],
+ addsub:['* סימנים זהים: מחברים ושומרים על הסימן. <span class="ltr">(−3) + (−4) = −7</span>','* סימנים שונים: מחסרים, ולוקחים את הסימן של מי שהערך המוחלט שלו גדול. <span class="ltr">(−8) + (+5) = −3</span>','* חיסור = חיבור הנגדי! <span class="ltr">(−2) − (−6) = (−2) + (+6) = 4</span>'],
+ anglename:['* זווית מסמנים בשלוש אותיות, למשל <span class="ltr">∢ABC</span>.','* האות של הקודקוד תמיד באמצע!','* <span class="ltr">∢ABC</span> ו־<span class="ltr">∢CBA</span> – זו אותה זווית. הקודקוד הוא B, והשוקיים הן BA ו־BC.'],
+ bisector:['* חוצה זווית = קרן שיוצאת מהקודקוד ומחלקת את הזווית לשתי זוויות שוות.','* אם <span class="ltr">BD</span> חוצה את <span class="ltr">∢ABC</span>, אז <span class="ltr">∢ABD = ∢DBC</span>, וכל אחת היא חצי מ־<span class="ltr">∢ABC</span>.'],
+ anglesum:['* כשהקרן <span class="ltr">OB</span> נמצאת בתוך <span class="ltr">∢AOC</span>:','* סכום: <span class="ltr">∢AOB + ∢BOC = ∢AOC</span>','* הפרש: <span class="ltr">∢AOC − ∢AOB = ∢BOC</span>'],
+ adjacent:['* זוויות צמודות: יש להן שוק משותפת, והשוקיים האחרות יוצרות קו ישר.','* סכום זוויות צמודות = <span class="ltr">180°</span>.','* אם אחת חדה – השנייה קהה. אם הן שוות – כל אחת <span class="ltr">90°</span>.'],
+ vertical:['* כששני ישרים נחתכים, נוצרות 4 זוויות.','* זוויות קודקודיות (אחת מול השנייה) – שוות!','* זוויות שכנות הן צמודות – ביחד <span class="ltr">180°</span>. כל הארבע ביחד: <span class="ltr">360°</span>.'],
+ boss:['* המבחן משלב את כל הנושאים.','* טיפ: קרא כל שאלה עד הסוף, ובדוק את הסימן (פלוס או מינוס) לפני שאתה עונה!']
+};
+
+/* ================= question helpers ================= */
+const MN='−';
+const sn=x=>x<0?MN+(-x):String(x);
+const sp=x=>x<0?'('+MN+(-x)+')':'(+'+x+')';
+const par=x=>x<0?'('+sn(x)+')':String(x);
+const L=s=>`<span class="ltr">${s}</span>`;
+const dg=x=>L(sn(x)+'°');
+const AN=s=>L('∢'+s);
+const pt=(x,y)=>L(`(${sn(x)}, ${sn(y)})`);
+function uniq(correct,cands,n=4){const out=[correct];for(const c of cands){if(out.length>=n)break;if(!out.includes(c))out.push(c)}return out}
+function numOpts(ans,cands,fmt,pos){fmt=fmt||(x=>L(sn(x)));const ok=c=>Number.isFinite(c)&&(!pos||c>0);const nums=[ans];for(const c of cands){if(nums.length>=4)break;if(ok(c)&&!nums.includes(c))nums.push(c)}let d=pos?10:1;let g=0;while(nums.length<4&&g++<40){for(const c of [ans+d,ans-d]){if(nums.length<4&&ok(c)&&!nums.includes(c))nums.push(c)}d+=pos?10:1}return nums.map(fmt)}
+function fixLtr(h){let p;do{p=h;h=h.replace(/<\/span>(\s*[=+−:·]\s*)<span class="ltr">/g,'$1')}while(h!==p);return h}
+function Q(topic,text,opts,explain,ex={}){
+  text=fixLtr(text);opts=opts.map(fixLtr);explain=fixLtr(explain);
+  let order=opts.map((o,i)=>i),ci=ex.ci!=null?ex.ci:0;
+  if(ex.ci==null&&!ex.fixed)order=shuffle(order);
+  return{topic,text,svg:ex.svg||'',opts:order.map(i=>opts[i]),ans:order.indexOf(ci),explain,ctx:ex.ctx||''};
+}
+/* svg helpers */
+const SVGW=560,SVGH=172;
+const wrapSvg=s=>`<svg viewBox="0 0 ${SVGW} ${SVGH}" width="${SVGW}" height="${SVGH}" font-family="Rubik" font-weight="700">${s}</svg>`;
+function P(cx,cy,deg,len){const r=deg*Math.PI/180;return[+(cx+len*Math.cos(r)).toFixed(1),+(cy-len*Math.sin(r)).toFixed(1)]}
+function txt(x,y,s,size,col){return `<text x="${x}" y="${y}" fill="${col||'#fff'}" font-size="${size||16}" text-anchor="middle" dominant-baseline="central" direction="ltr">${s}</text>`}
+function arcPath(cx,cy,r,a1,a2){const[x1,y1]=P(cx,cy,a1,r),[x2,y2]=P(cx,cy,a2,r);const large=((a2-a1)%360+360)%360>180?1:0;return `M${x1} ${y1} A${r} ${r} 0 ${large} 0 ${x2} ${y2}`}
+function angleFig(f){
+  const cx=f.cx,cy=f.cy;let s='';
+  (f.arcs||[]).forEach(a=>{const col=a.col||'#ffd400';s+=`<path d="${arcPath(cx,cy,a.r,a.a1,a.a2)}" stroke="${col}" stroke-width="2.5" fill="none"/>`;
+    const m=(a.a1+a.a2)/2;
+    if(a.tick){const[x1,y1]=P(cx,cy,m,a.r-6),[x2,y2]=P(cx,cy,m,a.r+6);s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="2.5"/>`}
+    if(a.label!=null){const[lx,ly]=P(cx,cy,m,a.r+(a.lr||17));s+=txt(lx,ly,a.label,a.fs||15,col)}});
+  (f.rays||[]).forEach(r=>{const[x,y]=P(cx,cy,r.a,r.len);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>`;
+    if(r.label){s+=`<circle cx="${x}" cy="${y}" r="3.2" fill="#fff"/>`;const[lx,ly]=P(cx,cy,r.a,r.len+14);s+=txt(lx,ly,r.label,17)}});
+  s+=`<circle cx="${cx}" cy="${cy}" r="3.2" fill="#fff"/>`;
+  if(f.vl){const[lx,ly]=P(cx,cy,f.vla,15);s+=txt(lx,ly,f.vl,17)}
+  return wrapSvg(s);
+}
+function gridFig(points){
+  const u=14,cx=280,cy=84,Rg=5;let s='';
+  for(let i=-Rg;i<=Rg;i++){s+=`<line x1="${cx+i*u}" y1="${cy-Rg*u}" x2="${cx+i*u}" y2="${cy+Rg*u}" stroke="#2c2c44" stroke-width="1"/><line x1="${cx-Rg*u}" y1="${cy-i*u}" x2="${cx+Rg*u}" y2="${cy-i*u}" stroke="#2c2c44" stroke-width="1"/>`}
+  const e=(Rg+0.7)*u;
+  s+=`<line x1="${cx-e}" y1="${cy}" x2="${cx+e}" y2="${cy}" stroke="#fff" stroke-width="2"/><line x1="${cx}" y1="${cy+e}" x2="${cx}" y2="${cy-e}" stroke="#fff" stroke-width="2"/>`;
+  s+=`<path d="M${cx+e} ${cy} l-7 -4 v8z M${cx} ${cy-e} l-4 7 h8z" fill="#fff"/>`;
+  s+=txt(cx+e+10,cy,'x',15)+txt(cx+12,cy-e+2,'y',15);
+  for(let i=-Rg;i<=Rg;i++){if(!i)continue;s+=txt(cx+i*u,cy+9,sn(i),8.5,'#9a9ab8')+txt(cx-9,cy-i*u,sn(i),8.5,'#9a9ab8')}
+  s+=txt(cx-7,cy+8,'0',8.5,'#9a9ab8');
+  points.forEach(p=>{const x=cx+p.x*u,y=cy-p.y*u;s+=`<circle cx="${x}" cy="${y}" r="4.5" fill="#ff3b3b"/>`+txt(x+10,y-10,p.l,15,'#ff0')});
+  return wrapSvg(s);
+}
+function lineFig(v){
+  const x0=40,x1=520,Rg=8,u=(x1-x0)/(2*Rg),y=96;let s=`<line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#fff" stroke-width="2.5"/><path d="M${x1+20} ${y} l-9 -5 v10z M${x0-20} ${y} l9 -5 v10z" fill="#fff"/>`;
+  for(let i=-Rg;i<=Rg;i++){const x=x0+(i+Rg)*u;s+=`<line x1="${x}" y1="${y-7}" x2="${x}" y2="${y+7}" stroke="#fff" stroke-width="${i===0?3:1.6}"/>`;if(i===0||i===Rg||i===-Rg||i===5||i===-5)s+=txt(x,y+22,sn(i),14,i===0?'#fff':'#aaa')}
+  const px=x0+(v+Rg)*u;s+=`<circle cx="${px}" cy="${y}" r="7" fill="#ff3b3b"/>`+txt(px,y-26,'?',20,'#ff0');
+  return wrapSvg(s);
+}
+function triFig(pts,labels,mark,lab){
+  let s=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>`;
+  const c=[(pts[0][0]+pts[1][0]+pts[2][0])/3,(pts[0][1]+pts[1][1]+pts[2][1])/3];
+  pts.forEach((p,i)=>{const dx=p[0]-c[0],dy=p[1]-c[1],d=Math.hypot(dx,dy);s+=txt(p[0]+dx/d*18,p[1]+dy/d*18,labels[i],17)});
+  const V=pts[mark],A=pts[(mark+1)%3],B=pts[(mark+2)%3];
+  const ang=p=>Math.atan2(-(p[1]-V[1]),p[0]-V[0])*180/Math.PI;
+  let a1=ang(A),a2=ang(B);let d=((a2-a1)%360+360)%360;if(d>180){[a1,a2]=[a2,a1];d=360-d}
+  s+=`<path d="${arcPath(V[0],V[1],28,a1,a1+d)}" stroke="#ffd400" stroke-width="3" fill="none"/>`;
+  if(lab){const[lx,ly]=P(V[0],V[1],a1+d/2,46);s+=txt(lx,ly,lab,15,'#ffd400')}
+  return wrapSvg(s);
+}
+const LET='ABCDEFGHKLMNPRST'.split('');
+function crossFig(alpha,rot,known,ask){
+  const cx=280,cy=86,len=84;const rays=[rot,rot+alpha,rot+180,rot+180+alpha].map(a=>({a,len}));
+  const span=[[rot,rot+alpha],[rot+alpha,rot+180],[rot+180,rot+180+alpha],[rot+180+alpha,rot+360]];
+  const arcs=span.map((sg,i)=>{const n=i+1;let col='#8888aa',label=String(n);if(known&&known[n]!=null){col='#ffd400';label=`${n}: ${known[n]}°`}if(ask===n){col='#5cf';label=`${n}: ?`}return{a1:sg[0]+4,a2:sg[1]-4,r:22+(n%2)*6,label,col,lr:label.length>2?30:15,fs:14}});
+  return angleFig({cx,cy,rays,arcs});
+}
+
+/* ================= question generators ================= */
+const G={};
+function moveDesc(x,y){
+  const xs=x===0?`לא זזים ימינה או שמאלה (${L('x = 0')})`:`${Math.abs(x)} ${x>0?'ימינה':'שמאלה'}`;
+  const ys=y===0?`לא זזים למעלה או למטה (${L('y = 0')})`:`${Math.abs(y)} ${y>0?'למעלה':'למטה'}`;
+  return `מראשית הצירים: ${xs}, ואז ${ys}.`;
+}
+G.coord=()=>{
+  const t=pick(['read','read','which','quad','axis','move','desc']);
+  if(t==='read'){let x,y;do{x=R(-5,5);y=R(-5,5)}while(x===y||(x===0&&y===0));
+    const c=pt(x,y);
+    return Q('coord','מה השיעורים של הנקודה A?',uniq(c,[pt(y,x),pt(-x,y),pt(x,-y),pt(-x,-y),pt(-y,-x)]),`${moveDesc(x,y)} כותבים קודם את ${L('x')} ואחר כך את ${L('y')}, לכן ${L('A = ')}${c}.`,{svg:gridFig([{x,y,l:'A'}]),ctx:`A=(${sn(x)}, ${sn(y)})`})}
+  if(t==='which'){let x,y;do{x=R(-5,5);y=R(-5,5)}while(!x||!y||Math.abs(x)===Math.abs(y));
+    const pts=shuffle([[x,y],[y,x],[-x,y],[x,-y]]);const labels=['A','B','C','D'];const ci=pts.findIndex(p=>p[0]===x&&p[1]===y);
+    return Q('coord',`איזו נקודה היא ${pt(x,y)}?`,labels.map(L),`${moveDesc(x,y)} זו הנקודה ${L(labels[ci])}. שים לב לא להתבלבל בין ${L('x')} ל־${L('y')}!`,{svg:gridFig(pts.map((p,i)=>({x:p[0],y:p[1],l:labels[i]}))),ci,ctx:`(${sn(x)}, ${sn(y)})`})}
+  if(t==='quad'){const x=R(1,9)*pick([1,-1]),y=R(1,9)*pick([1,-1]);const q=x>0?(y>0?0:3):(y>0?1:2);const names=['רביע ראשון','רביע שני','רביע שלישי','רביע רביעי'];
+    const sg=v=>v>0?'+':MN;
+    return Q('coord',`באיזה רביע נמצאת הנקודה ${pt(x,y)}?`,names,`ה־${L('x')} ${x>0?'חיובי':'שלילי'} וה־${L('y')} ${y>0?'חיובי':'שלילי'}: ${L('('+sg(x)+','+sg(y)+')')} ← ${names[q]}. זכור: ראשון ${L('(+,+)')} · שני ${L('(−,+)')} · שלישי ${L('(−,−)')} · רביעי ${L('(+,−)')}.`,{ci:q})}
+  if(t==='axis'){const r=Math.random();let x=0,y=0,ci;if(r<0.45){y=R(1,9)*pick([1,-1]);ci=1}else if(r<0.9){x=R(1,9)*pick([1,-1]);ci=0}else ci=2;
+    const ex=ci===2?`שני השיעורים הם 0 – זו בדיוק ראשית הצירים.`:ci===0?`ה־${L('y')} שווה 0, כלומר לא זזים למעלה או למטה – הנקודה על ציר ה־${L('x')}.`:`ה־${L('x')} שווה 0, כלומר לא זזים ימינה או שמאלה – הנקודה על ציר ה־${L('y')}.`;
+    return Q('coord',`איפה נמצאת הנקודה ${pt(x,y)}?`,[`על ציר ה־${L('x')}`,`על ציר ה־${L('y')}`,'בראשית הצירים','ברביע הראשון'],ex,{ci})}
+  if(t==='move'){const x=R(-4,4),y=R(-4,4),k=R(1,5);const d=pick(['ימינה','שמאלה','למעלה','למטה']);
+    const nx=d==='ימינה'?x+k:d==='שמאלה'?x-k:x,ny=d==='למעלה'?y+k:d==='למטה'?y-k:y;
+    const wrong=[d==='ימינה'?[x-k,y]:d==='שמאלה'?[x+k,y]:d==='למעלה'?[x,y-k]:[x,y+k], (d==='ימינה'||d==='שמאלה')?[x,y+(nx-x)]:[x+(ny-y),y],[ny,nx]];
+    const ex=(d==='ימינה'||d==='שמאלה')?`תזוזה ${d} משנה רק את ה־${L('x')}: ${L(sn(x)+(d==='ימינה'?' + ':' − ')+k+' = '+sn(nx))}. ה־${L('y')} נשאר ${L(sn(y))}.`:`תזוזה ${d} משנה רק את ה־${L('y')}: ${L(sn(y)+(d==='למעלה'?' + ':' − ')+k+' = '+sn(ny))}. ה־${L('x')} נשאר ${L(sn(x))}.`;
+    return Q('coord',`הנקודה ${pt(x,y)} זזה ${k} יחידות ${d}. מה השיעורים החדשים?`,uniq(pt(nx,ny),wrong.map(w=>pt(w[0],w[1])).concat([pt(-nx,ny),pt(nx,-ny)])),ex)}
+  // desc
+  let x,y;do{x=R(-6,6);y=R(-6,6)}while(!x||!y||x===y);
+  const xs=`${Math.abs(x)} יחידות ${x>0?'מימין':'משמאל'} לציר ה־${L('y')}`,ys=`${Math.abs(y)} יחידות ${y>0?'מעל':'מתחת'} לציר ה־${L('x')}`;
+  return Q('coord',`נקודה נמצאת ${xs} ו־${ys}. מה השיעורים שלה?`,uniq(pt(x,y),[pt(y,x),pt(-x,y),pt(x,-y),pt(-x,-y)]),`${x>0?'מימין':'משמאל'} לציר ה־${L('y')} ← ${L('x = '+sn(x))}. ${y>0?'מעל':'מתחת'} לציר ה־${L('x')} ← ${L('y = '+sn(y))}. לכן ${pt(x,y)}.`);
+};
+G.signed=()=>{
+  const t=pick(['opp','abs','abs2','cmp','cmp','order','count','line','line','oppopp']);
+  if(t==='opp'){const x=R(1,25)*pick([1,-1]);return Q('signed',`מהו המספר הנגדי ל־${L(sn(x))}?`,numOpts(-x,[x,0,1]),`מספר נגדי נמצא באותו מרחק מאפס, אבל בצד השני של ציר המספרים. הנגדי של ${L(sn(x))} הוא ${L(sn(-x))}.`,{ctx:sn(x)})}
+  if(t==='abs'){const x=pick([R(-25,-1),R(-25,-1),R(1,25),0]);const a=Math.abs(x);return Q('signed',`כמה זה ${L('|'+sn(x)+'|')}?`,numOpts(a,[-a,a*2,a+1]),`ערך מוחלט הוא המרחק של המספר מאפס – ולכן הוא אף פעם לא שלילי: ${L('|'+sn(x)+'| = '+a)}.`)}
+  if(t==='abs2'){const a=R(-12,-1),b=R(1,12)*pick([1,-1]),op=pick(['+',MN]);const va=-a,vb=Math.abs(b);const ans=op==='+'?va+vb:va-vb;
+    const ds=op==='+'?[a+b,-ans,va-vb]:[a-b,-ans,va+vb];const ex=`קודם כל ערך מוחלט לחוד: ${L('|'+sn(a)+'| = '+va)} ו־${L('|'+sn(b)+'| = '+vb)}. אחר כך: ${L(va+' '+op+' '+vb+' = '+sn(ans))}.`;
+    return Q('signed',`כמה זה ${L('|'+sn(a)+'| '+op+' |'+sn(b)+'|')}?`,numOpts(ans,ds),ex)}
+  if(t==='cmp'){let a,b;do{a=R(-15,15);b=R(-15,15)}while(a===b||(a>=0&&b>=0));const big=Math.max(a,b),small=Math.min(a,b);
+    const ex=`על ציר המספרים, מספר שנמצא יותר ימינה – גדול יותר. ${L(sn(big))} נמצא מימין ל־${L(sn(small))}, לכן ${L(sn(big)+' > '+sn(small))}.`+(big<0?' במספרים שליליים: ככל שהמספר רחוק יותר מאפס – הוא קטן יותר.':'');
+    return Q('signed','איזה מספר גדול יותר?',[L(sn(a)),L(sn(b)),'הם שווים'],ex,{ci:a>b?0:1})}
+  if(t==='order'){let ns;do{ns=[R(-12,-1),R(-12,-1),R(-12,12),R(1,12)]}while(new Set(ns).size<4||new Set(ns.map(Math.abs)).size<4);
+    const asc=ns.slice().sort((a,b)=>a-b);const f=a=>L(a.map(sn).join(', '));
+    const absS=ns.slice().sort((a,b)=>Math.abs(a)-Math.abs(b));const negWrong=ns.filter(n=>n<0).sort((a,b)=>b-a).concat(ns.filter(n=>n>=0).sort((a,b)=>a-b));
+    const opts=uniq(f(asc),[f(negWrong),f(absS),f(asc.slice().reverse()),f(shuffle(ns))]);
+    return Q('signed',`סדר מהקטן לגדול: ${f(shuffle(ns))}`,opts,`מהקטן לגדול: ${f(asc)}. כל מספר שלילי קטן מכל מספר חיובי, ובין השליליים – מי שרחוק יותר מאפס קטן יותר (למשל ${L('−9 < −2')}).`)}
+  if(t==='count'){const k=pick([0,R(1,20),R(1,20)]);return Q('signed',`כמה מספרים יש שהערך המוחלט שלהם הוא ${k}?`,['0','1','2','אינסוף'],k?`שני מספרים: ${L(sn(k))} ו־${L(sn(-k))} – שניהם במרחק ${k} מאפס.`:`רק מספר אחד – 0 עצמו (המרחק שלו מאפס הוא 0).`,{ci:k?2:1})}
+  if(t==='line'){const v=R(-7,7)||-3;return Q('signed','איזה מספר מסומן על ציר המספרים?',numOpts(v,[-v,v+1,v-1]),`סופרים שנתות מ־0: הנקודה נמצאת ${Math.abs(v)} שנתות ${v>0?'ימינה':'שמאלה'} מאפס, ולכן היא ${L(sn(v))}.`,{svg:lineFig(v),ctx:`נקודה ב־${sn(v)}`})}
+  const x=R(1,20)*pick([1,-1]);return Q('signed',`מהו הנגדי של הנגדי של ${L(sn(x))}?`,numOpts(x,[-x,0]),`הנגדי של ${L(sn(x))} הוא ${L(sn(-x))}, והנגדי שלו חוזר ל־${L(sn(x))}.`);
+};
+function addRule(a,b){const s=a+b,A=Math.abs(a),B=Math.abs(b);
+  if(Math.sign(a)===Math.sign(b))return `לשני המספרים אותו סימן ← מחברים ${L(A+' + '+B+' = '+(A+B))} ושומרים על הסימן: ${L(sn(s))}.`;
+  if(A===B)return `אלה מספרים נגדיים – הסכום שלהם 0.`;
+  const big=A>B?a:b;return `סימנים שונים ← מחסרים ${L(Math.max(A,B)+' − '+Math.min(A,B)+' = '+Math.abs(s))}, ולוקחים את הסימן של ${L(sn(big))} (הערך המוחלט שלו גדול יותר): ${L(sn(s))}.`}
+G.addsub=()=>{
+  const t=pick(['add','add','sub','sub','sub','three','missing','word']);const nz=()=>R(1,15)*pick([1,-1]);
+  if(t==='add'||t==='sub'){const a=nz(),b=nz(),st=Math.random()<.6;const fa=st?sp(a):sn(a),fb=st?sp(b):par(b);const op=t==='add'?'+':MN;const ans=t==='add'?a+b:a-b;const expr=`${fa} ${op} ${fb}`;
+    const ex=t==='sub'?`חיסור = חיבור הנגדי! ${L(expr+' = '+fa+' + '+sp(-b))}. ${addRule(a,-b)}`:addRule(a,b);
+    return Q('addsub',`כמה זה ${L(expr)}?`,numOpts(ans,t==='add'?[-ans,a-b,b-a]:[a+b,-ans,-(a+b)]),ex,{ctx:expr})}
+  if(t==='three'){const a=nz(),b=nz(),c=nz(),o1=pick(['+',MN]),o2=pick(['+',MN]);const f=(x,o,y)=>o==='+'?x+y:x-y;const s1=f(a,o1,b),ans=f(s1,o2,c);
+    const expr=`${sn(a)} ${o1} ${par(b)} ${o2} ${par(c)}`;
+    return Q('addsub',`כמה זה ${L(expr)}?`,numOpts(ans,[f(s1,o2,-c),f(f(a,o1,-b),o2,c),-ans]),`מחשבים משמאל לימין: ${L(sn(a)+' '+o1+' '+par(b)+' = '+sn(s1))}, ואז ${L(sn(s1)+' '+o2+' '+par(c)+' = '+sn(ans))}. (ובכל חיסור – מחברים את הנגדי.)`,{ctx:expr})}
+  if(t==='missing'){const b=nz(),c=R(-12,12),x=c-b;return Q('addsub',`איזה מספר חסר? ${L('? + '+sp(b)+' = '+sn(c))}`,numOpts(x,[c+b,-x,b-c]),`מחפשים מספר שאם נוסיף לו ${L(sp(b))} נקבל ${L(sn(c))}: ${L(sn(c)+' − '+sp(b)+' = '+sn(x))}. בדיקה: ${L(sp(x)+' + '+sp(b)+' = '+sn(c))}.`)}
+  const w=pick(['temp','elev','diff']);
+  if(w==='temp'){const t0=R(-9,6),d=R(3,12),up=Math.random()<.5,ans=up?t0+d:t0-d;
+    return Q('addsub',`בבוקר הטמפרטורה בחרמון הייתה ${dg(t0)}. עד הצהריים היא ${up?'עלתה':'ירדה'} ב־${dg(d)}. מה הטמפרטורה בצהריים?`,numOpts(ans,[up?t0-d:t0+d,-ans,d-t0],dg),`${up?'עלייה ← מוסיפים':'ירידה ← מחסירים'}: ${L(sn(t0)+(up?' + ':' − ')+d+' = '+sn(ans))} מעלות.`)}
+  if(w==='elev'){const f0=R(-3,9),d=R(2,9),down=Math.random()<.6,ans=down?f0-d:f0+d;
+    return Q('addsub',`מעלית הייתה בקומה ${L(sn(f0))} (קומות החניון הן מספרים שליליים). היא ${down?'ירדה':'עלתה'} ${d} קומות. באיזו קומה היא עכשיו?`,numOpts(ans,[down?f0+d:f0-d,-ans,ans+1]),`${down?'ירידה ← מחסירים':'עלייה ← מוסיפים'}: ${L(sn(f0)+(down?' − ':' + ')+d+' = '+sn(ans))}.`)}
+  const hot=R(2,30),cold=R(-15,-1),c1=pick(['בתל אביב','באילת','בירושלים']),c2=pick(['במוסקבה','בהלסינקי','בטורונטו','באוסלו']);
+  return Q('addsub',`${c1} ${dg(hot)}, ו${c2} ${dg(cold)}. בכמה מעלות חם יותר ${c1}?`,numOpts(hot-cold,[hot+cold,cold-hot,-(hot+cold)],x=>L(sn(x)+'°')),`ההפרש = החם פחות הקר: ${L(hot+' − '+sp(cold)+' = '+hot+' + '+(-cold)+' = '+(hot-cold))}.`);
+};
+G.anglename=()=>{
+  const t=pick(['simple','simple','tri','vertex','rays','arms']);
+  const [p1,v,p2]=shuffle(LET).slice(0,3);
+  if(t==='simple'){const a1=R(-5,30),op=R(40,120);const corr=Math.random()<.5?p1+v+p2:p2+v+p1;
+    const svg=angleFig({cx:230,cy:148,rays:[{a:a1,len:150,label:p1},{a:a1+op,len:118,label:p2}],arcs:[{a1,a2:a1+op,r:36}],vl:v,vla:a1+op/2+180});
+    return Q('anglename','איך מסמנים את הזווית המסומנת?',uniq(AN(corr),[AN(v+p1+p2),AN(p1+p2+v),AN(p2+p1+v)]),`הקודקוד (הנקודה שממנה יוצאות שתי השוקיים) הוא ${L(v)}, והוא תמיד באמצע: ${AN(p1+v+p2)} (או ${AN(p2+v+p1)}).`,{svg,ctx:`קודקוד ${v}`})}
+  if(t==='tri'){const L3=[p1,v,p2];const pts=[[150,148],[410,148],[R(210,350),32]];const m=R(0,2);const V=L3[m],A=L3[(m+1)%3],B=L3[(m+2)%3];
+    return Q('anglename','איך מסמנים את הזווית המסומנת במשולש?',uniq(AN(A+V+B),[AN(V+A+B),AN(A+B+V),AN(V+B+A)]),`הזווית המסומנת נמצאת בקודקוד ${L(V)}, ולכן ${L(V)} באמצע: ${AN(A+V+B)}.`,{svg:triFig(pts,L3,m),ctx:`קודקוד ${V}`})}
+  if(t==='vertex')return Q('anglename',`בזווית ${AN(p1+v+p2)}, איזו נקודה היא הקודקוד?`,[L(v),L(p1),L(p2)],`האות האמצעית היא תמיד הקודקוד: ${L(v)}.`);
+  if(t==='rays'){const L3=shuffle(['A','B','C']).sort();const base=R(5,20),g1=R(30,55),g2=R(30,55);const angs=[base,base+g1,base+g1+g2];
+    const pairs=[[0,2],[0,1],[1,2]];const pr=pick(pairs);const nm=(i,j)=>L3[i]+'O'+L3[j];
+    const svg=angleFig({cx:200,cy:146,rays:angs.map((a,i)=>({a,len:i===0?160:116,label:L3[i]})),arcs:[{a1:angs[pr[0]],a2:angs[pr[1]],r:pr[1]-pr[0]===2?62:40}],vl:'O',vla:(angs[0]+angs[2])/2+180});
+    const others=pairs.filter(p=>p!==pr).map(p=>AN(nm(p[0],p[1])));
+    return Q('anglename','איך מסמנים את הזווית המסומנת?',uniq(AN(nm(pr[0],pr[1])),[...others,AN('O'+L3[pr[0]]+L3[pr[1]])]),`השוקיים של הזווית המסומנת הן ${L('O'+L3[pr[0]])} ו־${L('O'+L3[pr[1]])}, והקודקוד O באמצע: ${AN(nm(pr[0],pr[1]))}.`,{svg})}
+  return Q('anglename',`מהן שוקי הזווית ${AN(p1+v+p2)}?`,uniq(`${L(v+p1)} ו־${L(v+p2)}`,[`${L(p1+v)} ו־${L(p1+p2)}`,`${L(p2+p1)} ו־${L(p2+v)}`,`${L(p1+p2)} ו־${L(v+p2)}`]),`השוקיים יוצאות מהקודקוד – האות האמצעית ${L(v)}: הקרניים ${L(v+p1)} ו־${L(v+p2)}.`);
+};
+function bisFig(total,vals,extraE){
+  const a0=R(0,12),cx=190,cy=146;const rays=[{a:a0,len:170,label:'C'},{a:a0+total,len:116,label:'A'},{a:a0+total/2,len:118,label:'D'}];
+  const arcs=[{a1:a0,a2:a0+total/2,r:44,tick:true,label:vals[0]},{a1:a0+total/2,a2:a0+total,r:44,tick:true,label:vals[1]}];
+  if(extraE){rays.push({a:a0+total/4,len:118,label:'E'})}
+  return angleFig({cx,cy,rays,arcs,vl:'B',vla:a0+total/2+180});
+}
+G.bisector=()=>{
+  const t=pick(['half','half','double','double','quarter','concept','statement','adjb']);
+  if(t==='half'){const tot=2*R(20,78);return Q('bisector',`${L('BD')} חוצה את ${AN('ABC')}, ו־${AN('ABC')} = ${dg(tot)}. מה גודל ${AN('ABD')}?`,numOpts(tot/2,[tot,180-tot,tot/2+10],dg,true),`חוצה זווית מחלק אותה לשתי זוויות שוות: ${L(tot+'° : 2 = '+tot/2+'°')}.`,{svg:bisFig(tot,['','?']),ctx:`ABC=${tot}`})}
+  if(t==='double'){const h=R(20,85);return Q('bisector',`${L('BD')} חוצה את ${AN('ABC')}, ו־${AN('DBC')} = ${dg(h)}. מה גודל ${AN('ABC')}?`,numOpts(2*h,[h,180-h,h+10],dg,true),`${AN('ABD')} שווה ל־${AN('DBC')}, כלומר גם ${L(h+'°')}. ביחד: ${L(h+'° + '+h+'° = '+2*h+'°')}.`,{svg:bisFig(2*h,[h+'°','']),ctx:`DBC=${h}`})}
+  if(t==='quarter'){const tot=4*R(10,40);return Q('bisector',`${L('BD')} חוצה את ${AN('ABC')} = ${dg(tot)}, ו־${L('BE')} חוצה את ${AN('DBC')}. מה גודל ${AN('EBC')}?`,numOpts(tot/4,[tot/2,tot,tot/4+10],dg,true),`${AN('DBC')} = ${L(tot+' : 2 = '+tot/2+'°')}. ${L('BE')} חוצה אותה: ${L(tot/2+' : 2 = '+tot/4+'°')}.`,{svg:bisFig(tot,['',''],true),ctx:`ABC=${tot}`})}
+  if(t==='concept')return Q('bisector','מהו חוצה זווית?',['קרן שיוצאת מקודקוד הזווית ומחלקת אותה לשתי זוויות שוות','קו שחותך את שתי השוקיים של הזווית','קרן שיוצרת זווית ישרה עם אחת השוקיים','הקטע שמחבר את קצות שתי השוקיים'],'חוצה זווית יוצא תמיד מהקודקוד, ומחלק את הזווית לשני חצאים שווים בדיוק.');
+  if(t==='statement')return Q('bisector',`${L('BD')} חוצה את ${AN('ABC')}. מה בטוח נכון?`,[`${AN('ABD')} = ${AN('DBC')}`,`${AN('ABD')} = ${AN('ABC')}`,`${AN('ABD')} + ${AN('DBC')} = ${L('180°')}`,`${AN('ABD')} = ${L('90°')}`],`חוצה זווית מחלק את הזווית לשתי זוויות שוות, ולכן ${AN('ABD')} = ${AN('DBC')} (וכל אחת היא חצי מ־${AN('ABC')}).`,{svg:bisFig(2*R(25,70),['',''])});
+  const a=2*R(15,60),b=180-a;
+  return Q('bisector',`שתי זוויות צמודות: ${dg(a)} ו־${dg(b)}. מעבירים חוצה זווית לכל אחת מהן. מה גודל הזווית בין שני חוצי הזוויות?`,uniq(dg(90),[dg(a/2),dg(180),dg(b),dg(45)]),`חצי מ־${L(a+'°')} הוא ${L(a/2+'°')}, וחצי מ־${L(b+'°')} הוא ${L(b/2+'°')}. ביחד: ${L(a/2+' + '+b/2+' = 90°')}. (תמיד 90°, כי זה חצי מ־180°!)`,);
+};
+function sumFig(parts,labels,showArcs){
+  const cx=180,cy=146,a0=R(2,10);const names=['A','B','C','D'];let acc=a0;const angs=[a0];parts.forEach(p=>{acc+=p;angs.push(acc)});
+  const rays=angs.map((a,i)=>({a,len:i===0?190:118,label:names[i]}));const arcs=[];
+  showArcs.forEach(s=>{arcs.push({a1:angs[s.i],a2:angs[s.j],r:s.r,label:s.label,col:s.col})});
+  return angleFig({cx,cy,rays,arcs,vl:'O',vla:(angs[0]+angs[angs.length-1])/2+180});
+}
+G.anglesum=()=>{
+  const t=pick(['sum','sum','diff','diff','three','word']);
+  if(t==='sum'){const p=R(20,80),q=R(20,80);return Q('anglesum',`${AN('AOB')} = ${dg(p)}, ${AN('BOC')} = ${dg(q)}. מה גודל ${AN('AOC')}?`,numOpts(p+q,[Math.abs(p-q),180-p-q,p+q+10],dg,true),`${L('OB')} נמצאת בתוך ${AN('AOC')}, ולכן מחברים: ${L(p+'° + '+q+'° = '+(p+q)+'°')}.`,{svg:sumFig([p,q],0,[{i:0,j:1,r:42,label:p+'°'},{i:1,j:2,r:58,label:q+'°',col:'#ff9f40'},{i:0,j:2,r:84,label:'?',col:'#5cf'}])})}
+  if(t==='diff'){const p=R(20,80),q=R(20,80);return Q('anglesum',`${AN('AOC')} = ${dg(p+q)}, ${AN('AOB')} = ${dg(p)}. מה גודל ${AN('BOC')}?`,numOpts(q,[p,2*p+q,180-q],dg,true),`${AN('BOC')} = ${AN('AOC')} − ${AN('AOB')} = ${L((p+q)+'° − '+p+'° = '+q+'°')}.`,{svg:sumFig([p,q],0,[{i:0,j:1,r:42,label:p+'°'},{i:1,j:2,r:58,label:'?',col:'#5cf'},{i:0,j:2,r:84,label:(p+q)+'°',col:'#ff9f40'}])})}
+  if(t==='three'){const a=R(20,50),b=R(20,50),c=R(20,50);
+    return Q('anglesum',`${AN('AOB')} = ${dg(a)}, ${AN('BOC')} = ${dg(b)}, ו־${AN('AOD')} = ${dg(a+b+c)}. מה גודל ${AN('COD')}?`,numOpts(c,[a+b,a+b+c-a,180-(a+b+c)],dg,true),`${AN('COD')} = ${AN('AOD')} − ${AN('AOB')} − ${AN('BOC')} = ${L((a+b+c)+' − '+a+' − '+b+' = '+c+'°')}.`,{svg:sumFig([a,b,c],0,[{i:0,j:1,r:40,label:a+'°'},{i:1,j:2,r:54,label:b+'°',col:'#ff9f40'},{i:2,j:3,r:68,label:'?',col:'#5cf'}])})}
+  const d=2*R(5,30),T=2*R(Math.ceil((d+40)/2),80);const small=(T-d)/2,big=(T+d)/2;const askBig=Math.random()<.5;
+  return Q('anglesum',`${AN('AOC')} = ${dg(T)}, והקרן ${L('OB')} בתוכה. ${AN('AOB')} גדולה ב־${dg(d)} מ־${AN('BOC')}. מה גודל ${askBig?AN('AOB'):AN('BOC')}?`,numOpts(askBig?big:small,[askBig?small:big,T-d,T/2],dg,true),`מורידים את ההפרש: ${L(T+' − '+d+' = '+(T-d))}, ומחלקים ל־2: ${AN('BOC')} = ${L(small+'°')}. ${AN('AOB')} = ${L(small+' + '+d+' = '+big+'°')}.`);
+};
+function adjFig(al,lb,la){return angleFig({cx:280,cy:142,rays:[{a:0,len:220,label:'C'},{a:180,len:220,label:'A'},{a:al,len:104,label:'B'}],arcs:[{a1:0,a2:al,r:34,label:lb,col:'#ffd400'},{a1:al,a2:180,r:48,label:la,col:'#5cf'}],vl:'O',vla:270})}
+G.adjacent=()=>{
+  const t=pick(['find','find','find','ratio','diff','concept','check']);
+  if(t==='find'){let al;do{al=R(15,165)}while(al===90);const flip=Math.random()<.5;
+    const given=flip?180-al:al,ans=180-given;
+    return Q('adjacent',`${AN('AOB')} ו־${AN('BOC')} צמודות. ${flip?AN('AOB'):AN('BOC')} = ${dg(given)}. מה גודל ${flip?AN('BOC'):AN('AOB')}?`,numOpts(ans,[given,90-given,ans+10],dg,true),`סכום זוויות צמודות הוא 180°: ${L('180° − '+given+'° = '+ans+'°')}.`,{svg:flip?adjFig(al,'?',given+'°'):adjFig(al,given+'°','?')})}
+  if(t==='ratio'){const k=pick([2,3,4,5,8]);const s=180/(k+1),b=k*s;const askS=Math.random()<.5;
+    return Q('adjacent',`שתי זוויות צמודות. אחת גדולה פי ${k} מהשנייה. מה גודל הזווית ${askS?'הקטנה':'הגדולה'}?`,numOpts(askS?s:b,[askS?b:s,180/k,90],dg,true),`מחלקים את 180° ל־${k+1} חלקים שווים (חלק אחד לקטנה, ${k} לגדולה): ${L('180 : '+(k+1)+' = '+s+'°')}. הגדולה: ${L(k+' · '+s+' = '+b+'°')}.`)}
+  if(t==='diff'){const d=2*R(5,60);const s=(180-d)/2,b=(180+d)/2;const askS=Math.random()<.5;
+    return Q('adjacent',`ההפרש בין שתי זוויות צמודות הוא ${dg(d)}. מה גודל הזווית ${askS?'הקטנה':'הגדולה'}?`,numOpts(askS?s:b,[askS?b:s,180-d,d],dg,true),`מורידים את ההפרש: ${L('180 − '+d+' = '+(180-d))}, ומחלקים ל־2: הקטנה ${L(s+'°')}. הגדולה: ${L(s+' + '+d+' = '+b+'°')}.`)}
+  if(t==='check'){const a=R(20,160);const good=Math.random()<.5;const b=good?180-a:clamp(180-a+pick([-1,1])*R(5,25),5,175);
+    return Q('adjacent',`האם זוויות בגודל ${dg(a)} ו־${dg(b)} יכולות להיות צמודות?`,[good?'כן, כי סכומן 180°':`לא, כי סכומן ${a+b}° ולא 180°`,good?`לא, כי סכומן ${a+b}° ולא 180°`:'כן, כי סכומן 180°','רק אם שתיהן חדות','רק אם הן שוות'],`${L(a+' + '+b+' = '+(a+b)+'°')}. זוויות צמודות חייבות להשלים ל־180° בדיוק.`)}
+  const c=pick([
+    ['סכום שתי זוויות צמודות הוא:',[dg(180),dg(90),dg(360),'תלוי בזוויות'],'זוויות צמודות יוצרות יחד קו ישר – תמיד 180°.'],
+    ['זווית חדה – הזווית הצמודה לה היא:',['קהה','חדה','ישרה','גם היא חדה, תמיד'],'אם זווית קטנה מ־90°, אז 180° פחות הזווית ייתן יותר מ־90° – זווית קהה.'],
+    ['שתי זוויות צמודות שוות זו לזו. מה גודל כל אחת?',[dg(90),dg(45),dg(180),dg(60)],'שתי זוויות שוות שסכומן 180°: כל אחת 180 : 2 = 90°.'],
+    ['מה נכון לגבי זוויות צמודות?',['יש להן שוק משותפת, והשוקיים האחרות יוצרות קו ישר','הן נמצאות אחת מול השנייה','הן תמיד שוות זו לזו','סכומן 90°'],'צמודות = "צמודות" זו לזו עם שוק משותפת, ושתי השוקיים האחרות יוצרות ישר (180°).']]);
+  return Q('adjacent',c[0],c[1],c[2]);
+};
+G.vertical=()=>{
+  const t=pick(['find','find','find','pair','sum13','three','ratio','concept']);
+  const val=(al,n)=>n%2===1?al:180-al;const opp=n=>((n+1)%4)+1;
+  if(t==='find'){let al;do{al=R(25,155)}while(al===90);const rot=R(-12,12);const i=R(1,4);let j;do{j=R(1,4)}while(j===i);
+    const vi=val(al,i),vj=val(al,j);const isOpp=opp(i)===j;
+    const ex=isOpp?`${AN(j)} ו־${AN(i)} הן זוויות קודקודיות (אחת מול השנייה) ← שוות: ${L(vj+'°')}.`:`${AN(j)} ו־${AN(i)} הן זוויות צמודות (שכנות) ← ${L('180° − '+vi+'° = '+vj+'°')}.`;
+    return Q('vertical',`שני ישרים נחתכים. ${AN(i)} = ${dg(vi)}. מה גודל ${AN(j)}?`,numOpts(vj,[isOpp?180-vi:vi,90,vj+10],dg,true),ex,{svg:crossFig(al,rot,{[i]:vi},j)})}
+  if(t==='pair'){const al=R(35,145),rot=R(-12,12);const c13=Math.random()<.5;const corr=c13?`${AN(1)} ו־${AN(3)}`:`${AN(2)} ו־${AN(4)}`;
+    return Q('vertical','איזה זוג הוא זוג של זוויות קודקודיות?',uniq(corr,shuffle([`${AN(1)} ו־${AN(2)}`,`${AN(2)} ו־${AN(3)}`,`${AN(3)} ו־${AN(4)}`,`${AN(1)} ו־${AN(4)}`])),`זוויות קודקודיות נמצאות אחת מול השנייה, והן שוות: ${AN(1)} מול ${AN(3)}, ו־${AN(2)} מול ${AN(4)}. שכנות הן צמודות.`,{svg:crossFig(al,rot,null,null)})}
+  if(t==='sum13'){let a;do{a=R(25,155)}while(a===90);
+    return Q('vertical',`שני ישרים נחתכים. ${AN(1)} + ${AN(3)} = ${dg(2*a)}. מה גודל ${AN(2)}?`,numOpts(180-a,[a,2*a,180-2*a],dg,true),`${AN(1)} ו־${AN(3)} קודקודיות – שוות, לכן כל אחת ${L(2*a+' : 2 = '+a+'°')}. ${AN(2)} צמודה ל־${AN(1)}: ${L('180 − '+a+' = '+(180-a)+'°')}.`,{svg:crossFig(a,R(-10,10),null,2)})}
+  if(t==='three'){let al;do{al=R(25,155)}while(al===90);const miss=R(1,4);const S=360-val(al,miss);
+    return Q('vertical',`שני ישרים נחתכים. סכום שלוש מתוך ארבע הזוויות שנוצרו הוא ${dg(S)}. מה גודל הזווית הרביעית?`,numOpts(360-S,[180-(360-S),S-180,S/3|0],dg,true),`ארבע הזוויות סביב נקודת החיתוך ביחד: 360°. לכן ${L('360 − '+S+' = '+(360-S)+'°')}.`)}
+  if(t==='ratio'){const k=pick([2,3,5]);const s=180/(k+1),b=k*s;const askOpp=Math.random()<.5;
+    return Q('vertical',`שני ישרים נחתכים. ${AN(2)} גדולה פי ${k} מ־${AN(1)}. מה גודל ${askOpp?AN(3):AN(4)}?`,numOpts(askOpp?s:b,[askOpp?b:s,180/k,90],dg,true),`${AN(1)} ו־${AN(2)} צמודות: ${L('180 : '+(k+1)+' = '+s+'°')} ← ${AN(1)} = ${L(s+'°')}, ${AN(2)} = ${L(b+'°')}. ${askOpp?`${AN(3)} קודקודית ל־${AN(1)} ← ${L(s+'°')}`:`${AN(4)} קודקודית ל־${AN(2)} ← ${L(b+'°')}`}.`,{svg:crossFig(s,R(-8,8),null,askOpp?3:4)})}
+  return Q('vertical','זוויות קודקודיות הן תמיד:',['שוות זו לזו','משלימות ל־180°','חדות','ישרות'],'זוויות קודקודיות (אחת מול השנייה כששני ישרים נחתכים) – תמיד שוות. צמודות – משלימות ל־180°.');
+};
+const QKEYS=['coord','signed','addsub','anglename','bisector','anglesum','adjacent','vertical'];
+G.boss=()=>G[pick(QKEYS)]();
+
+/* ================= input ================= */
+let pending=null,typing=null,keys={};
+const isConfirm=k=>k==='Enter'||k==='z'||k==='Z'||k===' '||k==='ז';
+const isBack=k=>k==='x'||k==='X'||k==='Escape'||k==='Shift'||k==='ס';
+addEventListener('keydown',e=>{
+  if($('#parent').classList.contains('on')){if(e.key==='Escape')closeParent();return}
+  if(document.activeElement===$('#nameIn')){if(e.key==='Enter')$('#nameOk').click();return}
+  keys[e.key]=true;
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();
+  if(isConfirm(e.key))e.preventDefault();
+  if(e.repeat&&isConfirm(e.key))return;
+  if(typing&&isConfirm(e.key)){typing.skip=true;return}
+  if(pending&&pending.key&&pending.key(e.key))return;
+  if(scene==='title'&&isConfirm(e.key))$('#btnStart').click();
+  if(scene==='map')mapKey(e.key);
+});
+addEventListener('keyup',e=>{keys[e.key]=false});
+stage.addEventListener('pointerup',e=>{
+  if(e.target.closest('button')||e.target.closest('input'))return;
+  if(typing){typing.skip=true;return}
+  if(pending&&pending.type==='confirm'){const p=pending;pending=null;p.res()}
+});
+function waitConfirm(){return new Promise(res=>{pending={type:'confirm',res,key:k=>{if(isConfirm(k)){pending=null;res();return true}return false}}})}
+
+/* typewriter */
+async function typeIn(el,html,speed){
+  el.innerHTML=html;const chars=[];
+  const walk=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);const nodes=[];while(walk.nextNode())nodes.push(walk.currentNode);
+  nodes.forEach(n=>{const f=document.createDocumentFragment();for(const ch of n.textContent){const s=document.createElement('span');s.className='c';s.textContent=ch;f.appendChild(s);chars.push(s)}n.parentNode.replaceChild(f,n)});
+  typing={skip:false};const tk=typing;
+  for(let i=0;i<chars.length;i++){if(tk.skip)break;chars[i].classList.add('v');const ch=chars[i].textContent;if(ch.trim()&&i%2===0)SFX.blip();await sleep(ch===','||ch==='.'?speed*4:speed)}
+  chars.forEach(c=>c.classList.add('v'));if(typing===tk)typing=null;
+}
+async function say(lines,el,speed){el=el||$('#boxText');for(const ln of lines){el.classList.toggle('small',strip(ln).length>150);await typeIn(el,ln,speed||24);await waitConfirm()}}
+
+/* ================= scenes ================= */
+let scene='title';
+function show(s){scene=s;$$('.scene').forEach(e=>e.classList.remove('on'));const m={title:'#scTitle',name:'#scName',map:'#scMap',battle:'#scBattle',over:'#scOver',intro:null}[s];if(m)$(m).classList.add('on');$('#dlg').classList.remove('on')}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2200)}
+
+/* title */
+function goTitle(){show('title');playSong('title');$('#btnStart').textContent=save.name?'המשך – '+save.name:'התחל משחק';$('#btnDodge').textContent='קרבות התחמקות: '+(save.dodge?'פועל':'כבוי')}
+$('#btnStart').onclick=()=>{audioInit();SFX.ok();if(!save.name){show('name');setTimeout(()=>$('#nameIn').focus(),50)}else goMap()};
+$('#btnSound').onclick=()=>{audioInit();setSound(!save.sound);SFX.move()};
+$('#muteBtn').onclick=()=>{audioInit();setSound(!save.sound)};
+$('#btnDodge').onclick=()=>{save.dodge=!save.dodge;persist();SFX.move();$('#btnDodge').textContent='קרבות התחמקות: '+(save.dodge?'פועל':'כבוי')};
+$('#btnMenu').onclick=()=>{SFX.move();goTitle()};
+$('#nameOk').onclick=async()=>{const v=$('#nameIn').value.trim()||'דיפו';save.name=v;persist();$('#nameIn').blur();SFX.ok();await intro()};
+
+async function intro(){
+  show('intro');playSong('title');const d=$('#dlg');d.classList.add('on');introAnim=0;
+  await say(['* לפני הרבה זמן, שני עמים חיו על ציר המספרים: החיוביים והשליליים.','* ביניהם, בדיוק באפס, נבנתה ממלכת הזוויות.','* יום אחד הגיעה שמועה מפחידה: <b>המבחן</b> מתקרב...',`* ${save.name}, רק אתה יכול לעבור את כל האזורים, לשכנע את המפלצות – ולנצח את המבחן!`],d,30);
+  save.introSeen=true;persist();goMap();
+}
+let introAnim=0;
+
+/* map */
+let mapSel=1;
+function lv(){return 1+TOPICS.filter(t=>save.cleared[t.k]).length}
+function goMap(){show('map');playSong('map');$('#mapName').textContent=save.name;$('#mapLv').textContent='LV '+lv();updMapInfo()}
+function starsStr(k){const s=(save.cleared[k]||{}).stars||0;return '★'.repeat(s)+'☆'.repeat(3-s)}
+function updMapInfo(){
+  const n=MAPN[mapSel];const el=$('#mapInfo');
+  if(n.k==='save'){el.innerHTML=`<div class="t1">★ נקודת שמירה</div><div class="t2">הכוכב הנוצץ שומר את ההתקדמות שלך.</div><div>אזורים שהושלמו: ${TOPICS.filter(t=>save.cleared[t.k]).length} / ${TOPICS.length}</div><button class="go">גע בכוכב</button>`}
+  else{const t=n;el.innerHTML=`<div class="t1">${t.name} <span style="color:#ffd400;font-size:18px">${starsStr(t.k)}</span></div><div class="t2">${t.sub}</div><div>שומר האזור: <b>${t.mon.name}</b>${t.k==='boss'?' · צריך 10 תשובות נכונות':' · צריך 5 תשובות נכונות'}</div><button class="go">היכנס ▶</button>`}
+  el.querySelector('.go').onclick=()=>enterNode();
+}
+function mapKey(k){
+  if(pending)return;
+  if(k==='ArrowLeft'||k==='ArrowDown'){mapSel=(mapSel+1)%MAPN.length;SFX.move();updMapInfo()}
+  else if(k==='ArrowRight'||k==='ArrowUp'){mapSel=(mapSel-1+MAPN.length)%MAPN.length;SFX.move();updMapInfo()}
+  else if(isConfirm(k))enterNode();
+}
+cv.addEventListener('pointerdown',e=>{
+  if(scene!=='map'||pending)return;const r=cv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
+  MAPN.forEach((n,i)=>{if(Math.hypot(n.x-x,n.y-y)<34){if(mapSel===i)enterNode();else{mapSel=i;SFX.move();updMapInfo()}}});
+});
+async function enterNode(){
+  if(scene!=='map'||pending)return;const n=MAPN[mapSel];SFX.ok();
+  if(n.k==='save'){const d=$('#dlg');d.classList.add('on');SFX.save();persist();
+    await say(['* (המחשבה שהמבחן מתקרב ממלאת אותך בנחישות.)','* ההתקדמות נשמרה.'],d);d.classList.remove('on');return}
+  battle(n.k);
+}
+
+/* ================= battle ================= */
+let B=null;
+const FULLBOX={x:32,y:250,w:576,h:162},DODGEBOX={x:212,y:256,w:216,h:150};
+const box={x:32,y:250,w:576,h:162},boxT={...FULLBOX};
+const heart={x:320,y:330,inv:0,show:false};
+let bullets=[],floats=[],parts=[],shake=0,monShake=0,monFlash=0;
+const ITEMS=[{n:'קווארדיטיני',h:8},{n:'נאגטס',h:14},{n:"עוד פעם ג'ירף",h:20}];
+function setBox(b){Object.assign(boxT,b)}
+function hud(){
+  $('#hudName').textContent=save.name;$('#hudLv').textContent='LV '+lv();
+  $('#hpBar i').style.width=(B.hp/B.max*100)+'%';$('#hpNum').textContent=`${Math.max(0,B.hp)} / ${B.max}`;
+  $('#monName').textContent=B.mon.name;$('#monName').classList.toggle('ready',B.conv>=B.need);
+  $('#convBar i').style.width=Math.min(100,B.conv/B.need*100)+'%';
+  $$('.mbtn')[3].classList.toggle('ready',B.conv>=B.need);
+}
+async function battle(k){
+  const T=TK[k];
+  B={k,T,mon:T.mon,hp:20,max:20,conv:0,need:k==='boss'?10:5,correct:0,wrong:0,items:ITEMS.map(i=>({...i})),asked:new Set(),menuIdx:0,spared:false,start:Date.now()};
+  blipPitch=T.mon.pitch;
+  show('battle');stopSong();SFX.appear();
+  $('#qPanel').classList.remove('on');$('#opts').classList.remove('on');$('#boxText').innerHTML='';$('#bubble').classList.remove('on');
+  bullets=[];floats=[];parts=[];heart.show=false;setBox(FULLBOX);Object.assign(box,FULLBOX);
+  monAppear=0;hud();$('#menu').classList.add('off');
+  await sleep(500);playSong(k==='boss'?'boss':'battle');
+  await say([T.mon.intro]);
+  while(true){
+    if(B.hp<=0){await gameOver();return}
+    $('#boxText').innerHTML=`* ${pick(['ה'+B.mon.name+' מחכה לתשובה שלך.',B.mon.name+' בוהה בך.','מה תעשה?','האוויר מתמלא במספרים.','זה הזמן לחשוב.'])}`;
+    const sel=await menuChoice();
+    if(sel==='flee'){recBattle({t:Date.now(),k,res:'flee',c:B.correct,w:B.wrong});SFX.move();await say(['* ברחת... אבל המבחן עדיין מחכה.']);goMap();return}
+    if(sel===0){const r=await askQuestion();if(r==='done')continue;await enemyTurn(r)}
+    else if(sel===1){await say(HINTS[k])}
+    else if(sel===2){const r=await useItem();if(r)await enemyTurn(true)}
+    else if(sel===3){
+      if(B.conv>=B.need){await spare();return}
+      await say([`* ${B.mon.name} עוד לא מוכן לוותר.`,`* (צריך עוד ${B.need-B.conv} תשובות נכונות כדי לשכנע אותו.)`]);
+    }
+  }
+}
+function menuChoice(){
+  return new Promise(res=>{
+    const btns=$$('.mbtn');$('#menu').classList.remove('off');$('#flee').classList.add('on');
+    const upd=()=>btns.forEach((b,i)=>b.classList.toggle('sel',i===B.menuIdx));upd();
+    const done=v=>{pending=null;$('#menu').classList.add('off');$('#flee').classList.remove('on');btns.forEach(b=>{b.onclick=null;b.classList.remove('sel')});$('#flee').onclick=null;res(v)};
+    btns.forEach((b,i)=>b.onclick=()=>{B.menuIdx=i;SFX.ok();done(i)});
+    $('#flee').onclick=()=>done('flee');
+    pending={type:'menu',key:k=>{
+      if(k==='ArrowLeft'){B.menuIdx=Math.min(3,B.menuIdx+1);SFX.move();upd();return true}
+      if(k==='ArrowRight'){B.menuIdx=Math.max(0,B.menuIdx-1);SFX.move();upd();return true}
+      if(isConfirm(k)){SFX.ok();done(B.menuIdx);return true}
+      return false}};
+  });
+}
+function chooseOption(opts){
+  return new Promise(res=>{
+    const box=$('#opts');const long=opts.some(o=>strip(o).length>16);box.classList.toggle('one',long);
+    box.innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="hrt">${heartSVG()}</span>${o}</button>`).join('');box.classList.add('on');$('#boxText').innerHTML='';
+    let idx=0;const els=[...box.children];const upd=()=>els.forEach((e,i)=>e.classList.toggle('sel',i===idx));upd();
+    const done=i=>{pending=null;els.forEach(e=>e.onclick=null);res(i)};
+    els.forEach((e,i)=>e.onclick=()=>{idx=i;upd();done(i)});
+    pending={type:'opts',key:k=>{
+      const n=els.length;
+      if(long){if(k==='ArrowDown'){idx=(idx+1)%n;SFX.move();upd();return true}if(k==='ArrowUp'){idx=(idx-1+n)%n;SFX.move();upd();return true}}
+      else{
+        if(k==='ArrowLeft'&&idx%2===0&&idx+1<n){idx++;SFX.move();upd();return true}
+        if(k==='ArrowRight'&&idx%2===1){idx--;SFX.move();upd();return true}
+        if(k==='ArrowDown'&&idx+2<n){idx+=2;SFX.move();upd();return true}
+        if(k==='ArrowUp'&&idx-2>=0){idx-=2;SFX.move();upd();return true}
+      }
+      if(/^[1-4]$/.test(k)&&+k<=n){idx=+k-1;upd();done(idx);return true}
+      if(isConfirm(k)){done(idx);return true}
+      return false}};
+  });
+}
+function genQ(){let q,g=0;do{q=G[B.k]();g++}while(B.asked.has(strip(q.text)+q.ctx)&&g<12);B.asked.add(strip(q.text)+q.ctx);return q}
+async function askQuestion(){
+  const q=genQ();const t0=Date.now();
+  monVisible=false;const qp=$('#qPanel');qp.classList.add('on');qp.classList.toggle('nosvg',!q.svg);$('#qText').innerHTML=q.text;$('#qSvg').innerHTML=q.svg;
+  const i=await chooseOption(q.opts);const ok=i===q.ans;const els=[...$('#opts').children];
+  els[q.ans].classList.add('good');if(!ok)els[i].classList.add('bad');
+  recAnswer({t:Date.now(),k:B.k==='boss'?q.topic:B.k,boss:B.k==='boss'||undefined,q:strip(q.text)+(q.ctx?` [${q.ctx}]`:''),a:strip(q.opts[i]),c:strip(q.opts[q.ans]),ok,ms:Date.now()-t0});
+  if(ok){SFX.correct();B.correct++;B.conv++;monShake=18;monFlash=10;floats.push({x:320,y:110,s:'+1 שכנוע',life:1.2,col:'#ffd400'});
+    await sleep(650);$('#opts').classList.remove('on');
+    await say([`* ${pick(['נכון!','מעולה!','בדיוק!','יפה מאוד!','צדקת!','תותח!'])} ${B.mon.name} ${pick(['מתרשם.','מהנהן לאט.','קצת פחות עצבני.','מתחיל לחייך.','מסתכל עליך בהערכה.'])}`]);
+  }else{SFX.wrong();B.wrong++;shake=8;await sleep(900);$('#opts').classList.remove('on');
+    await say([`* לא בדיוק... התשובה הנכונה: ${q.opts[q.ans]}`,'* '+q.explain]);
+  }
+  qp.classList.remove('on');monVisible=true;hud();
+  if(B.conv>=B.need&&ok){await say([B.mon.spare,'* (עכשיו אפשר לבחור <span style="color:#ff0">רחמים</span>.)']);return 'done'}
+  return ok;
+}
+async function useItem(){
+  const avail=B.items.filter(i=>!i.used);
+  if(!avail.length){await say(['* אין לך יותר פריטים.']);return false}
+  const opts=avail.map(i=>`${i.n} (+${i.h} HP)`).concat(['חזרה']);
+  $('#qPanel').classList.remove('on');
+  const i=await chooseOption(opts);$('#opts').classList.remove('on');
+  if(i===avail.length)return false;
+  const it=avail[i];it.used=true;const before=B.hp;B.hp=Math.min(B.max,B.hp+it.h);SFX.heal();hud();
+  await say([`* אכלת ${it.n}. ${B.hp===B.max?'ה־HP שלך מלא!':`קיבלת ${B.hp-before} HP.`}`]);return true;
+}
+async function enemyTurn(ok){
+  const b=$('#bubble');b.textContent=pick(B.mon.lines);b.classList.add('on');
+  $('#boxText').innerHTML='';
+  if(!save.dodge){await sleep(1100);b.classList.remove('on');return}
+  setBox(DODGEBOX);await sleep(350);b.classList.remove('on');
+  await dodge(ok?3600:5400,ok);
+  setBox(FULLBOX);await sleep(300);
+}
+let dodgeState=null;
+function dodge(ms,easy){
+  return new Promise(res=>{
+    heart.x=DODGEBOX.x+DODGEBOX.w/2;heart.y=DODGEBOX.y+DODGEBOX.h/2;heart.show=true;heart.inv=0;bullets=[];
+    const tier=B.mon.tier;dodgeState={t:0,ms,res,next:0,pat:pick(B.mon.pat),spd:(0.85+0.13*tier)*(easy?0.85:1),rate:(easy?560:430)-tier*45,glyphs:B.mon.glyphs,dmg:B.k==='boss'?4:3,flip:0};
+  });
+}
+function spawn(D){
+  const bx=box;const g=pick(D.glyphs);const s=D.spd;
+  const mk=(x,y,vx,vy)=>bullets.push({x,y,vx,vy,g,r:7});
+  switch(D.pat){
+    case 'rain':mk(bx.x+10+Math.random()*(bx.w-20),bx.y-10,0,(90+Math.random()*60)*s);break;
+    case 'rise':mk(bx.x+10+Math.random()*(bx.w-20),bx.y+bx.h+10,0,-(90+Math.random()*50)*s);break;
+    case 'sides':{const l=(D.flip++)%2===0;mk(l?bx.x-10:bx.x+bx.w+10,bx.y+10+Math.random()*(bx.h-20),(l?1:-1)*(100+Math.random()*50)*s,0);break}
+    case 'aim':{const side=R(0,3);let x,y;if(side===0){x=bx.x+Math.random()*bx.w;y=bx.y-10}else if(side===1){x=bx.x+Math.random()*bx.w;y=bx.y+bx.h+10}else if(side===2){x=bx.x-10;y=bx.y+Math.random()*bx.h}else{x=bx.x+bx.w+10;y=bx.y+Math.random()*bx.h}const d=Math.hypot(heart.x-x,heart.y-y)||1;const v=110*s;mk(x,y,(heart.x-x)/d*v,(heart.y-y)/d*v);break}
+    case 'burst':{const cx=bx.x+20+Math.random()*(bx.w-40);const n=5;for(let i=0;i<n;i++){const a=Math.PI*(0.2+0.6*i/(n-1));mk(cx,bx.y-6,Math.cos(a)*80*s,Math.sin(a)*80*s)}D.next+=D.rate*1.6;break}
+  }
+}
+function updDodge(dt){
+  const D=dodgeState;if(!D)return;D.t+=dt*1000;
+  if(D.t<D.ms-600&&D.t>=D.next){spawn(D);D.next+=D.rate*(0.7+Math.random()*0.6)}
+  const sp=150*dt;let dx=0,dy=0;
+  if(keys.ArrowLeft||keys.a||keys.A)dx-=1;if(keys.ArrowRight||keys.d||keys.D)dx+=1;if(keys.ArrowUp||keys.w||keys.W)dy-=1;if(keys.ArrowDown||keys.s||keys.S)dy+=1;
+  if(dx&&dy){dx*=0.707;dy*=0.707}
+  heart.x+=dx*sp;heart.y+=dy*sp;
+  heart.x=clamp(heart.x,box.x+11,box.x+box.w-11);heart.y=clamp(heart.y,box.y+10,box.y+box.h-10);
+  if(heart.inv>0)heart.inv-=dt;
+  bullets.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;
+    if(heart.inv<=0&&Math.hypot(b.x-heart.x,b.y-heart.y)<b.r+5){heart.inv=1;b.dead=true;B.hp-=D.dmg;shake=10;SFX.hurt();hud();if(B.hp<=0){D.t=D.ms}}});
+  bullets=bullets.filter(b=>!b.dead&&b.x>box.x-40&&b.x<box.x+box.w+40&&b.y>box.y-40&&b.y<box.y+box.h+40);
+  if(D.t>=D.ms){const r=D.res;dodgeState=null;bullets=[];heart.show=false;r()}
+}
+async function spare(){
+  B.spared=true;SFX.spare();stopSong();for(let i=0;i<40;i++)parts.push({x:300+Math.random()*40,y:80+Math.random()*90,vx:(Math.random()-.5)*40,vy:-20-Math.random()*50,life:1+Math.random()});
+  const acc=B.correct/Math.max(1,B.correct+B.wrong);const stars=1+(acc>=0.8?1:0)+(B.wrong===0?1:0);
+  const prev=save.cleared[B.k];if(!prev||prev.stars<stars)save.cleared[B.k]={stars,at:Date.now()};persist();
+  recBattle({t:Date.now(),k:B.k,res:'win',c:B.correct,w:B.wrong,stars,sec:Math.round((Date.now()-B.start)/1000)});
+  await sleep(600);playSong('win');
+  const gold=B.correct*10;
+  const lines=[`* חסת על ${B.mon.name}. ניצחת!`,`* קיבלת 0 נק״ן ו־${gold} מטבעות זהב. ${'★'.repeat(stars)}${'☆'.repeat(3-stars)}`,`* דיוק: ${Math.round(acc*100)}% (${B.correct} נכונות, ${B.wrong} שגויות).`];
+  if(B.k==='boss')lines.push(`* המבחן הובס! ${save.name}, אתה מוכן. בהצלחה במבחן האמיתי!`);
+  else if(TOPICS.filter(t=>t.k!=='boss').every(t=>save.cleared[t.k])&&!save.cleared.boss)lines.push('* כל האזורים הושלמו! הבוס הסופי – המבחן – מחכה לך.');
+  await say(lines);
+  const next=MAPN.findIndex(n=>n.k===B.k);if(next>=0&&next<MAPN.length-1)mapSel=next+1;
+  goMap();
+}
+
+/* game over */
+let overAnim=null;
+async function gameOver(){
+  recBattle({t:Date.now(),k:B.k,res:'lose',c:B.correct,w:B.wrong});
+  stopSong();heart.show=false;overAnim={t:0,x:heart.x,y:heart.y};SFX.shatter();
+  show('over');$('#overBtns').classList.remove('on');$('#overText').innerHTML='';
+  await sleep(1600);playSong('over');
+  blipPitch=300;
+  await say(['אל תוותר עכשיו...',`${save.name}! הישאר נחוש!`],$('#overText'),55);
+  $('#overBtns').classList.add('on');
+}
+$('#btnRetry').onclick=()=>{overAnim=null;battle(B.k)};
+$('#btnOverMap').onclick=()=>{overAnim=null;goMap()};
+
+/* touch drag for heart */
+let drag=null;
+stage.addEventListener('pointerdown',e=>{if(dodgeState){drag={x:e.clientX,y:e.clientY}}});
+addEventListener('pointermove',e=>{if(drag&&dodgeState){const r=stage.getBoundingClientRect();const s=r.width/W;heart.x+=(e.clientX-drag.x)/s*1.2;heart.y+=(e.clientY-drag.y)/s*1.2;drag={x:e.clientX,y:e.clientY}}});
+addEventListener('pointerup',()=>drag=null);
+
+/* ================= render loop ================= */
+let last=performance.now(),T=0,monVisible=true,monAppear=1;
+const stars=Array.from({length:70},()=>({x:Math.random()*W,y:Math.random()*H,s:Math.random()*2+0.5,p:Math.random()*6}));
+function frame(t){
+  const dt=Math.min(0.05,(t-last)/1000);last=t;T+=dt;
+  if(scene==='battle')updDodge(dt);
+  ctx.save();ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+  if(shake>0){ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake=Math.max(0,shake-dt*40)}
+  if(scene==='title'||scene==='intro'||scene==='name')drawTitle();
+  else if(scene==='map')drawMap();
+  else if(scene==='battle')drawBattle(dt);
+  else if(scene==='over')drawOver(dt);
+  ctx.restore();
+  requestAnimationFrame(frame);
+}
+function drawStars(){stars.forEach(s=>{ctx.globalAlpha=0.3+0.7*Math.abs(Math.sin(T*0.8+s.p));ctx.fillStyle='#fff';ctx.fillRect(s.x,s.y,s.s,s.s)});ctx.globalAlpha=1}
+function drawHeart(x,y,s,col){drawGrid(HEART,x-4.5*s,y-4*s,s,col||'#f00')}
+function drawTitle(){
+  drawStars();
+  const glyphs=['−','+','∢','°','x','y','|'];
+  for(let i=0;i<14;i++){const y=((T*20+i*53)%600)-30;ctx.globalAlpha=0.15;ctx.fillStyle='#fff';ctx.font="14px 'Press Start 2P'";ctx.fillText(glyphs[i%glyphs.length],(i*97)%620+10,y)}
+  ctx.globalAlpha=1;
+  if(scene==='title'){
+    ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font="40px 'Press Start 2P'";ctx.fillText('ZaviTale',320,130);
+    ctx.font="700 22px Rubik";ctx.direction='rtl';ctx.fillStyle='#ffd400';ctx.fillText('מסע אל המבחן בחשבון ובגיאומטריה',320,180);ctx.direction='ltr';
+    const p=1+0.08*Math.sin(T*3);drawHeart(320,236,4*p);
+    ctx.textAlign='start';
+  }else if(scene==='intro'){
+    ctx.textAlign='center';ctx.font="22px 'Press Start 2P'";ctx.fillStyle='#fff';ctx.fillText('ZaviTale',320,60);
+    // number line
+    ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(60,230);ctx.lineTo(580,230);ctx.stroke();
+    for(let i=-6;i<=6;i++){const x=320+i*40;ctx.beginPath();ctx.moveTo(x,222);ctx.lineTo(x,238);ctx.stroke();ctx.font="10px 'Press Start 2P'";ctx.fillStyle=i<0?'#7cf':i>0?'#fc7':'#fff';ctx.fillText(sn(i),x,258)}
+    drawGrid(SPR.signed,140-16*2.5+Math.sin(T*2)*6,150,2.5);drawGrid(SPR.addsub,480-20*2.5,150+Math.sin(T*2+1)*4,2.5);
+    drawGrid(SPR.boss,320-11*3,90+Math.sin(T*1.5)*3,3,null,0.5+0.4*Math.abs(Math.sin(T)));
+    drawHeart(320,300,3);
+    ctx.textAlign='start';
+  }else{drawHeart(320,110,4)}
+}
+function drawMap(){
+  drawStars();
+  // path
+  ctx.strokeStyle='#555';ctx.setLineDash([6,6]);ctx.lineWidth=3;ctx.beginPath();
+  MAPN.forEach((n,i)=>{if(i===0)ctx.moveTo(n.x,n.y);else ctx.lineTo(n.x,n.y)});ctx.stroke();ctx.setLineDash([]);
+  // section labels
+  ctx.direction='rtl';ctx.textAlign='center';ctx.font="700 13px Rubik";ctx.fillStyle='#6cf';ctx.fillText('● חשבון',560,378);ctx.fillStyle='#7e7';ctx.fillText('● גיאומטריה',470,378);
+  MAPN.forEach((n,i)=>{
+    const sel=i===mapSel;const cl=save.cleared[n.k];const geo=['anglename','bisector','anglesum','adjacent','vertical'].includes(n.k);
+    const r=n.k==='boss'?28:24;
+    ctx.fillStyle='#000';ctx.beginPath();ctx.arc(n.x,n.y,r,0,7);ctx.fill();
+    ctx.lineWidth=sel?4:3;ctx.strokeStyle=n.k==='save'?'#ffd400':cl?'#ffd400':n.k==='boss'?'#f44':geo?'#7e7':'#6cf';ctx.beginPath();ctx.arc(n.x,n.y,r,0,7);ctx.stroke();
+    if(n.k==='save'){ctx.save();ctx.translate(n.x,n.y);ctx.rotate(Math.sin(T*2)*0.2);ctx.fillStyle='#ffd400';ctx.font="26px Rubik";ctx.textBaseline='middle';ctx.fillText('★',0,2);ctx.restore()}
+    else{ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.direction='ltr';ctx.font=(n.icon.length>2?"10px":"13px")+" 'Press Start 2P', Rubik";ctx.fillText(n.icon,n.x,n.y+1)}
+    ctx.textBaseline='alphabetic';ctx.direction='rtl';ctx.font="700 13px Rubik";ctx.fillStyle=sel?'#ff0':'#fff';ctx.fillText(n.name,n.x,n.y+r+17);
+    if(n.k!=='save'){ctx.font="13px Rubik";ctx.fillStyle='#ffd400';ctx.fillText(starsStr(n.k),n.x,n.y+r+33)}
+    if(sel)drawHeart(n.x,n.y-r-14+Math.sin(T*5)*3,2);
+  });
+  ctx.direction='ltr';ctx.textAlign='start';
+}
+function drawBattle(dt){
+  // background grid
+  ctx.strokeStyle='#1b0f2e';ctx.lineWidth=1;
+  for(let x=20;x<=620;x+=40){ctx.beginPath();ctx.moveTo(x,10);ctx.lineTo(x,236);ctx.stroke()}
+  for(let y=10;y<=236;y+=38){ctx.beginPath();ctx.moveTo(20,y);ctx.lineTo(620,y);ctx.stroke()}
+  // monster
+  if(monVisible){
+    monAppear=Math.min(1,monAppear+dt*2);
+    const g=SPR[B.k];const s=B.k==='boss'?6.2:Math.min(9,150/g[0].length);const w=g[0].length*s,h=g.length*s;
+    let x=320-w/2,y=(B.k==='boss'?18:30)+(200-h)/2+Math.sin(T*2)*4;
+    if(monShake>0){x+=Math.sin(T*60)*monShake*0.5;monShake=Math.max(0,monShake-dt*30)}
+    const alpha=B.spared?0.35:monAppear;
+    drawGrid(g,x,y,s,monFlash>0&&Math.floor(T*20)%2?'#ffd400':'#fff',alpha);if(monFlash>0)monFlash-=dt*10;
+  }
+  // particles
+  parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle='#fff';ctx.fillRect(p.x,p.y,3,3)});parts=parts.filter(p=>p.life>0);ctx.globalAlpha=1;
+  // box
+  ['x','y','w','h'].forEach(k=>box[k]+=(boxT[k]-box[k])*Math.min(1,dt*12));
+  ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.strokeRect(box.x,box.y,box.w,box.h);
+  // bullets
+  ctx.save();ctx.beginPath();ctx.rect(box.x+2,box.y+2,box.w-4,box.h-4);ctx.clip();
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.direction='ltr';
+  bullets.forEach(b=>{ctx.font=(b.g.length>2?"11px":"16px")+" 'Press Start 2P', Rubik";ctx.fillText(b.g,b.x,b.y)});
+  ctx.restore();
+  if(heart.show&&!(heart.inv>0&&Math.floor(T*15)%2))drawHeart(heart.x,heart.y,2);
+  // floats
+  floats.forEach(f=>{f.y-=dt*30;f.life-=dt;ctx.globalAlpha=Math.max(0,f.life);ctx.fillStyle=f.col;ctx.font="900 22px Rubik";ctx.textAlign='center';ctx.direction='rtl';ctx.fillText(f.s,f.x,f.y)});floats=floats.filter(f=>f.life>0);ctx.globalAlpha=1;ctx.direction='ltr';ctx.textAlign='start';
+}
+function drawOver(dt){
+  ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font="48px 'Press Start 2P'";ctx.fillText('GAME',320,150);ctx.fillText('OVER',320,215);ctx.textAlign='start';
+  if(overAnim){overAnim.t+=dt;const a=overAnim;
+    if(a.t<0.8){drawHeart(320,262,3)}
+    else if(a.t<1.5){drawGrid(HEART.map(r=>r.slice(0,5)+'....'),320-13.5-3,262-12,3,'#f00');drawGrid(HEART.map(r=>'.....'+r.slice(5)),320-13.5+3,262-12,3,'#f00')}
+    else{if(!a.sh){a.sh=Array.from({length:7},()=>({x:320,y:262,vx:(Math.random()-.5)*160,vy:-60-Math.random()*80}))}a.sh.forEach(s=>{s.vy+=200*dt;s.x+=s.vx*dt;s.y+=s.vy*dt;ctx.fillStyle='#f00';ctx.fillRect(s.x,s.y,6,6)})}
+  }
+}
+
+/* ================= parent dashboard ================= */
+const TOPIC_ORDER=QKEYS;
+function tname(k){return(TK[k]||{}).name||k}
+let parentData=null;
+async function openParent(){
+  SFX.move();$('#parent').classList.add('on');renderParent(Object.values(log.sessions),'local');
+  if(backend==='firebase'){const u=fbAuth.currentUser;if(!u||u.isAnonymous){renderParent(Object.values(log.sessions),'login');return}}
+  if(db){
+    renderParent(Object.values(log.sessions),'loading');
+    let done=false;const timer=setTimeout(()=>{if(!done)renderParent(Object.values(log.sessions),'timeout')},10000);
+    try{const snap=await db.collection('sessions').orderBy('last','desc').limit(400).get();done=true;clearTimeout(timer);
+      const m={};Object.values(log.sessions).forEach(s=>m[s.id]=s);snap.docs.forEach(d=>{const v=d.data();if(v&&v.id){if(!m[v.id]||(v.answers||[]).length>(m[v.id].answers||[]).length)m[v.id]=v}});
+      renderParent(Object.values(m),'cloud');
+    }catch(e){done=true;clearTimeout(timer);renderParent(Object.values(log.sessions),e&&e.code==='permission-denied'?'denied':'error')}
+  }
+}
+function closeParent(){$('#parent').classList.remove('on');if(location.hash==='#parents'){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){location.hash=''}}}
+function route(){if(location.hash==='#parents')openParent();else if($('#parent').classList.contains('on'))$('#parent').classList.remove('on')}
+addEventListener('hashchange',route);
+const fmtD=t=>new Date(t).toLocaleDateString('he-IL',{day:'numeric',month:'numeric'});
+const fmtDT=t=>new Date(t).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'});
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function pctCol(p){return p>=80?'#36c36b':p>=60?'#e0b030':'#e05050'}
+let pAll={sessions:[],src:'local'},pPlayer='';
+const pname=s=>(String(s.player||'').trim()||'ללא שם');
+function renderParent(sessions,src){
+  pAll={sessions,src};
+  const allS=sessions.filter(s=>s&&Array.isArray(s.answers)).sort((a,b)=>b.start-a.start);
+  // players overview
+  const PL={};allS.forEach(s=>{const n=pname(s);const p=PL[n]||(PL[n]={name:n,n:0,c:0,last:0,ms:0,wins:new Set(),per:{}});
+    s.answers.forEach(a=>{p.n++;if(a.ok)p.c++;const t=p.per[a.k]||(p.per[a.k]={n:0,c:0});t.n++;if(a.ok)t.c++});
+    p.last=Math.max(p.last,s.last||s.start);p.ms+=Math.min(3*3600e3,Math.max(0,(s.last||s.start)-s.start));
+    (s.battles||[]).forEach(b=>{if(b.res==='win')p.wins.add(b.k)})});
+  const players=Object.values(PL).sort((a,b)=>b.last-a.last);
+  if(pPlayer&&!PL[pPlayer])pPlayer='';
+  sessions=pPlayer?allS.filter(s=>pname(s)===pPlayer):allS;
+  const ans=[];sessions.forEach(s=>s.answers.forEach(a=>ans.push({...a,player:pname(s)})));ans.sort((a,b)=>a.t-b.t);
+  const battles=[];sessions.forEach(s=>(s.battles||[]).forEach(b=>battles.push(b)));
+  const total=ans.length,corr=ans.filter(a=>a.ok).length,pc=total?Math.round(corr/total*100):0;
+  const mins=Math.round(sessions.reduce((m,s)=>m+Math.min(3*3600e3,Math.max(0,(s.last||s.start)-s.start)),0)/60000);
+  const wins=battles.filter(b=>b.res==='win').length;
+  const per={};TOPIC_ORDER.forEach(k=>per[k]={n:0,c:0,last:0,recent:[]});
+  ans.forEach(a=>{const p=per[a.k];if(!p)return;p.n++;if(a.ok)p.c++;p.last=Math.max(p.last,a.t);p.recent.push(a.ok)});
+  const weak=TOPIC_ORDER.filter(k=>per[k].n>=4&&per[k].c/per[k].n<0.7);
+  const none=TOPIC_ORDER.filter(k=>per[k].n===0);
+  const strong=TOPIC_ORDER.filter(k=>per[k].n>=6&&per[k].c/per[k].n>=0.85);
+  // days
+  const days=[];const d0=new Date();d0.setHours(0,0,0,0);
+  for(let i=13;i>=0;i--){const s=d0.getTime()-i*864e5;const e=s+864e5;const da=ans.filter(a=>a.t>=s&&a.t<e);days.push({s,n:da.length,c:da.filter(a=>a.ok).length})}
+  const maxN=Math.max(5,...days.map(d=>d.n));
+  const mistakes=ans.filter(a=>!a.ok).slice(-25).reverse();
+  const who=backend==='firebase'&&fbAuth&&fbAuth.currentUser&&!fbAuth.currentUser.isAnonymous?esc(fbAuth.currentUser.email):'';
+  const srcChip={login:'<span class="chip">💾 מוצגים רק נתוני המכשיר הזה</span> <button class="pbtn" id="pLogin">🔐 התחברות עם Google כדי לראות את כל התלמידים</button>',denied:`<span class="chip">⛔ החשבון ${who} לא מורשה לצפות בנתוני התלמידים</span> <button class="pbtn" id="pLogout">התנתקות</button>`,cloud:`<span class="chip ok">☁️ מסונכרן – נתונים מכל המכשירים</span>${who?` <span class="chip">מחובר: ${who}</span> <button class="pbtn" id="pLogout">התנתקות</button>`:''}`,loading:'<span class="chip">טוען נתונים מהענן…</span>',local:'<span class="chip">💾 נתונים מהמכשיר הזה</span>',timeout:'<span class="chip">הענן לא עונה כרגע – מוצגים נתוני המכשיר הזה</span>',error:'<span class="chip">לא הצלחתי לקרוא מהענן – מוצגים נתוני המכשיר הזה</span>'}[src]||'';
+  const writeNote=backend==='firebase'?'':db?(cloud.writable?'':'<div class="note">⚠️ המכשיר הזה לא יכול לשמור לענן (הרשאת צפייה בלבד).</div>'):'<div class="note">הנתונים נשמרים בדפדפן שבו משחקים. כשהמשחק פתוח דרך Claude עם חשבון מחובר, הנתונים מסונכרנים לענן ומוצגים כאן מכל מכשיר.</div>';
+  parentData={total,pc,mins,per,weak,none,mistakes,sessions,wins,player:pPlayer};
+  const selP=pPlayer?PL[pPlayer]:null;
+  $('#pw').innerHTML=`
+  <div class="ptop"><h1>👪 לוח מעקב <span class="pix">ZaviTale</span></h1><span class="sp"></span><button class="pbtn" id="pRefresh">רענן</button><button class="pbtn" id="pCopy">העתק סיכום</button><button class="pbtn" id="pClose">חזרה למשחק ✕</button></div>
+  <div>${srcChip}</div>${writeNote}
+  <h2>תלמידים (${players.length})</h2>
+  ${players.length?`<table class="pt plist"><tr><th>שם</th><th>שאלות</th><th>הצלחה</th><th>דקות</th><th>אזורים שנוצחו</th><th>כדאי לחזק</th><th>תרגול אחרון</th><th></th></tr>${players.map(p=>{const pc=p.n?Math.round(p.c/p.n*100):0;const wk=TOPIC_ORDER.filter(k=>p.per[k]&&p.per[k].n>=4&&p.per[k].c/p.per[k].n<0.7).map(tname);
+    return `<tr class="${p.name===pPlayer?'psel':''}"><td><b>${esc(p.name)}</b></td><td>${p.n}</td><td>${p.n?`<b style="color:${pctCol(pc)}">${pc}%</b>`:'—'}</td><td>${Math.round(p.ms/60000)}</td><td>${p.wins.size} / ${TOPICS.length}</td><td class="muted">${wk.join(', ')||'—'}</td><td class="muted">${fmtD(p.last)}</td><td><button class="pbtn pick" data-p="${esc(p.name)}">${p.name===pPlayer?'מוצג ✓':'הצג'}</button></td></tr>`}).join('')}</table>`:'<div class="muted">עוד אף אחד לא שיחק.</div>'}
+  <div class="pview"><span>מציג נתונים של:</span><select id="pSel"><option value="">כל התלמידים</option>${players.map(p=>`<option value="${esc(p.name)}" ${p.name===pPlayer?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>
+  <textarea id="copyArea" readonly></textarea>
+  <div class="cards">
+    <div class="card"><b>${total}</b><span>שאלות שנענו</span></div>
+    <div class="card"><b style="color:${total?pctCol(pc):'#fff'}">${total?pc+'%':'—'}</b><span>תשובות נכונות</span></div>
+    <div class="card"><b>${mins}</b><span>דקות תרגול</span></div>
+    ${selP?`<div class="card"><b>${selP.wins.size} / ${TOPICS.length}</b><span>אזורים שנוצחו</span></div>`:`<div class="card"><b>${players.length}</b><span>תלמידים</span></div>`}
+    <div class="card"><b>${sessions.length?fmtD(sessions[0].last||sessions[0].start):'—'}</b><span>תרגול אחרון</span></div>
+  </div>
+  <div class="rec">${total?`
+    ${weak.length?`<div>🔴 <b>כדאי לחזק:</b> ${weak.map(tname).join(', ')}</div>`:''}
+    ${strong.length?`<div>🟢 <b>שולט היטב:</b> ${strong.map(tname).join(', ')}</div>`:''}
+    ${none.length?`<div>⚪ <b>עוד לא תורגל:</b> ${none.map(tname).join(', ')}</div>`:''}
+    ${!weak.length&&!none.length?'<div>👏 כל הנושאים תורגלו ואין נושא חלש במיוחד. מומלץ להילחם בבוס "המבחן" לחזרה כללית.</div>':''}`:'<div>עוד אין נתונים. ברגע שמישהו יתחיל לשחק, ההתקדמות תופיע כאן.</div>'}
+  </div>
+  <h2>לפי נושא</h2>
+  <table class="pt"><tr><th>נושא</th><th>שאלות</th><th>נכונות</th><th style="width:34%">הצלחה</th><th>10 אחרונות</th><th>תורגל לאחרונה</th></tr>
+  ${TOPIC_ORDER.map(k=>{const p=per[k];const pp=p.n?Math.round(p.c/p.n*100):0;const r10=p.recent.slice(-10);const rp=r10.length?Math.round(r10.filter(Boolean).length/r10.length*100):0;
+    return `<tr><td><b>${tname(k)}</b></td><td>${p.n}</td><td>${p.c}</td><td>${p.n?`<div style="display:flex;align-items:center;gap:8px"><div class="pbar" style="flex:1"><i style="width:${pp}%;background:${pctCol(pp)}"></i></div><b style="color:${pctCol(pp)}">${pp}%</b></div>`:'<span class="muted">—</span>'}</td><td>${r10.length?`<span style="color:${pctCol(rp)}">${rp}%</span>`:'<span class="muted">—</span>'}</td><td class="muted">${p.last?fmtD(p.last):'—'}</td></tr>`}).join('')}
+  </table>
+  <h2>14 הימים האחרונים</h2>
+  <div class="days">${days.map(d=>`<div class="day"><span class="n">${d.n||''}</span><div class="col" style="height:${d.n/maxN*100}%"><i style="height:${d.n?d.c/d.n*100:0}%"></i></div><span>${fmtD(d.s)}</span></div>`).join('')}</div>
+  <div class="legend"><i style="background:#2d6cdf"></i>שאלות <i style="background:#36c36b"></i>מתוכן נכונות</div>
+  <h2>טעויות אחרונות</h2>
+  ${mistakes.length?`<table class="pt mist"><tr><th>מתי</th><th>שחקן</th><th>נושא</th><th>שאלה</th><th>ענה</th><th>נכון</th></tr>${mistakes.map(a=>`<tr><td class="muted">${fmtDT(a.t)}</td><td><b>${esc(a.player)}</b></td><td>${tname(a.k)}${a.boss?' <span class="muted">(בוס)</span>':''}</td><td>${esc(a.q)}</td><td>${esc(a.a)}</td><td>${esc(a.c)}</td></tr>`).join('')}</table>`:'<div class="muted">אין טעויות להצגה.</div>'}
+  <h2>מפגשי משחק</h2>
+  ${sessions.length?`<table class="pt"><tr><th>התחלה</th><th>שחקן</th><th>משך</th><th>שאלות</th><th>הצלחה</th><th>קרבות שנוצחו</th></tr>${sessions.slice(0,40).map(s=>{const n=s.answers.length,c=s.answers.filter(a=>a.ok).length;const w=(s.battles||[]).filter(b=>b.res==='win').map(b=>tname(b.k));return `<tr><td>${fmtDT(s.start)}</td><td><b>${esc(pname(s))}</b></td><td>${Math.max(1,Math.round(((s.last||s.start)-s.start)/60000))} ד׳</td><td>${n}</td><td>${n?`<span style="color:${pctCol(c/n*100)}">${Math.round(c/n*100)}%</span>`:'—'}</td><td class="muted">${w.join(', ')||'—'}</td></tr>`}).join('')}</table>`:'<div class="muted">אין עדיין מפגשים.</div>'}
+  <h2>ניהול</h2>
+  <button class="pbtn danger" id="pReset">איפוס נתוני המכשיר הזה</button>
+  <div class="note">האיפוס מוחק את ההתקדמות והתיעוד שנשמרו בדפדפן הזה (שם, כוכבים ותשובות). נתונים שכבר סונכרנו לענן נשארים.</div>
+  `;
+  $('#pClose').onclick=closeParent;$('#pRefresh').onclick=openParent;
+  if($('#pLogin'))$('#pLogin').onclick=async()=>{try{await fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());openParent()}catch(e){toast('ההתחברות לא הצליחה')}};
+  if($('#pLogout'))$('#pLogout').onclick=async()=>{try{await fbAuth.signOut();await fbAuth.signInAnonymously()}catch(e){}openParent()};
+  $('#pSel').onchange=e=>{pPlayer=e.target.value;renderParent(pAll.sessions,pAll.src)};
+  $$('.pick').forEach(b=>b.onclick=()=>{pPlayer=b.dataset.p===pPlayer?'':b.dataset.p;renderParent(pAll.sessions,pAll.src);$('#pSel').scrollIntoView({behavior:'smooth',block:'start'})});
+  $('#pCopy').onclick=()=>{const tx=summaryText();const ta=$('#copyArea');ta.value=tx;ta.style.display='block';
+    try{navigator.clipboard.writeText(tx).then(()=>{$('#pCopy').textContent='הועתק ✓'},()=>{ta.select()})}catch(e){ta.select()}};
+  let armed=false;$('#pReset').onclick=()=>{if(!armed){armed=true;$('#pReset').textContent='בטוח? לחץ שוב כדי למחוק';return}
+    try{localStorage.removeItem('dipotale_save');localStorage.removeItem('dipotale_log_v1')}catch(e){}
+    log.sessions={};Object.assign(save,{name:'',cleared:{},introSeen:false});session=newSession();closeParent();goTitle()};
+}
+function summaryText(){
+  const d=parentData;if(!d)return'';
+  let s=`סיכום תרגול ZaviTale${d.player?' – '+d.player:' – כל התלמידים'} – ${new Date().toLocaleDateString('he-IL')}\n`;
+  s+=`שאלות: ${d.total} · הצלחה: ${d.pc}% · דקות תרגול: ${d.mins}\n\n`;
+  TOPIC_ORDER.forEach(k=>{const p=d.per[k];s+=`${tname(k)}: ${p.n?Math.round(p.c/p.n*100)+'% ('+p.c+'/'+p.n+')':'לא תורגל'}\n`});
+  if(d.weak.length)s+=`\nכדאי לחזק: ${d.weak.map(tname).join(', ')}\n`;
+  if(d.mistakes.length){s+=`\nטעויות אחרונות:\n`;d.mistakes.slice(0,10).forEach(a=>{s+=`• ${d.player?'':a.player+': '}${a.q} — ענה ${a.a}, נכון: ${a.c}\n`})}
+  return s;
+}
+
+/* ================= boot ================= */
+setSound(save.sound);
+goTitle();
+route();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
