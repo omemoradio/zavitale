@@ -380,7 +380,7 @@ const TOPICS=[
  {k:'addsub',name:'חיבור וחיסור',sub:'מספרים מכוונים',icon:'+−',x:246,y:96,
   mon:{name:'פלוסמינוס',intro:'* פלוסמינוס מופיע! שני ראשים, ושניהם מתווכחים על הסימן.',lines:['פלוס!','לא, מינוס!','חיסור זה חיבור הנגדי!','סימנים שונים – מחסרים!'],spare:'* שני הראשים של פלוסמינוס סוף סוף מסכימים.',glyphs:['+','−','+3','−7'],pat:['sides','rain','aim'],tier:2,pitch:500}},
  {k:'anglename',name:'סימון זוויות',sub:'∢ABC – הקודקוד באמצע',icon:'∢',x:116,y:126,
-  mon:{name:'זוויתן',intro:'* זוויתן מזדקר מולך. הקרניים שלו יוצרות זווית מושלמת.',lines:['הקודקוד – באמצע!','קרא לי בשם הנכון.','∢ABC או ∢CBA – שניהם אני.','שלוש אותיות, לא פחות.'],spare:'* זוויתן שמח שקראו לו בשם הנכון.',glyphs:['∢','A','B','C'],pat:['rain','burst'],tier:1,pitch:650}},
+  mon:{name:'זוויתן',intro:'* זוויתן מזדקר מולך. הקרניים שלו יוצרות זווית מושלמת.',lines:['הקודקוד – באמצע!','צריך לקרוא לי בשם הנכון.','∢ABC או ∢CBA – שניהם אני.','שלוש אותיות, לא פחות.'],spare:'* זוויתן שמח שקראו לו בשם הנכון.',glyphs:['∢','A','B','C'],pat:['rain','burst'],tier:1,pitch:650}},
  {k:'bisector',name:'חוצה זווית',sub:'שתי זוויות שוות',icon:'½',x:150,y:240,
   mon:{name:'אביר החוצה',intro:'* אביר החוצה שולף חרב. הוא חוצה את האוויר לשני חצאים שווים בדיוק.',lines:['חצי לי, חצי לך!','שווה בשווה!','כל זווית – לשניים.','החרב שלי תמיד באמצע.'],spare:'* אביר החוצה מכניס את החרב לנדן ומשתחווה.',glyphs:['½','/','\\'],pat:['sides','aim'],tier:2,pitch:380}},
  {k:'anglesum',name:'סכום והפרש זוויות',sub:'חיבור וחיסור של זוויות',icon:'∢+',x:280,y:250,
@@ -404,7 +404,7 @@ const HINTS={
  anglesum:['* כשהקרן <span class="ltr">OB</span> נמצאת בתוך <span class="ltr">∢AOC</span>:','* סכום: <span class="ltr">∢AOB + ∢BOC = ∢AOC</span>','* הפרש: <span class="ltr">∢AOC − ∢AOB = ∢BOC</span>'],
  adjacent:['* זוויות צמודות: יש להן שוק משותפת, והשוקיים האחרות יוצרות קו ישר.','* סכום זוויות צמודות = <span class="ltr">180°</span>.','* אם אחת חדה – השנייה קהה. אם הן שוות – כל אחת <span class="ltr">90°</span>.'],
  vertical:['* כששני ישרים נחתכים, נוצרות 4 זוויות.','* זוויות קודקודיות (אחת מול השנייה) – שוות!','* זוויות שכנות הן צמודות – ביחד <span class="ltr">180°</span>. כל הארבע ביחד: <span class="ltr">360°</span>.'],
- boss:['* המבחן משלב את כל הנושאים.','* טיפ: קרא כל שאלה עד הסוף, ובדוק את הסימן (פלוס או מינוס) לפני שאתה עונה!']
+ boss:['* המבחן משלב את כל הנושאים.','* טיפ: כדאי לקרוא כל שאלה עד הסוף ולבדוק את הסימן (פלוס או מינוס) לפני שעונים!']
 };
 
 /* ================= question helpers ================= */
@@ -494,10 +494,10 @@ G.coord=()=>{
     return Q('coord','מה השיעורים של הנקודה A?',uniq(c,[pt(y,x),pt(-x,y),pt(x,-y),pt(-x,-y),pt(-y,-x)]),`${moveDesc(x,y)} כותבים קודם את ${L('x')} ואחר כך את ${L('y')}, לכן ${L('A = ')}${c}.`,{svg:gridFig([{x,y,l:'A'}]),ctx:`A=(${sn(x)}, ${sn(y)})`})}
   if(t==='which'){let x,y;do{x=R(-5,5);y=R(-5,5)}while(!x||!y||Math.abs(x)===Math.abs(y));
     const pts=shuffle([[x,y],[y,x],[-x,y],[x,-y]]);const labels=['A','B','C','D'];const ci=pts.findIndex(p=>p[0]===x&&p[1]===y);
-    return Q('coord',`איזו נקודה היא ${pt(x,y)}?`,labels.map(L),`${moveDesc(x,y)} זו הנקודה ${L(labels[ci])}. שים לב לא להתבלבל בין ${L('x')} ל־${L('y')}!`,{svg:gridFig(pts.map((p,i)=>({x:p[0],y:p[1],l:labels[i]}))),ci,ctx:`(${sn(x)}, ${sn(y)})`})}
+    return Q('coord',`איזו נקודה היא ${pt(x,y)}?`,labels.map(L),`${moveDesc(x,y)} זו הנקודה ${L(labels[ci])}. חשוב לא להתבלבל בין ${L('x')} ל־${L('y')}!`,{svg:gridFig(pts.map((p,i)=>({x:p[0],y:p[1],l:labels[i]}))),ci,ctx:`(${sn(x)}, ${sn(y)})`})}
   if(t==='quad'){const x=R(1,9)*pick([1,-1]),y=R(1,9)*pick([1,-1]);const q=x>0?(y>0?0:3):(y>0?1:2);const names=['רביע ראשון','רביע שני','רביע שלישי','רביע רביעי'];
     const sg=v=>v>0?'+':MN;
-    return Q('coord',`באיזה רביע נמצאת הנקודה ${pt(x,y)}?`,names,`ה־${L('x')} ${x>0?'חיובי':'שלילי'} וה־${L('y')} ${y>0?'חיובי':'שלילי'}: ${L('('+sg(x)+','+sg(y)+')')} ← ${names[q]}. זכור: ראשון ${L('(+,+)')} · שני ${L('(−,+)')} · שלישי ${L('(−,−)')} · רביעי ${L('(+,−)')}.`,{ci:q})}
+    return Q('coord',`באיזה רביע נמצאת הנקודה ${pt(x,y)}?`,names,`ה־${L('x')} ${x>0?'חיובי':'שלילי'} וה־${L('y')} ${y>0?'חיובי':'שלילי'}: ${L('('+sg(x)+','+sg(y)+')')} ← ${names[q]}. כדאי לזכור: ראשון ${L('(+,+)')} · שני ${L('(−,+)')} · שלישי ${L('(−,−)')} · רביעי ${L('(+,−)')}.`,{ci:q})}
   if(t==='axis'){const r=Math.random();let x=0,y=0,ci;if(r<0.45){y=R(1,9)*pick([1,-1]);ci=1}else if(r<0.9){x=R(1,9)*pick([1,-1]);ci=0}else ci=2;
     const ex=ci===2?`שני השיעורים הם 0 – זו בדיוק ראשית הצירים.`:ci===0?`ה־${L('y')} שווה 0, כלומר לא זזים למעלה או למטה – הנקודה על ציר ה־${L('x')}.`:`ה־${L('x')} שווה 0, כלומר לא זזים ימינה או שמאלה – הנקודה על ציר ה־${L('y')}.`;
     return Q('coord',`איפה נמצאת הנקודה ${pt(x,y)}?`,[`על ציר ה־${L('x')}`,`על ציר ה־${L('y')}`,'בראשית הצירים','ברביע הראשון'],ex,{ci})}
@@ -688,7 +688,7 @@ $('#nameOk').onclick=async()=>{const v=$('#nameIn').value.trim();if(!v){const n=
 
 async function intro(){
   show('intro');playSong('title');const d=$('#dlg');d.classList.add('on');introAnim=0;
-  await say(['* לפני הרבה זמן, שני עמים חיו על ציר המספרים: החיוביים והשליליים.','* ביניהם, בדיוק באפס, נבנתה ממלכת הזוויות.','* יום אחד הגיעה שמועה מפחידה: <b>המבחן</b> מתקרב...',`* ${save.name}, רק אתה יכול לעבור את כל האזורים, לשכנע את המפלצות – ולנצח את המבחן!`],d,30);
+  await say(['* לפני הרבה זמן, שני עמים חיו על ציר המספרים: החיוביים והשליליים.','* ביניהם, בדיוק באפס, נבנתה ממלכת הזוויות.','* יום אחד הגיעה שמועה מפחידה: <b>המבחן</b> מתקרב...',`* ${save.name}, רק לך יש את הכוח לעבור את כל האזורים, לשכנע את המפלצות – ולנצח את המבחן!`],d,30);
   save.introSeen=true;persist();goMap();
 }
 let introAnim=0;
@@ -700,8 +700,8 @@ function goMap(){show('map');playSong('map');$('#mapName').textContent=save.name
 function starsStr(k){const s=(save.cleared[k]||{}).stars||0;return '★'.repeat(s)+'☆'.repeat(3-s)}
 function updMapInfo(){
   const n=MAPN[mapSel];const el=$('#mapInfo');
-  if(n.k==='save'){el.innerHTML=`<div class="t1">★ נקודת שמירה</div><div class="t2">הכוכב הנוצץ שומר את ההתקדמות שלך.</div><div>אזורים שהושלמו: ${TOPICS.filter(t=>save.cleared[t.k]).length} / ${TOPICS.length}</div><button class="go">גע בכוכב</button>`}
-  else{const t=n;el.innerHTML=`<div class="t1">${t.name} <span style="color:#ffd400;font-size:18px">${starsStr(t.k)}</span></div><div class="t2">${t.sub}</div><div>שומר האזור: <b>${t.mon.name}</b>${t.k==='boss'?' · צריך 10 תשובות נכונות':' · צריך 5 תשובות נכונות'}</div><button class="go">היכנס ▶</button>`}
+  if(n.k==='save'){el.innerHTML=`<div class="t1">★ נקודת שמירה</div><div class="t2">הכוכב הנוצץ שומר את ההתקדמות שלך.</div><div>אזורים שהושלמו: ${TOPICS.filter(t=>save.cleared[t.k]).length} / ${TOPICS.length}</div><button class="go">נגיעה בכוכב ★</button>`}
+  else{const t=n;el.innerHTML=`<div class="t1">${t.name} <span style="color:#ffd400;font-size:18px">${starsStr(t.k)}</span></div><div class="t2">${t.sub}</div><div>שומר האזור: <b>${t.mon.name}</b>${t.k==='boss'?' · צריך 10 תשובות נכונות':' · צריך 5 תשובות נכונות'}</div><button class="go">כניסה ▶</button>`}
   el.querySelector('.go').onclick=()=>enterNode();
 }
 function mapKey(k){
@@ -748,7 +748,7 @@ async function battle(k){
   await say([T.mon.intro]);
   while(true){
     if(B.hp<=0){await gameOver();return}
-    $('#boxText').innerHTML=`* ${pick(['ה'+B.mon.name+' מחכה לתשובה שלך.',B.mon.name+' בוהה בך.','מה תעשה?','האוויר מתמלא במספרים.','זה הזמן לחשוב.'])}`;
+    $('#boxText').innerHTML=`* ${pick(['ה'+B.mon.name+' מחכה לתשובה שלך.',B.mon.name+' בוהה בך.','מה הצעד הבא?','האוויר מתמלא במספרים.','זה הזמן לחשוב.'])}`;
     const sel=await menuChoice();
     if(sel==='flee'){recBattle({t:Date.now(),k,res:'flee',c:B.correct,w:B.wrong});SFX.move();await say(['* ברחת... אבל המבחן עדיין מחכה.']);goMap();return}
     if(sel===0){const r=await askQuestion();if(r==='done')continue;await enemyTurn(r)}
@@ -804,7 +804,7 @@ async function askQuestion(){
   recAnswer({t:Date.now(),k:B.k==='boss'?q.topic:B.k,boss:B.k==='boss'||undefined,q:strip(q.text)+(q.ctx?` [${q.ctx}]`:''),a:strip(q.opts[i]),c:strip(q.opts[q.ans]),ok,ms:Date.now()-t0});
   if(ok){SFX.correct();B.correct++;B.conv++;monShake=18;monFlash=10;floats.push({x:320,y:110,s:'+1 שכנוע',life:1.2,col:'#ffd400'});
     await sleep(650);$('#opts').classList.remove('on');
-    await say([`* ${pick(['נכון!','מעולה!','בדיוק!','יפה מאוד!','צדקת!','תותח!'])} ${B.mon.name} ${pick(['מתרשם.','מהנהן לאט.','קצת פחות עצבני.','מתחיל לחייך.','מסתכל עליך בהערכה.'])}`]);
+    await say([`* ${pick(['נכון!','מעולה!','בדיוק!','יפה מאוד!','צדקת!','מושלם!'])} ${B.mon.name} ${pick(['מתרשם.','מהנהן לאט.','קצת פחות עצבני.','מתחיל לחייך.','מסתכל עליך בהערכה.'])}`]);
   }else{SFX.wrong();B.wrong++;shake=8;await sleep(900);$('#opts').classList.remove('on');
     await say([`* לא בדיוק... התשובה הנכונה: ${q.opts[q.ans]}`,'* '+q.explain]);
   }
@@ -870,7 +870,7 @@ async function spare(){
   await sleep(600);playSong('win');
   const gold=B.correct*10;
   const lines=[`* חסת על ${B.mon.name}. ניצחת!`,`* קיבלת 0 נק״ן ו־${gold} מטבעות זהב. ${'★'.repeat(stars)}${'☆'.repeat(3-stars)}`,`* דיוק: ${Math.round(acc*100)}% (${B.correct} נכונות, ${B.wrong} שגויות).`];
-  if(B.k==='boss')lines.push(`* המבחן הובס! ${save.name}, אתה מוכן. בהצלחה במבחן האמיתי!`);
+  if(B.k==='boss')lines.push(`* המבחן הובס! ${save.name}, יש לך את כל מה שצריך. בהצלחה במבחן האמיתי!`);
   else if(TOPICS.filter(t=>t.k!=='boss').every(t=>save.cleared[t.k])&&!save.cleared.boss)lines.push('* כל האזורים הושלמו! הבוס הסופי – המבחן – מחכה לך.');
   await say(lines);
   const next=MAPN.findIndex(n=>n.k===B.k);if(next>=0&&next<MAPN.length-1)mapSel=next+1;
@@ -885,7 +885,7 @@ async function gameOver(){
   show('over');$('#overBtns').classList.remove('on');$('#overText').innerHTML='';
   await sleep(1600);playSong('over');
   blipPitch=300;
-  await say(['אל תוותר עכשיו...',`${save.name}! הישאר נחוש!`],$('#overText'),55);
+  await say(['זה לא הזמן לוותר...',`${save.name}! נשארים נחושים!`],$('#overText'),55);
   $('#overBtns').classList.add('on');
 }
 $('#btnRetry').onclick=()=>{overAnim=null;battle(B.k)};
@@ -1092,7 +1092,7 @@ function renderParent(sessions,src){
   $$('.pick').forEach(b=>b.onclick=()=>{pPlayer=b.dataset.p===pPlayer?'':b.dataset.p;renderParent(pAll.sessions,pAll.src);$('#pSel').scrollIntoView({behavior:'smooth',block:'start'})});
   $('#pCopy').onclick=()=>{const tx=summaryText();const ta=$('#copyArea');ta.value=tx;ta.style.display='block';
     try{navigator.clipboard.writeText(tx).then(()=>{$('#pCopy').textContent='הועתק ✓'},()=>{ta.select()})}catch(e){ta.select()}};
-  let armed=false;$('#pReset').onclick=()=>{if(!armed){armed=true;$('#pReset').textContent='בטוח? לחץ שוב כדי למחוק';return}
+  let armed=false;$('#pReset').onclick=()=>{if(!armed){armed=true;$('#pReset').textContent='בטוח? לחיצה נוספת תמחק';return}
     try{localStorage.removeItem('dipotale_save');localStorage.removeItem('dipotale_log_v1')}catch(e){}
     log.sessions={};Object.assign(save,{name:'',cleared:{},introSeen:false});session=newSession();closeParent();goTitle()};
 }
