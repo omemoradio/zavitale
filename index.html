@@ -230,7 +230,7 @@ function recAnswer(a){if(session.answers.length>=700)session=newSession();sessio
 function recBattle(b){session.battles.push(b);touchSession()}
 
 /* cloud sync: Firebase (when configured) or the Claude artifact db */
-const FIREBASE_CONFIG=null; /*FIREBASE_CONFIG*/
+const FIREBASE_CONFIG={apiKey:"AIzaSyDK2xEKqsi3PGfTWXQjVzlT_krxb5i8M3M",authDomain:"zavitale.firebaseapp.com",projectId:"zavitale",storageBucket:"zavitale.firebasestorage.app",messagingSenderId:"845240579650",appId:"1:845240579650:web:5b7862e14c1db9af649fdb"};
 let db=null,backend='none',fbAuth=null;const cloud={state:'checking',writable:true,inflight:false,dirty:false,timer:null};
 function loadScript(src){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;el.onload=res;el.onerror=rej;document.head.appendChild(el)})}
 async function initFirebase(){
@@ -243,8 +243,9 @@ async function initFirebase(){
 }
 (async()=>{
   try{
-    if(FIREBASE_CONFIG){db=await initFirebase();backend='firebase'}
-    else if(window.claude&&typeof window.claude.use==='function'){db=await window.claude.use('db');backend=db?'claude':'none'}
+    const inClaude=!!(window.claude&&typeof window.claude.use==='function');
+    if(FIREBASE_CONFIG&&!inClaude){db=await initFirebase();backend='firebase'}
+    else if(inClaude){db=await window.claude.use('db');backend=db?'claude':'none'}
   }catch(e){db=null;backend='none'}
   cloud.state=db?'on':'off';if(db&&session.answers.length)syncSoon();
   if(location.hash==='#parents'&&$('#parent').classList.contains('on'))openParent();
