@@ -37,6 +37,8 @@ button{font-family:inherit;cursor:pointer}
 /* name */
 #scName .wrapn{position:absolute;left:0;right:0;top:150px;text-align:center}
 #scName h2{font:700 26px Rubik;margin:0 0 24px}
+#nameIn::placeholder{color:#555}
+#nameIn.err{border-bottom-color:#f44}
 #nameIn{background:#000;color:#ff0;border:none;border-bottom:3px solid #fff;font:700 34px Rubik;text-align:center;width:300px;outline:none;padding:6px;-webkit-user-select:text;user-select:text}
 #nameOk{margin-top:30px}
 
@@ -162,7 +164,7 @@ tr.psel td{background:#1d1d10}
   <div id="scName" class="scene">
     <div class="wrapn">
       <h2>איך קוראים לגיבור?</h2>
-      <input id="nameIn" maxlength="12" autocomplete="off" value="דיפו">
+      <input id="nameIn" maxlength="12" autocomplete="off" value="" placeholder="השם שלך">
       <div><button class="tbtn" id="nameOk" style="margin:30px auto 0">זהו!</button></div>
     </div>
   </div>
@@ -682,7 +684,7 @@ $('#btnSound').onclick=()=>{audioInit();setSound(!save.sound);SFX.move()};
 $('#muteBtn').onclick=()=>{audioInit();setSound(!save.sound)};
 $('#btnDodge').onclick=()=>{save.dodge=!save.dodge;persist();SFX.move();$('#btnDodge').textContent='קרבות התחמקות: '+(save.dodge?'פועל':'כבוי')};
 $('#btnMenu').onclick=()=>{SFX.move();goTitle()};
-$('#nameOk').onclick=async()=>{const v=$('#nameIn').value.trim()||'דיפו';save.name=v;persist();$('#nameIn').blur();SFX.ok();await intro()};
+$('#nameOk').onclick=async()=>{const v=$('#nameIn').value.trim();if(!v){const n=$('#nameIn');n.classList.add('err');n.placeholder='צריך לכתוב שם 🙂';n.focus();SFX.wrong();return}save.name=v;persist();$('#nameIn').blur();SFX.ok();await intro()};
 
 async function intro(){
   show('intro');playSong('title');const d=$('#dlg');d.classList.add('on');introAnim=0;
