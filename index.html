@@ -852,7 +852,7 @@ async function cinema(cards){
   removeEventListener('keydown',kh);t.classList.remove('show');c.classList.remove('on');
 }
 async function battle(k){
-  if(k==='boss'){stopSong();await cinema([`<div class="c1">ZaviTale מציג</div>`,`<div class="c1">המועד</div><div class="c2">יום רביעי, 25.11</div>`,`<div class="c3">המבחן</div><div class="c4">כל הנושאים · צריך 10 תשובות נכונות</div>`])}
+  if(k==='boss'){stopSong();await cinema([`<div class="c1">ZaviTale מציג</div>`,`<div class="c1">הזמן</div><div class="c2">יום רביעי, 25.11</div>`,`<div class="c3">המבחן</div><div class="c4">כל הנושאים · צריך 10 תשובות נכונות</div>`])}
   const T=TK[k];
   B={k,T,mon:T.mon,turn:0,lastSoul:null,hp:20,max:20,conv:0,need:k==='boss'?10:5,correct:0,wrong:0,items:ITEMS.map(i=>({...i})),asked:new Set(),menuIdx:0,spared:false,start:Date.now()};
   blipPitch=T.mon.pitch;
