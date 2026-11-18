@@ -62,6 +62,14 @@ button{font-family:inherit;cursor:pointer}
 #bubble{position:absolute;left:400px;top:40px;max-width:190px;background:#fff;color:#000;font:700 16px/1.35 Rubik;padding:8px 12px;border-radius:6px;display:none}
 #bubble::after{content:'';position:absolute;right:100%;top:18px;border:8px solid transparent;border-right-color:#fff}
 #bubble.on{display:block}
+#cinema{position:absolute;inset:0;background:#000;z-index:30;display:none;align-items:center;justify-content:center;text-align:center}
+#cinema.on{display:flex}
+#cineText{opacity:0;transition:opacity .9s ease}
+#cineText.show{opacity:1}
+#cineText .c1{font:500 20px Rubik;color:#aaa;letter-spacing:2px}
+#cineText .c2{font:900 46px Rubik;color:#fff;margin-top:10px}
+#cineText .c3{font:900 64px Rubik;color:#ff3b3b;margin-top:6px;letter-spacing:4px}
+#cineText .c4{font:500 16px Rubik;color:#888;margin-top:18px}
 #soulTip{position:absolute;left:20px;right:20px;top:228px;text-align:center;font:700 15px Rubik;display:none}
 #soulTip.on{display:block}
 #qTimer{position:absolute;left:36px;top:254px;width:568px;height:7px;background:#333;display:none}
@@ -214,6 +222,7 @@ tr.psel td{background:#1d1d10}
   </div>
 
   <div id="dlg" class="ubox"></div>
+  <div id="cinema"><div id="cineText"></div></div>
   <div id="toast"></div>
   <button id="muteBtn" title="צליל">🔊</button>
 </div>
@@ -737,6 +746,7 @@ addEventListener('keydown',e=>{
   handleKey(e.key,e);
 });
 function handleKey(k,e){
+  if($('#cinema').classList.contains('on'))return;
   if(typing&&isConfirm(k)){typing.skip=true;return}
   if(pending&&pending.key&&pending.key(k))return;
   if(scene==='title'&&isConfirm(k))$('#btnStart').click();
@@ -809,7 +819,7 @@ function mapKey(k){
   else if(isConfirm(k))enterNode();
 }
 cv.addEventListener('pointerdown',e=>{
-  if(scene!=='map'||pending)return;const r=cv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
+  if(scene!=='map'||pending||$('#cinema').classList.contains('on'))return;const r=cv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
   MAPN.forEach((n,i)=>{if(Math.hypot(n.x-x,n.y-y)<34){if(mapSel===i)enterNode();else{mapSel=i;SFX.move();updMapInfo()}}});
 });
 async function enterNode(){
@@ -834,7 +844,15 @@ function hud(){
   $('#convBar i').style.width=Math.min(100,B.conv/B.need*100)+'%';
   $$('.mbtn')[3].classList.toggle('ready',B.conv>=B.need);
 }
+async function cinema(cards){
+  const c=$('#cinema'),t=$('#cineText');c.classList.add('on');let skip=false;
+  const sk=()=>{skip=true};c.addEventListener('pointerup',sk,{once:true});const kh=e=>{if(isConfirm(e.key)||e.key==='Escape')skip=true};addEventListener('keydown',kh);
+  const wait=async ms=>{const end=Date.now()+ms;while(Date.now()<end&&!skip)await sleep(50)};
+  for(const html of cards){if(skip)break;t.innerHTML=html;await sleep(30);t.classList.add('show');await wait(2300);t.classList.remove('show');await wait(950)}
+  removeEventListener('keydown',kh);t.classList.remove('show');c.classList.remove('on');
+}
 async function battle(k){
+  if(k==='boss'){stopSong();await cinema([`<div class="c1">ZaviTale מציג</div>`,`<div class="c1">המועד</div><div class="c2">יום רביעי, 25.11</div>`,`<div class="c3">המבחן</div><div class="c4">כל הנושאים · צריך 10 תשובות נכונות</div>`])}
   const T=TK[k];
   B={k,T,mon:T.mon,turn:0,lastSoul:null,hp:20,max:20,conv:0,need:k==='boss'?10:5,correct:0,wrong:0,items:ITEMS.map(i=>({...i})),asked:new Set(),menuIdx:0,spared:false,start:Date.now()};
   blipPitch=T.mon.pitch;
