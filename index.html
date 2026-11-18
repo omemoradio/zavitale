@@ -23,11 +23,11 @@ button{font-family:inherit;cursor:pointer}
 
 /* generic undertale box */
 .ubox{position:absolute;border:4px solid #fff;background:#000;box-sizing:border-box}
-#dlg{left:32px;top:388px;width:576px;height:136px;padding:14px 22px;font:700 20px/1.5 Rubik;display:none;z-index:5}
+#dlg{left:32px;top:388px;width:576px;height:136px;padding:14px 22px;overflow:hidden;font:700 20px/1.5 Rubik;display:none;z-index:5}
 #dlg.on{display:block}
 
 /* title */
-#titleBtns{position:absolute;left:0;right:0;top:300px;display:flex;flex-direction:column;align-items:center;gap:12px}
+#titleBtns{position:absolute;left:0;right:0;top:282px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .tbtn{background:#000;color:#fff;border:3px solid #fff;font:700 21px Rubik;padding:8px 26px;min-width:260px;display:flex;align-items:center;justify-content:center;gap:10px}
 .tbtn:hover,.tbtn:focus-visible,.tbtn.sel{color:#ff0;border-color:#ff0;outline:none}
 .trow{display:flex;gap:10px}
@@ -54,7 +54,7 @@ button{font-family:inherit;cursor:pointer}
 #mapInfo .go:hover{color:#ff0;border-color:#ff0}
 
 /* battle */
-#qPanel{position:absolute;left:20px;top:4px;width:600px;height:242px;display:none;flex-direction:column;align-items:center;justify-content:flex-start}
+#qPanel{position:absolute;left:20px;top:4px;width:600px;height:242px;overflow:hidden;display:none;flex-direction:column;align-items:center;justify-content:flex-start}
 #qPanel.on{display:flex}
 #qText{font:700 21px/1.38 Rubik;text-align:center;min-height:62px;display:flex;align-items:center;justify-content:center;padding:0 8px}
 #qPanel.nosvg #qText{flex:1;font-size:25px}
@@ -62,9 +62,15 @@ button{font-family:inherit;cursor:pointer}
 #bubble{position:absolute;left:400px;top:40px;max-width:190px;background:#fff;color:#000;font:700 16px/1.35 Rubik;padding:8px 12px;border-radius:6px;display:none}
 #bubble::after{content:'';position:absolute;right:100%;top:18px;border:8px solid transparent;border-right-color:#fff}
 #bubble.on{display:block}
-#boxText{position:absolute;left:54px;top:266px;width:532px;height:138px;font:700 19.5px/1.5 Rubik;overflow:hidden}
+#soulTip{position:absolute;left:20px;right:20px;top:228px;text-align:center;font:700 15px Rubik;display:none}
+#soulTip.on{display:block}
+#qTimer{position:absolute;left:36px;top:254px;width:568px;height:7px;background:#333;display:none}
+#qTimer.on{display:block}
+#qTimer i{position:absolute;right:0;top:0;bottom:0;background:#3f3;width:100%}
+#qTimer span{position:absolute;left:-30px;top:-6px;font:12px 'Press Start 2P';color:#fff}
+#boxText{position:absolute;left:54px;top:266px;width:532px;height:138px;font:700 19.5px/1.45 Rubik;overflow:hidden}
 #boxText.small{font-size:17px;line-height:1.45}
-#opts{position:absolute;left:46px;top:262px;width:548px;height:146px;display:none;grid-template-columns:1fr 1fr;gap:8px 12px;align-content:center}
+#opts{position:absolute;left:46px;top:262px;width:548px;height:146px;overflow:hidden;display:none;grid-template-columns:1fr 1fr;gap:8px 12px;align-content:center}
 #opts.on{display:grid}
 #opts.one{grid-template-columns:1fr;gap:5px}
 .opt{background:#000;color:#fff;border:2px solid #fff;font:700 20px Rubik;padding:6px 34px 6px 10px;position:relative;text-align:right;min-height:42px;line-height:1.25}
@@ -164,6 +170,10 @@ tr.psel td{background:#1d1d10}
         <button class="tbtn" id="btnSound">צליל: פועל</button>
         <button class="tbtn" id="btnDodge">קרבות התחמקות: פועל</button>
       </div>
+      <div class="trow">
+        <button class="tbtn" id="btnDiff">קושי ההתחמקות: בינוני</button>
+        <button class="tbtn" id="btnTimer">טיימר לשאלות: כבוי</button>
+      </div>
     </div>
     <div id="titleHelp">חיצים – תנועה · Z / Enter – בחירה · X – חזרה · אפשר גם ללחוץ ולגעת במסך</div>
   </div>
@@ -184,6 +194,8 @@ tr.psel td{background:#1d1d10}
   <div id="scBattle" class="scene">
     <div id="qPanel"><div id="qText"></div><div id="qSvg"></div></div>
     <div id="bubble"></div>
+    <div id="soulTip"></div>
+    <div id="qTimer"><i></i><span></span></div>
     <div id="boxText"></div>
     <div id="opts"></div>
     <div id="hud"><span id="hudName"></span><span class="lv" id="hudLv"></span><span>HP</span><span class="bar" id="hpBar"><i></i></span><span id="hpNum" class="ltr"></span><span class="sp"></span><span id="monName"></span><span class="bar" id="convBar"><i></i></span></div>
@@ -229,7 +241,7 @@ addEventListener('resize',fit);fit();
 
 /* ================= storage ================= */
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const save=Object.assign({name:'',cleared:{},sound:true,dodge:true,introSeen:false},LS.get('dipotale_save',{}));
+const save=Object.assign({name:'',cleared:{},sound:true,dodge:true,introSeen:false,diff:'medium',timer:false},LS.get('dipotale_save',{}));
 function persist(){LS.set('dipotale_save',save)}
 const log=LS.get('dipotale_log_v1',{sessions:{}});
 if(!log.sessions)log.sessions={};
@@ -709,22 +721,29 @@ const QKEYS=['coord','signed','addsub','anglename','bisector','anglesum','adjace
 G.boss=()=>G[pick(QKEYS)]();
 
 /* ================= input ================= */
-let pending=null,typing=null,keys={};
+let pending=null,typing=null,keys={},keysC={};
+const WASD={KeyW:'ArrowUp',KeyA:'ArrowLeft',KeyS:'ArrowDown',KeyD:'ArrowRight'};
 const isConfirm=k=>k==='Enter'||k==='z'||k==='Z'||k===' '||k==='ז';
 const isBack=k=>k==='x'||k==='X'||k==='Escape'||k==='Shift'||k==='ס';
 addEventListener('keydown',e=>{
   if($('#parent').classList.contains('on')){if(e.key==='Escape')closeParent();return}
   if(document.activeElement===$('#nameIn')){if(e.key==='Enter')$('#nameOk').click();return}
-  keys[e.key]=true;
+  keys[e.key]=true;keysC[e.code]=true;
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();
+  if(dodgeState)return;
+  const k0=WASD[e.code];if(k0&&scene!=='name')return handleKey(k0,e);
   if(isConfirm(e.key))e.preventDefault();
   if(e.repeat&&isConfirm(e.key))return;
-  if(typing&&isConfirm(e.key)){typing.skip=true;return}
-  if(pending&&pending.key&&pending.key(e.key))return;
-  if(scene==='title'&&isConfirm(e.key))$('#btnStart').click();
-  if(scene==='map')mapKey(e.key);
+  handleKey(e.key,e);
 });
-addEventListener('keyup',e=>{keys[e.key]=false});
+function handleKey(k,e){
+  if(typing&&isConfirm(k)){typing.skip=true;return}
+  if(pending&&pending.key&&pending.key(k))return;
+  if(scene==='title'&&isConfirm(k))$('#btnStart').click();
+  if(scene==='map')mapKey(k);
+}
+addEventListener('keyup',e=>{keys[e.key]=false;keysC[e.code]=false});
+addEventListener('blur',()=>{keys={};keysC={}});
 stage.addEventListener('pointerup',e=>{
   if(e.target.closest('button')||e.target.closest('input'))return;
   if(typing){typing.skip=true;return}
@@ -741,7 +760,12 @@ async function typeIn(el,html,speed){
   for(let i=0;i<chars.length;i++){if(tk.skip)break;chars[i].classList.add('v');const ch=chars[i].textContent;if(ch.trim()&&i%2===0)SFX.blip();await sleep(ch===','||ch==='.'?speed*4:speed)}
   chars.forEach(c=>c.classList.add('v'));if(typing===tk)typing=null;
 }
-async function say(lines,el,speed){el=el||$('#boxText');for(const ln of lines){el.classList.toggle('small',strip(ln).length>150);await typeIn(el,ln,speed||24);await waitConfirm()}}
+function fitText(el,max,min){el.style.fontSize=max+'px';let f=max;while(el.scrollHeight>el.clientHeight+1&&f>min){f-=0.5;el.style.fontSize=f+'px'}}
+function fitQ(){const qp=$('#qPanel'),qt=$('#qText'),sv=$('#qSvg svg');let f=qp.classList.contains('nosvg')?25:21;qt.style.fontSize=f+'px';let g=0;
+  while(qp.scrollHeight>qp.clientHeight+1&&g++<40){if(f>14){f-=1;qt.style.fontSize=f+'px'}else if(sv){const h=sv.getBoundingClientRect().height/((stage.getBoundingClientRect().width/W)||1);if(h<90)break;sv.style.height=(h-8)+'px'}else break}}
+function fitOpts(){const box=$('#opts'),one=box.classList.contains('one');const els=[...box.children];let f=one?15.5:20;const set=()=>els.forEach(e=>e.style.fontSize=f+'px');set();let g=0;
+  while((box.scrollHeight>box.clientHeight+1||els.some(e=>e.scrollWidth>e.clientWidth+1))&&f>11&&g++<30){f-=0.5;set()}}
+async function say(lines,el,speed){el=el||$('#boxText');for(const ln of lines){el.innerHTML=ln;fitText(el,el.id==='boxText'?19.5:20,12);await typeIn(el,ln,speed||24);await waitConfirm()}}
 
 /* ================= scenes ================= */
 let scene='title';
@@ -749,10 +773,13 @@ function show(s){scene=s;$$('.scene').forEach(e=>e.classList.remove('on'));const
 function toast(msg){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2200)}
 
 /* title */
-function goTitle(){show('title');playSong('title');$('#btnStart').textContent=save.name?'המשך – '+save.name:'התחל משחק';$('#btnDodge').textContent='קרבות התחמקות: '+(save.dodge?'פועל':'כבוי')}
+function goTitle(){show('title');playSong('title');setTimeout(updTitleBtns,0);$('#btnStart').textContent=save.name?'המשך – '+save.name:'התחל משחק';$('#btnDodge').textContent='קרבות התחמקות: '+(save.dodge?'פועל':'כבוי')}
 $('#btnStart').onclick=()=>{audioInit();SFX.ok();if(!save.name){show('name');setTimeout(()=>$('#nameIn').focus(),50)}else goMap()};
 $('#btnSound').onclick=()=>{audioInit();setSound(!save.sound);SFX.move()};
 $('#muteBtn').onclick=()=>{audioInit();setSound(!save.sound)};
+function updTitleBtns(){$('#btnDodge').textContent='קרבות התחמקות: '+(save.dodge?'פועל':'כבוי');$('#btnDiff').textContent='קושי ההתחמקות: '+(DIFF[save.diff]||DIFF.medium).label;$('#btnTimer').textContent='טיימר לשאלות: '+(save.timer?'25 שניות':'כבוי')}
+$('#btnDiff').onclick=()=>{const o=['easy','medium','hard'];save.diff=o[(o.indexOf(save.diff)+1)%3];persist();SFX.move();updTitleBtns()};
+$('#btnTimer').onclick=()=>{save.timer=!save.timer;persist();SFX.move();updTitleBtns()};
 $('#btnDodge').onclick=()=>{save.dodge=!save.dodge;persist();SFX.move();$('#btnDodge').textContent='קרבות התחמקות: '+(save.dodge?'פועל':'כבוי')};
 $('#btnMenu').onclick=()=>{SFX.move();goTitle()};
 $('#nameOk').onclick=async()=>{const v=$('#nameIn').value.trim();if(!v){const n=$('#nameIn');n.classList.add('err');n.placeholder='צריך לכתוב שם 🙂';n.focus();SFX.wrong();return}save.name=v;persist();$('#nameIn').blur();SFX.ok();await intro()};
@@ -809,7 +836,7 @@ function hud(){
 }
 async function battle(k){
   const T=TK[k];
-  B={k,T,mon:T.mon,hp:20,max:20,conv:0,need:k==='boss'?10:5,correct:0,wrong:0,items:ITEMS.map(i=>({...i})),asked:new Set(),menuIdx:0,spared:false,start:Date.now()};
+  B={k,T,mon:T.mon,turn:0,lastSoul:null,hp:20,max:20,conv:0,need:k==='boss'?10:5,correct:0,wrong:0,items:ITEMS.map(i=>({...i})),asked:new Set(),menuIdx:0,spared:false,start:Date.now()};
   blipPitch=T.mon.pitch;
   show('battle');stopSong();SFX.appear();
   $('#qPanel').classList.remove('on');$('#opts').classList.remove('on');$('#boxText').innerHTML='';$('#bubble').classList.remove('on');
@@ -845,12 +872,17 @@ function menuChoice(){
       return false}};
   });
 }
-function chooseOption(opts){
+function chooseOption(opts,secs){
   return new Promise(res=>{
+    let tmr=null;const tb=$('#qTimer');
     const box=$('#opts');const long=opts.some(o=>strip(o).length>16);box.classList.toggle('one',long);
     box.innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="hrt">${heartSVG()}</span>${o}</button>`).join('');box.classList.add('on');$('#boxText').innerHTML='';
+    fitOpts();
     let idx=0;const els=[...box.children];const upd=()=>els.forEach((e,i)=>e.classList.toggle('sel',i===idx));upd();
-    const done=i=>{pending=null;els.forEach(e=>e.onclick=null);res(i)};
+    const done=i=>{if(tmr){clearInterval(tmr);tmr=null}tb.classList.remove('on');pending=null;els.forEach(e=>e.onclick=null);res(i)};
+    if(secs){const end=Date.now()+secs*1000;let lastS=secs;tb.classList.add('on');const bar=tb.querySelector('i'),lab=tb.querySelector('span');
+      const tick=()=>{const left=Math.max(0,end-Date.now());const sec=Math.ceil(left/1000);bar.style.width=(left/(secs*1000)*100)+'%';bar.style.background=sec<=5?'#f44':sec<=10?'#fd0':'#3f3';lab.textContent=sec;
+        if(sec<lastS&&sec<=5&&sec>0)tone(880,now(),0.05,'square',0.05);lastS=sec;if(left<=0)done(-1)};tick();tmr=setInterval(tick,100)}
     els.forEach((e,i)=>e.onclick=()=>{idx=i;upd();done(i)});
     pending={type:'opts',key:k=>{
       const n=els.length;
@@ -869,15 +901,15 @@ function chooseOption(opts){
 function genQ(){let q,g=0;do{q=G[B.k]();g++}while(B.asked.has(strip(q.text)+q.ctx)&&g<12);B.asked.add(strip(q.text)+q.ctx);return q}
 async function askQuestion(){
   const q=genQ();const t0=Date.now();
-  monVisible=false;const qp=$('#qPanel');qp.classList.add('on');qp.classList.toggle('nosvg',!q.svg);$('#qText').innerHTML=q.text;$('#qSvg').innerHTML=q.svg;
-  const i=await chooseOption(q.opts);const ok=i===q.ans;const els=[...$('#opts').children];
-  els[q.ans].classList.add('good');if(!ok)els[i].classList.add('bad');
-  recAnswer({t:Date.now(),k:B.k==='boss'?q.topic:B.k,boss:B.k==='boss'||undefined,q:strip(q.text)+(q.ctx?` [${q.ctx}]`:''),a:strip(q.opts[i]),c:strip(q.opts[q.ans]),ok,ms:Date.now()-t0});
+  monVisible=false;const qp=$('#qPanel');qp.classList.add('on');qp.classList.toggle('nosvg',!q.svg);$('#qText').innerHTML=q.text;$('#qSvg').innerHTML=q.svg;fitQ();
+  const i=await chooseOption(q.opts,save.timer?25:0);const ok=i===q.ans;const els=[...$('#opts').children];const timeout=i<0;
+  els[q.ans].classList.add('good');if(!ok&&!timeout)els[i].classList.add('bad');
+  recAnswer({t:Date.now(),k:B.k==='boss'?q.topic:B.k,boss:B.k==='boss'||undefined,q:strip(q.text)+(q.ctx?` [${q.ctx}]`:''),a:timeout?'(נגמר הזמן)':strip(q.opts[i]),c:strip(q.opts[q.ans]),ok,ms:Date.now()-t0});
   if(ok){SFX.correct();B.correct++;B.conv++;monShake=18;monFlash=10;floats.push({x:320,y:110,s:'+1 שכנוע',life:1.2,col:'#ffd400'});
     await sleep(650);$('#opts').classList.remove('on');
     await say([`* ${pick(['נכון!','מעולה!','בדיוק!','יפה מאוד!','צדקת!','מושלם!'])} ${B.mon.name} ${pick(['מתרשם.','מהנהן לאט.','קצת פחות עצבני.','מתחיל לחייך.','מסתכל עליך בהערכה.'])}`]);
   }else{SFX.wrong();B.wrong++;shake=8;await sleep(900);$('#opts').classList.remove('on');
-    await say([`* לא בדיוק... התשובה הנכונה: ${q.opts[q.ans]}`,'* '+q.explain]);
+    await say([timeout?`* ⏰ נגמר הזמן! התשובה הנכונה: ${q.opts[q.ans]}`:`* לא בדיוק... התשובה הנכונה: ${q.opts[q.ans]}`,'* '+q.explain]);
   }
   qp.classList.remove('on');monVisible=true;hud();
   if(B.conv>=B.need&&ok){await say([B.mon.spare,'* (עכשיו אפשר לבחור <span style="color:#ff0">רחמים</span>.)']);return 'done'}
@@ -893,25 +925,47 @@ async function useItem(){
   const it=avail[i];it.used=true;const before=B.hp;B.hp=Math.min(B.max,B.hp+it.h);SFX.heal();hud();
   await say([`* אכלת ${it.n}. ${B.hp===B.max?'ה־HP שלך מלא!':`קיבלת ${B.hp-before} HP.`}`]);return true;
 }
+const SOUL={
+  red:{c:'#ff0000',name:'אדומה',tip:'❤️ נשמה אדומה – תנועה חופשית: חיצים / WASD'},
+  blue:{c:'#2f6bff',name:'כחולה',tip:'💙 נשמה כחולה – כוח משיכה! קפיצה: ↑ / W / רווח'},
+  green:{c:'#2ecc40',name:'ירוקה',tip:'💚 נשמה ירוקה – הלב לא זז. מגן: חיצים / WASD'},
+  yellow:{c:'#ffd400',name:'צהובה',tip:'💛 נשמה צהובה – תנועה + ירייה: Z / רווח'},
+  purple:{c:'#b04cff',name:'סגולה',tip:'💜 נשמה סגולה – חוטים! ↑↓ / W S להחלפת חוט'}};
+const SOULS_BY={coord:['red','blue'],signed:['red','yellow'],addsub:['red','purple'],anglename:['red','green'],bisector:['blue','green'],anglesum:['yellow','purple'],adjacent:['green','blue'],vertical:['purple','yellow'],boss:['red','blue','green','yellow','purple']};
+const DIFF={easy:{spd:.72,rate:1.45,dmg:2,label:'קל'},medium:{spd:1,rate:1,dmg:3,label:'בינוני'},hard:{spd:1.3,rate:.7,dmg:4,label:'קשה'}};
+const GREENBOX={x:250,y:262,w:140,h:140};
+const kd=(...c)=>c.some(k=>keysC[k]);
+const KL=()=>kd('ArrowLeft','KeyA'),KR=()=>kd('ArrowRight','KeyD'),KU=()=>kd('ArrowUp','KeyW'),KD=()=>kd('ArrowDown','KeyS'),KA=()=>kd('Space','KeyZ','Enter');
 async function enemyTurn(ok){
   const b=$('#bubble');b.textContent=pick(B.mon.lines);b.classList.add('on');
   $('#boxText').innerHTML='';
   if(!save.dodge){await sleep(1100);b.classList.remove('on');return}
-  setBox(DODGEBOX);await sleep(350);b.classList.remove('on');
-  await dodge(ok?3600:5400,ok);
-  setBox(FULLBOX);await sleep(300);
+  const list=SOULS_BY[B.k]||['red'];const soul=B.turn===0?list[0]:pick(list);B.turn++;
+  setBox(soul==='green'?GREENBOX:DODGEBOX);await sleep(350);b.classList.remove('on');
+  const tip=$('#soulTip');tip.textContent=SOUL[soul].tip;tip.style.color=SOUL[soul].c;tip.classList.add('on');
+  if(soul!==B.lastSoul&&B.lastSoul)SFX.appear();B.lastSoul=soul;
+  await dodge(ok?3800:5600,ok,soul);
+  tip.classList.remove('on');setBox(FULLBOX);await sleep(300);
 }
 let dodgeState=null;
-function dodge(ms,easy){
+function dodge(ms,easy,soul){
   return new Promise(res=>{
-    heart.x=DODGEBOX.x+DODGEBOX.w/2;heart.y=DODGEBOX.y+DODGEBOX.h/2;heart.show=true;heart.inv=0;bullets=[];
-    const tier=B.mon.tier;dodgeState={t:0,ms,res,next:0,pat:pick(B.mon.pat),spd:(0.85+0.13*tier)*(easy?0.85:1),rate:(easy?560:430)-tier*45,glyphs:B.mon.glyphs,dmg:B.k==='boss'?4:3,flip:0};
+    const bx=soul==='green'?GREENBOX:DODGEBOX;const df=DIFF[save.diff]||DIFF.medium;
+    heart.x=bx.x+bx.w/2;heart.y=soul==='blue'?bx.y+bx.h-11:bx.y+bx.h/2;heart.show=true;heart.inv=0;bullets=[];shots=[];
+    const tier=B.mon.tier;
+    dodgeState={t:0,ms,res,next:soul==='green'?500:0,soul,pat:pick(B.mon.pat),spd:(0.85+0.13*tier)*(easy?0.85:1)*df.spd,rate:((easy?560:430)-tier*45)*df.rate,glyphs:B.mon.glyphs,dmg:df.dmg+(B.k==='boss'?1:0),flip:0,vy:0,ground:true,jumpCut:false,shield:'up',line:1,cool:0,pu:false,pd:false,bx};
   });
 }
+let shots=[];
 function spawn(D){
-  const bx=box;const g=pick(D.glyphs);const s=D.spd;
-  const mk=(x,y,vx,vy)=>bullets.push({x,y,vx,vy,g,r:7});
-  switch(D.pat){
+  const bx=D.bx;const g=pick(D.glyphs);const s=D.spd;
+  const mk=(x,y,vx,vy,o)=>bullets.push(Object.assign({x,y,vx,vy,g,r:7},o||{}));
+  if(D.soul==='blue'){const l=(D.flip++)%2===0;const h=R(14,46);const v=(110+Math.random()*50)*s*(l?1:-1);
+    mk(l?bx.x-8:bx.x+bx.w+8,bx.y+bx.h-h/2,v,0,{kind:'bar',w:10,h});return}
+  if(D.soul==='green'){const dir=pick(['up','down','left','right']);const cx=bx.x+bx.w/2,cy=bx.y+bx.h/2;const v=(70+Math.random()*30)*s;
+    const p={up:[cx,bx.y-6,0,v],down:[cx,bx.y+bx.h+6,0,-v],left:[bx.x-6,cy,v,0],right:[bx.x+bx.w+6,cy,-v,0]}[dir];mk(p[0],p[1],p[2],p[3],{kind:'arrow',dir});D.next+=D.rate*0.9;return}
+  if(D.soul==='purple'){const ln=R(0,2);const l=Math.random()<.5;const y=bx.y+bx.h*(ln+1)/4;mk(l?bx.x-10:bx.x+bx.w+10,y,(l?1:-1)*(100+Math.random()*50)*s,0);return}
+  switch(D.soul==='yellow'?pick(['rain','rain','aim']):D.pat){
     case 'rain':mk(bx.x+10+Math.random()*(bx.w-20),bx.y-10,0,(90+Math.random()*60)*s);break;
     case 'rise':mk(bx.x+10+Math.random()*(bx.w-20),bx.y+bx.h+10,0,-(90+Math.random()*50)*s);break;
     case 'sides':{const l=(D.flip++)%2===0;mk(l?bx.x-10:bx.x+bx.w+10,bx.y+10+Math.random()*(bx.h-20),(l?1:-1)*(100+Math.random()*50)*s,0);break}
@@ -919,19 +973,38 @@ function spawn(D){
     case 'burst':{const cx=bx.x+20+Math.random()*(bx.w-40);const n=5;for(let i=0;i<n;i++){const a=Math.PI*(0.2+0.6*i/(n-1));mk(cx,bx.y-6,Math.cos(a)*80*s,Math.sin(a)*80*s)}D.next+=D.rate*1.6;break}
   }
 }
+function hurt(D){heart.inv=1;B.hp-=D.dmg;shake=10;SFX.hurt();hud();if(B.hp<=0)D.t=D.ms}
 function updDodge(dt){
-  const D=dodgeState;if(!D)return;D.t+=dt*1000;
-  if(D.t<D.ms-600&&D.t>=D.next){spawn(D);D.next+=D.rate*(0.7+Math.random()*0.6)}
-  const sp=150*dt;let dx=0,dy=0;
-  if(keys.ArrowLeft||keys.a||keys.A)dx-=1;if(keys.ArrowRight||keys.d||keys.D)dx+=1;if(keys.ArrowUp||keys.w||keys.W)dy-=1;if(keys.ArrowDown||keys.s||keys.S)dy+=1;
-  if(dx&&dy){dx*=0.707;dy*=0.707}
-  heart.x+=dx*sp;heart.y+=dy*sp;
-  heart.x=clamp(heart.x,box.x+11,box.x+box.w-11);heart.y=clamp(heart.y,box.y+10,box.y+box.h-10);
+  const D=dodgeState;if(!D)return;D.t+=dt*1000;const bx=box;
+  if(D.t<D.ms-700&&D.t>=D.next){spawn(D);D.next+=D.rate*(0.7+Math.random()*0.6)}
+  const sp=150*dt;
+  if(D.soul==='red'||D.soul==='yellow'){let dx=(KR()?1:0)-(KL()?1:0),dy=(KD()?1:0)-(KU()?1:0);if(dx&&dy){dx*=0.707;dy*=0.707}heart.x+=dx*sp;heart.y+=dy*sp}
+  if(D.soul==='blue'){heart.x+=((KR()?1:0)-(KL()?1:0))*sp;const jump=KU()||KA()||ptr.down;
+    if(jump&&D.ground){D.vy=-275;D.ground=false;D.jumpCut=false;tone(520,now(),0.06,'square',0.04)}
+    if(!jump&&D.vy<0&&!D.jumpCut){D.vy*=0.45;D.jumpCut=true}
+    D.vy+=720*dt;heart.y+=D.vy*dt;const fl=bx.y+bx.h-10;if(heart.y>=fl){heart.y=fl;D.vy=0;D.ground=true}}
+  if(D.soul==='green'){heart.x=bx.x+bx.w/2;heart.y=bx.y+bx.h/2;if(KU())D.shield='up';else if(KD())D.shield='down';else if(KL())D.shield='left';else if(KR())D.shield='right'}
+  if(D.soul==='purple'){heart.x+=((KR()?1:0)-(KL()?1:0))*sp;const u=KU(),d=KD();if(u&&!D.pu&&D.line>0){D.line--;SFX.move()}if(d&&!D.pd&&D.line<2){D.line++;SFX.move()}D.pu=u;D.pd=d;
+    const ty=bx.y+bx.h*(D.line+1)/4;heart.y+=(ty-heart.y)*Math.min(1,dt*18)}
+  if(D.soul==='yellow'){D.cool-=dt;if((KA()||ptr.down)&&D.cool<=0){shots.push({x:heart.x,y:heart.y-10});D.cool=0.22;tone(1200,now(),0.04,'square',0.03)}
+    shots.forEach(s=>{s.y-=340*dt;bullets.forEach(b=>{if(!b.dead&&Math.abs(b.x-s.x)<10&&Math.abs(b.y-s.y)<12){b.dead=true;s.dead=true;tone(880,now(),0.05,'triangle',0.05);for(let i=0;i<5;i++)parts.push({x:b.x,y:b.y,vx:(Math.random()-.5)*80,vy:(Math.random()-.5)*80,life:.4})}})});shots=shots.filter(s=>!s.dead&&s.y>bx.y)}
+  heart.x=clamp(heart.x,bx.x+11,bx.x+bx.w-11);heart.y=clamp(heart.y,bx.y+10,bx.y+bx.h-10);
   if(heart.inv>0)heart.inv-=dt;
-  bullets.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;
-    if(heart.inv<=0&&Math.hypot(b.x-heart.x,b.y-heart.y)<b.r+5){heart.inv=1;b.dead=true;B.hp-=D.dmg;shake=10;SFX.hurt();hud();if(B.hp<=0){D.t=D.ms}}});
-  bullets=bullets.filter(b=>!b.dead&&b.x>box.x-40&&b.x<box.x+box.w+40&&b.y>box.y-40&&b.y<box.y+box.h+40);
-  if(D.t>=D.ms){const r=D.res;dodgeState=null;bullets=[];heart.show=false;r()}
+  bullets.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;if(b.dead)return;
+    if(b.kind==='arrow'){const d=Math.hypot(b.x-heart.x,b.y-heart.y);if(d<24&&D.shield===b.dir){b.dead=true;tone(300,now(),0.05,'square',0.06);return}if(d<8){b.dead=true;if(heart.inv<=0)hurt(D)}return}
+    if(heart.inv>0)return;
+    if(b.kind==='bar'){if(Math.abs(b.x-heart.x)<b.w/2+6&&Math.abs(b.y-heart.y)<b.h/2+6){b.dead=true;hurt(D)}return}
+    if(Math.hypot(b.x-heart.x,b.y-heart.y)<b.r+5){b.dead=true;hurt(D)}});
+  bullets=bullets.filter(b=>!b.dead&&b.x>bx.x-40&&b.x<bx.x+bx.w+40&&b.y>bx.y-40&&b.y<bx.y+bx.h+40);
+  if(D.t>=D.ms){const r=D.res;dodgeState=null;bullets=[];shots=[];heart.show=false;r()}
+}
+function drawSoul(){
+  const D=dodgeState;const soul=D?D.soul:'red';const col=SOUL[soul].c;
+  if(D&&soul==='purple'){ctx.strokeStyle='#7a2bb8';ctx.lineWidth=2;for(let i=1;i<=3;i++){const y=box.y+box.h*i/4;ctx.beginPath();ctx.moveTo(box.x+4,y);ctx.lineTo(box.x+box.w-4,y);ctx.stroke()}}
+  if(D&&soul==='green'){ctx.strokeStyle='#2ecc40';ctx.lineWidth=2;ctx.beginPath();ctx.arc(heart.x,heart.y,24,0,7);ctx.stroke();
+    const a={right:0,down:Math.PI/2,left:Math.PI,up:-Math.PI/2}[D.shield];ctx.strokeStyle='#5cf';ctx.lineWidth=5;ctx.beginPath();ctx.arc(heart.x,heart.y,24,a-0.6,a+0.6);ctx.stroke()}
+  shots.forEach(s=>{ctx.fillStyle='#ffd400';ctx.fillRect(s.x-2,s.y-6,4,10)});
+  if(heart.show&&!(heart.inv>0&&Math.floor(T*15)%2)){if(soul==='yellow')drawGrid(HEART.slice().reverse(),heart.x-9,heart.y-8,2,col);else drawHeart(heart.x,heart.y,2,col)}
 }
 async function spare(){
   B.spared=true;SFX.spare();stopSong();for(let i=0;i<40;i++)parts.push({x:300+Math.random()*40,y:80+Math.random()*90,vx:(Math.random()-.5)*40,vy:-20-Math.random()*50,life:1+Math.random()});
@@ -1031,10 +1104,16 @@ $('#btnRetry').onclick=()=>{overAnim=null;battle(B.k)};
 $('#btnOverMap').onclick=()=>{overAnim=null;goMap()};
 
 /* touch drag for heart */
-let drag=null;
-stage.addEventListener('pointerdown',e=>{if(dodgeState){drag={x:e.clientX,y:e.clientY}}});
-addEventListener('pointermove',e=>{if(drag&&dodgeState){const r=stage.getBoundingClientRect();const s=r.width/W;heart.x+=(e.clientX-drag.x)/s*1.2;heart.y+=(e.clientY-drag.y)/s*1.2;drag={x:e.clientX,y:e.clientY}}});
-addEventListener('pointerup',()=>drag=null);
+let drag=null;const ptr={down:false};
+stage.addEventListener('pointerdown',e=>{if(!dodgeState)return;drag={x:e.clientX,y:e.clientY,sy:e.clientY};ptr.down=true;
+  if(dodgeState.soul==='green'){const r=stage.getBoundingClientRect(),s=r.width/W;const dx=(e.clientX-r.left)/s-heart.x,dy=(e.clientY-r.top)/s-heart.y;dodgeState.shield=Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up')}});
+addEventListener('pointermove',e=>{if(!(drag&&dodgeState))return;const D=dodgeState;const r=stage.getBoundingClientRect();const s=r.width/W;const mx=(e.clientX-drag.x)/s*1.2,my=(e.clientY-drag.y)/s*1.2;
+  if(D.soul==='red'||D.soul==='yellow'){heart.x+=mx;heart.y+=my}
+  else if(D.soul==='blue'){heart.x+=mx}
+  else if(D.soul==='purple'){heart.x+=mx;const vy=(e.clientY-drag.sy)/s;if(Math.abs(vy)>28){D.line=clamp(D.line+(vy>0?1:-1),0,2);drag.sy=e.clientY;SFX.move()}}
+  else if(D.soul==='green'){const dx=(e.clientX-r.left)/s-heart.x,dy=(e.clientY-r.top)/s-heart.y;D.shield=Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up')}
+  drag.x=e.clientX;drag.y=e.clientY});
+addEventListener('pointerup',()=>{drag=null;ptr.down=false});
 
 /* ================= render loop ================= */
 let last=performance.now(),T=0,monVisible=true,monAppear=1;
@@ -1117,9 +1196,9 @@ function drawBattle(dt){
   // bullets
   ctx.save();ctx.beginPath();ctx.rect(box.x+2,box.y+2,box.w-4,box.h-4);ctx.clip();
   ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.direction='ltr';
-  bullets.forEach(b=>{ctx.font=(b.g.length>2?"11px":"16px")+" 'Press Start 2P', Rubik";ctx.fillText(b.g,b.x,b.y)});
+  bullets.forEach(b=>{if(b.kind==='bar'){ctx.fillRect(b.x-b.w/2,b.y-b.h/2,b.w,b.h);return}if(b.kind==='arrow'){ctx.font="16px 'Press Start 2P', Rubik";ctx.fillStyle='#fff';ctx.fillText({up:'↓',down:'↑',left:'→',right:'←'}[b.dir],b.x,b.y);return}ctx.font=(b.g.length>2?"11px":"16px")+" 'Press Start 2P', Rubik";ctx.fillText(b.g,b.x,b.y)});
+  drawSoul();
   ctx.restore();
-  if(heart.show&&!(heart.inv>0&&Math.floor(T*15)%2))drawHeart(heart.x,heart.y,2);
   // floats
   floats.forEach(f=>{f.y-=dt*30;f.life-=dt;ctx.globalAlpha=Math.max(0,f.life);ctx.fillStyle=f.col;ctx.font="900 22px Rubik";ctx.textAlign='center';ctx.direction='rtl';ctx.fillText(f.s,f.x,f.y)});floats=floats.filter(f=>f.life>0);ctx.globalAlpha=1;ctx.direction='ltr';ctx.textAlign='start';
 }
