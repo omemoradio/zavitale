@@ -64,6 +64,18 @@ button{font-family:inherit;cursor:pointer}
 #bubble.on{display:block}
 #cinema{position:absolute;inset:0;background:#000;z-index:30;display:none;align-items:center;justify-content:center;text-align:center}
 #cinema.on{display:flex}
+#cinema::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(160,0,0,.0) 60%,rgba(120,0,0,.0));pointer-events:none;transition:background 1s}
+#cinema.red::before{background:radial-gradient(ellipse at center,transparent 30%,rgba(140,0,0,.35) 70%,rgba(90,0,0,.85));animation:vig 1.1s ease-in-out infinite alternate}
+@keyframes vig{from{opacity:.55}to{opacity:1}}
+#cinema::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#cinema.flash::after{animation:flash .7s ease-out}
+@keyframes flash{0%{opacity:1}100%{opacity:0}}
+#cinema.shake{animation:cshake .55s linear}
+@keyframes cshake{0%,100%{transform:translate(0,0)}10%{transform:translate(-12px,6px)}20%{transform:translate(10px,-8px)}30%{transform:translate(-8px,-4px)}40%{transform:translate(8px,6px)}50%{transform:translate(-6px,2px)}60%{transform:translate(5px,-4px)}70%{transform:translate(-3px,3px)}80%{transform:translate(2px,-2px)}}
+#cineText .c3.glitch{animation:glitch 1.6s steps(1) infinite}
+@keyframes glitch{0%{text-shadow:3px 0 #0ff,-3px 0 #f0f;transform:none}8%{text-shadow:-5px 0 #0ff,5px 0 #f00;transform:translate(3px,-1px) skewX(-6deg)}12%{text-shadow:2px 0 #0ff,-2px 0 #f0f;transform:none}55%{text-shadow:3px 0 #0ff,-3px 0 #f0f}58%{text-shadow:-6px 0 #0ff,6px 0 #f00;transform:translate(-4px,2px) skewX(8deg)}62%{text-shadow:3px 0 #0ff,-3px 0 #f0f;transform:none}}
+#cineText .c2.tick{animation:tickp 1s ease-out infinite}
+@keyframes tickp{0%{transform:scale(1.04)}30%{transform:scale(1)}}
 #cineText{opacity:0;transition:opacity .9s ease}
 #cineText.show{opacity:1}
 #cineText .c1{font:500 20px Rubik;color:#aaa;letter-spacing:2px}
@@ -844,15 +856,27 @@ function hud(){
   $('#convBar i').style.width=Math.min(100,B.conv/B.need*100)+'%';
   $$('.mbtn')[3].classList.toggle('ready',B.conv>=B.need);
 }
+const CFX={
+  drone(d){if(!AC)return;const t=now(),g=AC.createGain(),f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=320;g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.22,t+1.2);g.gain.setValueAtTime(0.22,t+d-0.8);g.gain.exponentialRampToValueAtTime(0.0001,t+d);f.connect(g);g.connect(master);
+    [55,55.8,82.4].forEach(fr=>{const o=AC.createOscillator();o.type='sawtooth';o.frequency.value=fr;o.connect(f);o.start(t);o.stop(t+d+0.1)})},
+  beat(){if(!AC)return;const t=now();tone(62,t,0.16,'sine',0.55,master,40);tone(58,t+0.24,0.2,'sine',0.45,master,38)},
+  tick(){if(!AC)return;noise(now(),0.03,0.18,4000,master);tone(1800,now(),0.02,'square',0.03,master)},
+  boom(){if(!AC)return;const t=now();noise(t,1.4,0.6,40,master);tone(110,t,1.6,'sine',0.7,master,28);tone(220,t,0.5,'sawtooth',0.12,master,40);
+    [0,0.08,0.16].forEach((d,i)=>tone([146.8,174.6,207.7][i],t+d,1.8,'square',0.05,master))}
+};
 async function cinema(cards){
-  const c=$('#cinema'),t=$('#cineText');c.classList.add('on');let skip=false;
+  const c=$('#cinema'),t=$('#cineText');c.className='on';let skip=false;const timers=[];const every=(fn,ms)=>timers.push(setInterval(()=>{if(!skip)fn()},ms));
   const kh=e=>{if(isConfirm(e.key)||e.key==='Escape')skip=true};addEventListener('keydown',kh);
   const wait=async ms=>{const end=Date.now()+ms;while(Date.now()<end&&!skip)await sleep(50)};
-  for(const html of cards){if(skip)break;t.innerHTML=html;await sleep(30);t.classList.add('show');await wait(2300);t.classList.remove('show');await wait(950)}
-  removeEventListener('keydown',kh);t.classList.remove('show');c.classList.remove('on');
+  for(const card of cards){if(skip)break;const html=card.html||card;t.innerHTML=html;await sleep(30);
+    if(card.fx)card.fx({c,t,every});t.classList.add('show');await wait(card.ms||2300);timers.splice(0).forEach(clearInterval);t.classList.remove('show');await wait(card.gap||950)}
+  timers.forEach(clearInterval);removeEventListener('keydown',kh);t.classList.remove('show');c.className='';
 }
 async function battle(k){
-  if(k==='boss'){stopSong();await cinema([`<div class="c1">ZaviTale מציג</div>`,`<div class="c1">הזמן</div><div class="c2">יום רביעי, 25.11</div>`,`<div class="c3">המבחן</div><div class="c4">כל הנושאים · צריך 10 תשובות נכונות</div>`])}
+  if(k==='boss'){stopSong();await cinema([
+    {html:`<div class="c1">ZaviTale מציג</div>`,fx:({every})=>{CFX.drone(9.5);CFX.beat();every(()=>CFX.beat(),1100)}},
+    {html:`<div class="c1">הזמן</div><div class="c2 tick">יום רביעי, 25.11</div>`,fx:({c,every})=>{c.classList.add('red');CFX.tick();every(()=>CFX.tick(),1000);every(()=>CFX.beat(),800)}},
+    {html:`<div class="c3 glitch">המבחן</div><div class="c4">כל הנושאים · צריך 10 תשובות נכונות</div>`,ms:3000,gap:600,fx:({c})=>{c.classList.remove('flash','shake');void c.offsetWidth;c.classList.add('flash','shake','red');CFX.boom()}}])}
   const T=TK[k];
   B={k,T,mon:T.mon,turn:0,lastSoul:null,hp:20,max:20,conv:0,need:k==='boss'?10:5,correct:0,wrong:0,items:ITEMS.map(i=>({...i})),asked:new Set(),menuIdx:0,spared:false,start:Date.now()};
   blipPitch=T.mon.pitch;
