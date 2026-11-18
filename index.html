@@ -58,6 +58,7 @@ button{font-family:inherit;cursor:pointer}
 #qPanel.on{display:flex}
 #qText{font:700 21px/1.38 Rubik;text-align:center;min-height:62px;display:flex;align-items:center;justify-content:center;padding:0 8px}
 #qPanel.nosvg #qText{flex:1;font-size:25px}
+#qText .qin{display:block;max-width:100%}
 #qSvg svg{display:block}
 #bubble{position:absolute;left:400px;top:40px;max-width:190px;background:#fff;color:#000;font:700 16px/1.35 Rubik;padding:8px 12px;border-radius:6px;display:none}
 #bubble::after{content:'';position:absolute;right:100%;top:18px;border:8px solid transparent;border-right-color:#fff}
@@ -462,7 +463,7 @@ const AN=s=>L('∢'+s);
 const pt=(x,y)=>L(`(${sn(x)}, ${sn(y)})`);
 function uniq(correct,cands,n=4){const out=[correct];for(const c of cands){if(out.length>=n)break;if(!out.includes(c))out.push(c)}return out}
 function numOpts(ans,cands,fmt,pos){fmt=fmt||(x=>L(sn(x)));const ok=c=>Number.isFinite(c)&&(!pos||c>0);const nums=[ans];for(const c of cands){if(nums.length>=4)break;if(ok(c)&&!nums.includes(c))nums.push(c)}let d=pos?10:1;let g=0;while(nums.length<4&&g++<40){for(const c of [ans+d,ans-d]){if(nums.length<4&&ok(c)&&!nums.includes(c))nums.push(c)}d+=pos?10:1}return nums.map(fmt)}
-function fixLtr(h){let p;do{p=h;h=h.replace(/<\/span>(\s*[=+−:·]\s*)<span class="ltr">/g,'$1')}while(h!==p);return h}
+function fixLtr(h){let p;do{p=h;h=h.replace(/<\/span>(\s*[=+−:·]?\s*)<span class="ltr">/g,'$1')}while(h!==p);return h}
 function Q(topic,text,opts,explain,ex={}){
   text=fixLtr(text);opts=opts.map(fixLtr);explain=fixLtr(explain);
   let order=opts.map((o,i)=>i),ci=ex.ci!=null?ex.ci:0;
@@ -943,7 +944,7 @@ function chooseOption(opts,secs){
 function genQ(){let q,g=0;do{q=G[B.k]();g++}while(B.asked.has(strip(q.text)+q.ctx)&&g<12);B.asked.add(strip(q.text)+q.ctx);return q}
 async function askQuestion(){
   const q=genQ();const t0=Date.now();
-  monVisible=false;const qp=$('#qPanel');qp.classList.add('on');qp.classList.toggle('nosvg',!q.svg);$('#qText').innerHTML=q.text;$('#qSvg').innerHTML=q.svg;fitQ();
+  monVisible=false;const qp=$('#qPanel');qp.classList.add('on');qp.classList.toggle('nosvg',!q.svg);$('#qText').innerHTML=`<div class="qin">${q.text}</div>`;$('#qSvg').innerHTML=q.svg;fitQ();
   const i=await chooseOption(q.opts,save.timer?25:0);const ok=i===q.ans;const els=[...$('#opts').children];const timeout=i<0;
   els[q.ans].classList.add('good');if(!ok&&!timeout)els[i].classList.add('bad');
   recAnswer({t:Date.now(),k:B.k==='boss'?q.topic:B.k,boss:B.k==='boss'||undefined,q:strip(q.text)+(q.ctx?` [${q.ctx}]`:''),a:timeout?'(נגמר הזמן)':strip(q.opts[i]),c:strip(q.opts[q.ans]),ok,ms:Date.now()-t0});
