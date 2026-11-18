@@ -961,7 +961,7 @@ async function ending(){
   for(const t of TOPICS){endS.cur=t.k;blipPitch=t.mon.pitch;SFX.appear();
     await say([`* ${t.mon.name}: ${FAREWELL[t.k]}`],d);endS.shown.push(t.k);endS.cur=null}
   blipPitch=520;endS.final=true;SFX.spare();
-  await say([`* ${save.name}, השלמת את כל המסע!`,`* זכרו את מה שאמר אבא חופר: ${QUOTE}`,'* עכשיו – לתעודה!'],d);
+  await say([`* ${save.name}, השלמת את כל המסע!`,`* זכרו את מה שאומר אבא חופר: ${QUOTE}`,'* עכשיו – לתעודה!'],d);
   d.classList.remove('on');openCert();
 }
 function drawEnding(dt){
@@ -988,7 +988,7 @@ async function drawCert(){
   x.textAlign='center';x.direction='rtl';
   x.fillStyle='#b8860b';x.font="22px 'Press Start 2P', monospace";x.direction='ltr';x.fillText('ZaviTale',cw/2,108);x.direction='rtl';
   x.fillStyle='#222';x.font="900 58px Rubik, sans-serif";x.fillText('תעודת "מוכן למבחן"',cw/2,185);
-  x.font="500 26px Rubik, sans-serif";x.fillStyle='#555';x.fillText('מוענקת בגאווה ל',cw/2,240);
+  x.font="500 26px Rubik, sans-serif";x.fillStyle='#555';x.fillText('מוענקת בהצלחה ל',cw/2,240);
   x.font="900 64px Rubik, sans-serif";x.fillStyle='#c0392b';x.fillText(save.name||'',cw/2,315);
   x.strokeStyle='#c9a227';x.lineWidth=2;x.beginPath();x.moveTo(cw/2-220,335);x.lineTo(cw/2+220,335);x.stroke();
   x.font="500 24px Rubik, sans-serif";x.fillStyle='#333';x.fillText('על השלמת המסע בממלכת המספרים והזוויות, וניצחון על המבחן!',cw/2,378);
