@@ -819,7 +819,7 @@ async function battle(k){
   await say([T.mon.intro]);
   while(true){
     if(B.hp<=0){await gameOver();return}
-    $('#boxText').innerHTML=`* ${pick(['ה'+B.mon.name+' מחכה לתשובה שלך.',B.mon.name+' בוהה בך.','מה הצעד הבא?','האוויר מתמלא במספרים.','זה הזמן לחשוב.'])}`;
+    $('#boxText').innerHTML=`* ${pick([B.mon.name+' מחכה לתשובה שלך.',B.mon.name+' בוהה בך.','מה הצעד הבא?','האוויר מתמלא במספרים.','זה הזמן לחשוב.'])}`;
     const sel=await menuChoice();
     if(sel==='flee'){recBattle({t:Date.now(),k,res:'flee',c:B.correct,w:B.wrong});SFX.move();await say(['* ברחת... אבל המבחן עדיין מחכה.']);goMap();return}
     if(sel===0){const r=await askQuestion();if(r==='done')continue;await enemyTurn(r)}
