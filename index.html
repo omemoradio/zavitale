@@ -373,13 +373,13 @@ const SPR={
 
 /* ================= topics & monsters ================= */
 const TOPICS=[
- {k:'coord',name:'מערכת הצירים',sub:'חשבון',icon:'xy',x:478,y:96,
-  mon:{name:'צירון',intro:'* צירון חוסם את הדרך! הוא מצביע לכל הכיוונים בבת אחת.',lines:['קודם x, אחר כך y!','איבדתי את הראשית...','אני בכל הרביעים!','(0, 0) זה הבית שלי.'],spare:'* צירון מצא את הכיוון שלו. הוא כבר לא רוצה להילחם.',glyphs:['x','y','+'],pat:['rain','sides'],tier:1,pitch:600}},
+ {k:'coord',name:'מערכת הצירים',sub:'קנה מידה, אורכי קטעים, מלבנים',icon:'xy',x:478,y:96,
+  mon:{name:'צירון',intro:'* צירון חוסם את הדרך! הוא מצביע לכל הכיוונים בבת אחת.',lines:['קודם x, אחר כך y!','כל משבצת – כמה יחידות?','אני מקביל לציר!','(0, 0) זה הבית שלי.'],spare:'* צירון מצא את הכיוון שלו. הוא כבר לא רוצה להילחם.',glyphs:['x','y','+'],pat:['rain','sides'],tier:1,pitch:600}},
  {k:'signed',name:'מספרים מכוונים',sub:'נגדיים וערך מוחלט',icon:'±',x:362,y:96,
   mon:{name:'מינוסיק',intro:'* מינוסיק מרחף לעברך. הוא מרגיש קצת... שלילי היום.',lines:['אני תמיד מתחת לאפס...','הערך המוחלט שלי? חיובי!','מינוס מינוס... פלוס?','הנגדי שלי נמצא בצד השני.'],spare:'* מינוסיק חייך. בפעם הראשונה הוא מרגיש חיובי.',glyphs:['−','|','−5','−1'],pat:['rain','aim'],tier:1,pitch:420}},
  {k:'addsub',name:'חיבור וחיסור',sub:'מספרים מכוונים',icon:'+−',x:246,y:96,
   mon:{name:'פלוסמינוס',intro:'* פלוסמינוס מופיע! שני ראשים, ושניהם מתווכחים על הסימן.',lines:['פלוס!','לא, מינוס!','חיסור זה חיבור הנגדי!','סימנים שונים – מחסרים!'],spare:'* שני הראשים של פלוסמינוס סוף סוף מסכימים.',glyphs:['+','−','+3','−7'],pat:['sides','rain','aim'],tier:2,pitch:500}},
- {k:'anglename',name:'סימון זוויות',sub:'∢ABC – הקודקוד באמצע',icon:'∢',x:116,y:126,
+ {k:'anglename',name:'סימון זוויות',sub:'סימון זוויות, משולשים ומרובעים, סוגי זוויות',icon:'∢',x:116,y:126,
   mon:{name:'זוויתן',intro:'* זוויתן מזדקר מולך. הקרניים שלו יוצרות זווית מושלמת.',lines:['הקודקוד – באמצע!','צריך לקרוא לי בשם הנכון.','∢ABC או ∢CBA – שניהם אני.','שלוש אותיות, לא פחות.'],spare:'* זוויתן שמח שקראו לו בשם הנכון.',glyphs:['∢','A','B','C'],pat:['rain','burst'],tier:1,pitch:650}},
  {k:'bisector',name:'חוצה זווית',sub:'שתי זוויות שוות',icon:'½',x:150,y:240,
   mon:{name:'אביר החוצה',intro:'* אביר החוצה שולף חרב. הוא חוצה את האוויר לשני חצאים שווים בדיוק.',lines:['חצי לי, חצי לך!','שווה בשווה!','כל זווית – לשניים.','החרב שלי תמיד באמצע.'],spare:'* אביר החוצה מכניס את החרב לנדן ומשתחווה.',glyphs:['½','/','\\'],pat:['sides','aim'],tier:2,pitch:380}},
@@ -396,12 +396,12 @@ const TK={};TOPICS.forEach(t=>TK[t.k]=t);
 const SAVEPT={k:'save',name:'נקודת שמירה',sub:'',icon:'★',x:590,y:96};
 const MAPN=[SAVEPT,...TOPICS];
 const HINTS={
- coord:['* צירון לוחש לך סוד:',`* בנקודה ${'<span class="ltr">(x, y)</span>'} – קודם x (ימינה/שמאלה), ואחר כך y (למעלה/למטה).`,'* רביע ראשון: <span class="ltr">(+,+)</span> · שני: <span class="ltr">(−,+)</span> · שלישי: <span class="ltr">(−,−)</span> · רביעי: <span class="ltr">(+,−)</span>. סופרים נגד כיוון השעון, מהרביע הימני־עליון.','* נקודה עם <span class="ltr">y = 0</span> נמצאת על ציר ה־x. נקודה עם <span class="ltr">x = 0</span> – על ציר ה־y.'],
- signed:['* מספר נגדי: אותו מרחק מאפס, בצד השני. הנגדי של <span class="ltr">−5</span> הוא 5.','* ערך מוחלט = המרחק מאפס. הוא אף פעם לא שלילי: <span class="ltr">|−7| = 7</span>.','* על ציר המספרים – מי שימינה, גדול יותר. לכן <span class="ltr">−2 > −9</span>.'],
+ coord:['* צירון לוחש לך סוד:','* בנקודה <span class="ltr">(x, y)</span> – קודם x (ימינה), ואחר כך y (למעלה).','* לבדוק את קנה המידה! לפעמים כל משבצת היא 2, 5 או 10 יחידות.','* אורך קטע שמקביל לציר: מחסרים את השיעורים שמשתנים – הגדול פחות הקטן.','* נקודה עם <span class="ltr">y = 0</span> נמצאת על ציר ה־x. נקודה עם <span class="ltr">x = 0</span> – על ציר ה־y.'],
+ signed:['* מספרים טבעיים: <span class="ltr">1, 2, 3...</span> · שלמים: הטבעיים, האפס והנגדיים שלהם. 0 – לא חיובי ולא שלילי.','* מספר נגדי: אותו מרחק מאפס, בצד השני. הנגדי של <span class="ltr">−5</span> הוא 5.','* ערך מוחלט = המרחק מאפס. הוא אף פעם לא שלילי: <span class="ltr">|−7| = 7</span>.','* על ציר המספרים – מי שימינה, גדול יותר. לכן <span class="ltr">−2 > −9</span>.'],
  addsub:['* סימנים זהים: מחברים ושומרים על הסימן. <span class="ltr">(−3) + (−4) = −7</span>','* סימנים שונים: מחסרים, ולוקחים את הסימן של מי שהערך המוחלט שלו גדול. <span class="ltr">(−8) + (+5) = −3</span>','* חיסור = חיבור הנגדי! <span class="ltr">(−2) − (−6) = (−2) + (+6) = 4</span>'],
- anglename:['* זווית מסמנים בשלוש אותיות, למשל <span class="ltr">∢ABC</span>.','* האות של הקודקוד תמיד באמצע!','* <span class="ltr">∢ABC</span> ו־<span class="ltr">∢CBA</span> – זו אותה זווית. הקודקוד הוא B, והשוקיים הן BA ו־BC.'],
+ anglename:['* זווית מסמנים בשלוש אותיות, למשל <span class="ltr">∢ABC</span>.','* האות של הקודקוד תמיד באמצע!','* <span class="ltr">∢ABC</span> ו־<span class="ltr">∢CBA</span> – זו אותה זווית. הקודקוד הוא B, והשוקיים הן BA ו־BC.','* מרובע: כותבים את הקודקודים לפי הסדר מסביב. משולש: כל סדר מתאים.','* חדה < 90° · ישרה = 90° · קהה בין 90° ל־180° · שטוחה = 180°.'],
  bisector:['* חוצה זווית = קרן שיוצאת מהקודקוד ומחלקת את הזווית לשתי זוויות שוות.','* אם <span class="ltr">BD</span> חוצה את <span class="ltr">∢ABC</span>, אז <span class="ltr">∢ABD = ∢DBC</span>, וכל אחת היא חצי מ־<span class="ltr">∢ABC</span>.'],
- anglesum:['* כשהקרן <span class="ltr">OB</span> נמצאת בתוך <span class="ltr">∢AOC</span>:','* סכום: <span class="ltr">∢AOB + ∢BOC = ∢AOC</span>','* הפרש: <span class="ltr">∢AOC − ∢AOB = ∢BOC</span>'],
+ anglesum:['* כשהקרן <span class="ltr">OB</span> נמצאת בתוך <span class="ltr">∢AOC</span>:','* סכום: <span class="ltr">∢AOB + ∢BOC = ∢AOC</span>','* הפרש: <span class="ltr">∢AOC − ∢AOB = ∢BOC</span>','* כל הזוויות סביב נקודה ביחד: <span class="ltr">360°</span>.'],
  adjacent:['* זוויות צמודות: יש להן שוק משותפת, והשוקיים האחרות יוצרות קו ישר.','* סכום זוויות צמודות = <span class="ltr">180°</span>.','* אם אחת חדה – השנייה קהה. אם הן שוות – כל אחת <span class="ltr">90°</span>.'],
  vertical:['* כששני ישרים נחתכים, נוצרות 4 זוויות.','* זוויות קודקודיות (אחת מול השנייה) – שוות!','* זוויות שכנות הן צמודות – ביחד <span class="ltr">180°</span>. כל הארבע ביחד: <span class="ltr">360°</span>.'],
  boss:['* המבחן משלב את כל הנושאים.','* טיפ: כדאי לקרוא כל שאלה עד הסוף ולבדוק את הסימן (פלוס או מינוס) לפני שעונים!']
@@ -482,36 +482,67 @@ function crossFig(alpha,rot,known,ask){
 
 /* ================= question generators ================= */
 const G={};
-function moveDesc(x,y){
-  const xs=x===0?`לא זזים ימינה או שמאלה (${L('x = 0')})`:`${Math.abs(x)} ${x>0?'ימינה':'שמאלה'}`;
-  const ys=y===0?`לא זזים למעלה או למטה (${L('y = 0')})`:`${Math.abs(y)} ${y>0?'למעלה':'למטה'}`;
-  return `מראשית הצירים: ${xs}, ואז ${ys}.`;
+function gridQ(points,o){o=o||{};const n=o.n||8,s=o.s||1,u=17,ox=214,oy=156;let g='';
+  for(let i=0;i<=n;i++){g+=`<line x1="${ox+i*u}" y1="${oy}" x2="${ox+i*u}" y2="${oy-n*u}" stroke="#2c2c44" stroke-width="1"/><line x1="${ox}" y1="${oy-i*u}" x2="${ox+n*u}" y2="${oy-i*u}" stroke="#2c2c44" stroke-width="1"/>`}
+  const e=n*u+14;
+  g+=`<line x1="${ox}" y1="${oy}" x2="${ox+e}" y2="${oy}" stroke="#fff" stroke-width="2"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy-e}" stroke="#fff" stroke-width="2"/><path d="M${ox+e} ${oy} l-7 -4 v8z M${ox} ${oy-e} l-4 7 h8z" fill="#fff"/>`;
+  g+=txt(ox+e+10,oy,'x',15)+txt(ox+12,oy-e+3,'y',15);
+  for(let i=1;i<=n;i++){g+=txt(ox+i*u,oy+10,String(i*s),s>=10?8:9,'#9a9ab8')+txt(ox-(s>=10?12:9),oy-i*u,String(i*s),s>=10?8:9,'#9a9ab8')}
+  g+=txt(ox-8,oy+9,'0',9,'#9a9ab8');
+  const X=v=>ox+v/s*u,Y=v=>oy-v/s*u;
+  if(o.poly)g+=`<polygon points="${o.poly.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="rgba(255,212,0,.12)" stroke="#ffd400" stroke-width="2.5"/>`;
+  (o.segs||[]).forEach(sg=>{g+=`<line x1="${X(sg[0])}" y1="${Y(sg[1])}" x2="${X(sg[2])}" y2="${Y(sg[3])}" stroke="${sg[4]||'#5cf'}" stroke-width="3"/>`});
+  points.forEach(p=>{const x=X(p.x),y=Y(p.y);g+=`<circle cx="${x}" cy="${y}" r="4.5" fill="#ff3b3b"/>`+txt(x+10,y-10,p.l,15,'#ff0')});
+  return wrapSvg(g);
 }
+const pq=(x,y)=>L(`(${x}, ${y})`);
 G.coord=()=>{
-  const t=pick(['read','read','which','quad','axis','move','desc']);
-  if(t==='read'){let x,y;do{x=R(-5,5);y=R(-5,5)}while(x===y||(x===0&&y===0));
-    const c=pt(x,y);
-    return Q('coord','מה השיעורים של הנקודה A?',uniq(c,[pt(y,x),pt(-x,y),pt(x,-y),pt(-x,-y),pt(-y,-x)]),`${moveDesc(x,y)} כותבים קודם את ${L('x')} ואחר כך את ${L('y')}, לכן ${L('A = ')}${c}.`,{svg:gridFig([{x,y,l:'A'}]),ctx:`A=(${sn(x)}, ${sn(y)})`})}
-  if(t==='which'){let x,y;do{x=R(-5,5);y=R(-5,5)}while(!x||!y||Math.abs(x)===Math.abs(y));
-    const pts=shuffle([[x,y],[y,x],[-x,y],[x,-y]]);const labels=['A','B','C','D'];const ci=pts.findIndex(p=>p[0]===x&&p[1]===y);
-    return Q('coord',`איזו נקודה היא ${pt(x,y)}?`,labels.map(L),`${moveDesc(x,y)} זו הנקודה ${L(labels[ci])}. חשוב לא להתבלבל בין ${L('x')} ל־${L('y')}!`,{svg:gridFig(pts.map((p,i)=>({x:p[0],y:p[1],l:labels[i]}))),ci,ctx:`(${sn(x)}, ${sn(y)})`})}
-  if(t==='quad'){const x=R(1,9)*pick([1,-1]),y=R(1,9)*pick([1,-1]);const q=x>0?(y>0?0:3):(y>0?1:2);const names=['רביע ראשון','רביע שני','רביע שלישי','רביע רביעי'];
-    const sg=v=>v>0?'+':MN;
-    return Q('coord',`באיזה רביע נמצאת הנקודה ${pt(x,y)}?`,names,`ה־${L('x')} ${x>0?'חיובי':'שלילי'} וה־${L('y')} ${y>0?'חיובי':'שלילי'}: ${L('('+sg(x)+','+sg(y)+')')} ← ${names[q]}. כדאי לזכור: ראשון ${L('(+,+)')} · שני ${L('(−,+)')} · שלישי ${L('(−,−)')} · רביעי ${L('(+,−)')}.`,{ci:q})}
-  if(t==='axis'){const r=Math.random();let x=0,y=0,ci;if(r<0.45){y=R(1,9)*pick([1,-1]);ci=1}else if(r<0.9){x=R(1,9)*pick([1,-1]);ci=0}else ci=2;
-    const ex=ci===2?`שני השיעורים הם 0 – זו בדיוק ראשית הצירים.`:ci===0?`ה־${L('y')} שווה 0, כלומר לא זזים למעלה או למטה – הנקודה על ציר ה־${L('x')}.`:`ה־${L('x')} שווה 0, כלומר לא זזים ימינה או שמאלה – הנקודה על ציר ה־${L('y')}.`;
-    return Q('coord',`איפה נמצאת הנקודה ${pt(x,y)}?`,[`על ציר ה־${L('x')}`,`על ציר ה־${L('y')}`,'בראשית הצירים','ברביע הראשון'],ex,{ci})}
-  if(t==='move'){const x=R(-4,4),y=R(-4,4),k=R(1,5);const d=pick(['ימינה','שמאלה','למעלה','למטה']);
-    const nx=d==='ימינה'?x+k:d==='שמאלה'?x-k:x,ny=d==='למעלה'?y+k:d==='למטה'?y-k:y;
-    const wrong=[d==='ימינה'?[x-k,y]:d==='שמאלה'?[x+k,y]:d==='למעלה'?[x,y-k]:[x,y+k], (d==='ימינה'||d==='שמאלה')?[x,y+(nx-x)]:[x+(ny-y),y],[ny,nx]];
-    const ex=(d==='ימינה'||d==='שמאלה')?`תזוזה ${d} משנה רק את ה־${L('x')}: ${L(sn(x)+(d==='ימינה'?' + ':' − ')+k+' = '+sn(nx))}. ה־${L('y')} נשאר ${L(sn(y))}.`:`תזוזה ${d} משנה רק את ה־${L('y')}: ${L(sn(y)+(d==='למעלה'?' + ':' − ')+k+' = '+sn(ny))}. ה־${L('x')} נשאר ${L(sn(x))}.`;
-    return Q('coord',`הנקודה ${pt(x,y)} זזה ${k} יחידות ${d}. מה השיעורים החדשים?`,uniq(pt(nx,ny),wrong.map(w=>pt(w[0],w[1])).concat([pt(-nx,ny),pt(nx,-ny)])),ex)}
-  // desc
-  let x,y;do{x=R(-6,6);y=R(-6,6)}while(!x||!y||x===y);
-  const xs=`${Math.abs(x)} יחידות ${x>0?'מימין':'משמאל'} לציר ה־${L('y')}`,ys=`${Math.abs(y)} יחידות ${y>0?'מעל':'מתחת'} לציר ה־${L('x')}`;
-  return Q('coord',`נקודה נמצאת ${xs} ו־${ys}. מה השיעורים שלה?`,uniq(pt(x,y),[pt(y,x),pt(-x,y),pt(x,-y),pt(-x,-y)]),`${x>0?'מימין':'משמאל'} לציר ה־${L('y')} ← ${L('x = '+sn(x))}. ${y>0?'מעל':'מתחת'} לציר ה־${L('x')} ← ${L('y = '+sn(y))}. לכן ${pt(x,y)}.`);
+  const t=pick(['read','read','scale','which','axis','dist','seglen','seglen','findpt','rect','rect','parallel']);
+  if(t==='read'){let x,y;do{x=R(0,8);y=R(0,7)}while(x===y||(x===0&&y===0));
+    return Q('coord','מה השיעורים של הנקודה A?',uniq(pq(x,y),[pq(y,x),pq(x+1,y),pq(x,y+1),pq(x-1,y-1)].filter(o=>!/-/.test(strip(o)))),`מראשית הצירים: ${x} יחידות ימינה (שיעור ה־${L('x')}), ו־${y} יחידות למעלה (שיעור ה־${L('y')}). כותבים קודם את ${L('x')}: ${L('A = ')}${pq(x,y)}.`,{svg:gridQ([{x,y,l:'A'}]),ctx:`A=(${x}, ${y})`})}
+  if(t==='scale'){const s=pick([2,5,10,10]);let a,b;do{a=R(1,8);b=R(1,7)}while(a===b);const x=a*s,y=b*s;
+    return Q('coord','שימו לב לקנה המידה! מה השיעורים של הנקודה A?',uniq(pq(x,y),[pq(a,b),pq(y,x),pq(b,a),pq(x+s,y)]),`כל משבצת כאן מייצגת ${s} יחידות (ולא יחידה אחת). A נמצאת ${a} משבצות ימינה ← ${L(a+' · '+s+' = '+x)}, ו־${b} משבצות למעלה ← ${L(b+' · '+s+' = '+y)}. לכן ${L('A = ')}${pq(x,y)}.`,{svg:gridQ([{x,y,l:'A'}],{s}),ctx:`A=(${x}, ${y}), קנה מידה ${s}`})}
+  if(t==='which'){let x,y;do{x=R(1,7);y=R(1,7)}while(x===y||x+1>8||y+1>7);
+    const cand=shuffle([[x,y],[y,x],[x+1,y],[x,y+1]].filter((p,i,a)=>a.findIndex(q=>q[0]===p[0]&&q[1]===p[1])===i)).slice(0,4);const labels=['A','B','C','D'].slice(0,cand.length);const ci=cand.findIndex(p=>p[0]===x&&p[1]===y);
+    return Q('coord',`איזו נקודה היא ${pq(x,y)}?`,labels.map(L),`קודם זזים ${x} ימינה (${L('x')}), ואחר כך ${y} למעלה (${L('y')}) – זו הנקודה ${L(labels[ci])}. חשוב לא להתבלבל בין ${L('x')} ל־${L('y')}!`,{svg:gridQ(cand.map((p,i)=>({x:p[0],y:p[1],l:labels[i]}))),ci,ctx:`(${x}, ${y})`})}
+  if(t==='axis'){const r=Math.random();let x=0,y=0,ci;if(r<0.4){y=R(1,9);ci=1}else if(r<0.8){x=R(1,9);ci=0}else ci=2;
+    const ex=ci===2?'שני השיעורים הם 0 – זו ראשית הצירים.':ci===0?`שיעור ה־${L('y')} הוא 0 – לא זזים למעלה בכלל, ולכן הנקודה על ציר ה־${L('x')}.`:`שיעור ה־${L('x')} הוא 0 – לא זזים ימינה בכלל, ולכן הנקודה על ציר ה־${L('y')}.`;
+    return Q('coord',`איפה נמצאת הנקודה ${pq(x,y)}?`,[`על ציר ה־${L('x')}`,`על ציר ה־${L('y')}`,'בראשית הצירים','לא על אף ציר'],ex,{ci})}
+  if(t==='dist'){let x,y;do{x=R(1,9);y=R(1,9)}while(x===y);const toY=Math.random()<.5;
+    return Q('coord',`מה המרחק של הנקודה ${pq(x,y)} מציר ה־${toY?L('y'):L('x')}?`,numOpts(toY?x:y,[toY?y:x,x+y,0],null,true),toY?`המרחק מציר ה־${L('y')} הוא כמה צעדים ימינה זזנו – שיעור ה־${L('x')}: ${x}.`:`המרחק מציר ה־${L('x')} הוא כמה צעדים למעלה זזנו – שיעור ה־${L('y')}: ${y}.`)}
+  if(t==='seglen'){const hor=Math.random()<.5;let a,b,c;do{a=R(0,7);b=R(0,7);c=R(1,7)}while(Math.abs(a-b)<2);const lo=Math.min(a,b),hi=Math.max(a,b);
+    const A=hor?[a,c]:[c,a],B=hor?[b,c]:[c,b];const show=Math.random()<.5;
+    return Q('coord',`מה אורך הקטע ${L('AB')}?<br>${L(`A(${A[0]}, ${A[1]})   B(${B[0]}, ${B[1]})`)}`,numOpts(hi-lo,[a+b,c,hi],null,true),`הקטע מקביל לציר ה־${hor?L('x'):L('y')}, כי לשתי הנקודות אותו שיעור ${hor?L('y'):L('x')}. מחסרים את שיעורי ה־${hor?L('x'):L('y')}: הגדול פחות הקטן ← ${L(hi+' − '+lo+' = '+(hi-lo))}.`,{svg:show?gridQ([{x:A[0],y:A[1],l:'A'},{x:B[0],y:B[1],l:'B'}],{segs:[[A[0],A[1],B[0],B[1]]]}):'',ctx:`A(${A}), B(${B})`})}
+  if(t==='findpt'){const hor=Math.random()<.5;const ax=R(1,4),ay=R(1,4),len=R(2,4);const B=hor?[ax+len,ay]:[ax,ay+len];
+    return Q('coord',`הקטע ${L('AB')} מקביל לציר ה־${hor?L('x'):L('y')}, ואורכו ${len}. ${L('A = ')}${pq(ax,ay)}, והנקודה B נמצאת ${hor?'מימין':'מעל'} ל־A. מה השיעורים של B?`,uniq(pq(B[0],B[1]),[hor?pq(ax,ay+len):pq(ax+len,ay),pq(ax+len,ay+len),pq(len,hor?ay:ax),hor?pq(ax+len-1,ay):pq(ax,ay+len-1)]),`מקביל לציר ה־${hor?L('x'):L('y')} ← שיעור ה־${hor?L('y'):L('x')} לא משתנה (${hor?ay:ax}). מוסיפים את האורך לשיעור ה־${hor?L('x'):L('y')}: ${L((hor?ax:ay)+' + '+len+' = '+(hor?B[0]:B[1]))}. לכן ${L('B = ')}${pq(B[0],B[1])}.`)}
+  if(t==='rect'){const x1=R(0,3),y1=R(0,3),w=R(2,5),h=R(2,4);const x2=x1+w,y2=y1+h;const kind=pick(['per','area','fourth']);
+    const poly=[[x1,y1],[x2,y1],[x2,y2],[x1,y2]];const nm=['A','B','C','D'];
+    if(kind==='fourth')return Q('coord',`${L('ABCD')} הוא מלבן: ${L(`A(${x1}, ${y1})   B(${x2}, ${y1})   C(${x2}, ${y2})`)}. מה השיעורים של D?`,uniq(pq(x1,y2),[pq(x2,y1+h+1),pq(y2,x1),pq(x1,y1+w),pq(x2,y2+1)]),`D נמצאת מעל A (אותו ${L('x')} כמו A: ${x1}) ומשמאל ל־C (אותו ${L('y')} כמו C: ${y2}). לכן ${L('D = ')}${pq(x1,y2)}.`,{svg:gridQ([{x:x1,y:y1,l:'A'},{x:x2,y:y1,l:'B'},{x:x2,y:y2,l:'C'}],{segs:[[x1,y1,x2,y1,'#ffd400'],[x2,y1,x2,y2,'#ffd400']]})});
+    const ans=kind==='per'?2*(w+h):w*h;
+    return Q('coord',`מה ${kind==='per'?'ההיקף':'השטח'} של המלבן ${L('ABCD')}?`,numOpts(ans,kind==='per'?[w*h,w+h,2*w+h]:[2*(w+h),w+h,w*h+w],null,true),`אורך ${L('AB')} = ${L(x2+' − '+x1+' = '+w)}, ורוחב ${L('BC')} = ${L(y2+' − '+y1+' = '+h)}. ${kind==='per'?`היקף = סכום כל הצלעות: ${L(w+' + '+h+' + '+w+' + '+h+' = '+ans)}.`:`שטח = אורך × רוחב: ${L(w+' × '+h+' = '+ans)}.`}`,{svg:gridQ(poly.map((p,i)=>({x:p[0],y:p[1],l:nm[i]})),{poly}),ctx:`מלבן ${w}×${h}`})}
+  // parallel
+  const c=pick([['שני ישרים שאינם נחתכים אף פעם נקראים:',['ישרים מקבילים','ישרים מאונכים','ישרים נחתכים','קרניים'],'ישרים מקבילים לא נחתכים לעולם, גם אם נמשיך אותם לשני הכיוונים. מסמנים אותם כך: '+L('a ∥ b')+'.'],
+    ['איך מסמנים ש־a ו־b ישרים מקבילים?',[L('a ∥ b'),L('a ⊥ b'),L('a = b'),L('a + b')],'הסימן '+L('∥')+' (שני קווים מקבילים) אומר "מקביל ל־".'],
+    [`קטע מקביל לציר ה־${L('x')}. מה נכון לגבי כל הנקודות שעליו?`,[`יש להן אותו שיעור ${L('y')}`,`יש להן אותו שיעור ${L('x')}`,`שיעור ה־${L('y')} שלהן הוא 0`,`שיעור ה־${L('x')} שווה לשיעור ה־${L('y')}`],`קטע אופקי (מקביל לציר ה־${L('x')}) נמצא כולו באותו "גובה" – לכל הנקודות עליו אותו שיעור ${L('y')}.`],
+    [`איזה מהקטעים הבאים מקביל לציר ה־${L('y')}?`,[L('A(3, 1)  B(3, 6)'),L('A(1, 3)  B(6, 3)'),L('A(1, 1)  B(6, 6)'),L('A(0, 2)  B(2, 0)')],`קטע מקביל לציר ה־${L('y')} (אנכי) – לשתי הנקודות אותו שיעור ${L('x')}. כאן: ${L('x = 3')} בשתיהן.`]]);
+  return Q('coord',c[0],c[1],c[2]);
 };
+function abLine(pts){const x0=40,x1=520,Rg=10,u=(x1-x0)/(2*Rg),y=96;let s=`<line x1="${x0-14}" y1="${y}" x2="${x1+14}" y2="${y}" stroke="#fff" stroke-width="2.5"/><path d="M${x1+20} ${y} l-9 -5 v10z M${x0-20} ${y} l9 -5 v10z" fill="#fff"/>`;
+  for(let i=-Rg;i<=Rg;i++){const x=x0+(i+Rg)*u;s+=`<line x1="${x}" y1="${y-5}" x2="${x}" y2="${y+5}" stroke="#fff" stroke-width="${i===0?3:1.2}"/>`}
+  s+=txt(x0+Rg*u,y+22,'0',15);pts.forEach(p=>{const x=x0+(p.v+Rg)*u;s+=`<circle cx="${x}" cy="${y}" r="6" fill="#ff3b3b"/>`+txt(x,y-24,p.l,19,'#ff0')});return wrapSvg(s)}
 G.signed=()=>{
+  if(Math.random()<0.35){const t=pick(['life','life','natural','whole','zero','half']);
+    if(t==='life'){const c=pick([
+      ()=>{const v=R(2,15);return[`הטמפרטורה בבוקר הייתה ${v} מעלות מתחת לאפס. איך מסמנים אותה?`,-v,`מתחת לאפס ← מספר שלילי: ${L(sn(-v)+'°C')}.`,x=>L(sn(x)+'°C')]},
+      ()=>{const v=R(2,9)*10;return[`צוללת נמצאת ${v} מטרים מתחת לפני הים. מה הגובה שלה ביחס לפני הים?`,-v,`פני הים הם ה־0. מתחת לפני הים ← שלילי: ${L(sn(-v))} מטרים.`]},
+      ()=>{const v=R(1,4);return[`בבניין, קומת הכניסה היא קומה 0. חניון נמצא ${v} קומות מתחת לקומת הכניסה. מה מספר הקומה שלו?`,-v,`מתחת לקומת הכניסה (0) ← שלילי: קומה ${L(sn(-v))}.`]},
+      ()=>{const v=R(2,9)*100;return[`בחשבון הבנק היו 0 ש״ח, והוצאתם ${v} ש״ח. מה מצב החשבון?`,-v,`הוצאה מעבר למה שיש ← יתרה שלילית ("מינוס"): ${L(sn(-v))} ש״ח.`]},
+      ()=>{const v=R(100,900);return[`אירוע היסטורי קרה בשנת ${v} לפני הספירה. איך מסמנים את השנה על ציר המספרים של השנים?`,-v,`שנים לפני הספירה מסומנות במספרים שליליים: ${L(sn(-v))}. (שנים אחרי הספירה – חיוביים, למשל ${L('+1948')}.)`]}])();
+      return Q('signed',c[0],numOpts(c[1],[-c[1],0,c[1]+1],c[3]),c[2])}
+    if(t==='natural'){const k=R(1,40);return Q('signed','איזה מהמספרים הבאים הוא מספר טבעי?',[L(String(k)),L('0'),L(sn(-R(1,20))),L(R(1,9)+'.5')],`המספרים הטבעיים הם המספרים השלמים החל מ־1: ${L('1, 2, 3, ...')}. ${L('0')}, מספרים שליליים ושברים אינם טבעיים.`)}
+    if(t==='whole'){const neg=-R(1,30);return Q('signed','איזה מהמספרים הבאים הוא שלם, אבל לא טבעי?',[L(sn(neg)),L(String(R(1,30))),L(R(1,9)+'.5'),L(sn(-R(1,9))+'.5')],`המספרים השלמים הם הטבעיים, האפס והנגדיים שלהם. ${L(sn(neg))} שלם (בלי שבר), אבל הוא שלילי – ולכן לא טבעי.`)}
+    if(t==='zero')return Q('signed','המספר 0 הוא:',['לא חיובי ולא שלילי','חיובי','שלילי','גם חיובי וגם שלילי'],'0 הוא נקודת הראשית בציר המספרים: מימינו החיוביים, משמאלו השליליים – והוא עצמו לא זה ולא זה.');
+    const k=R(-7,6),v=k+0.5;return Q('signed','איזה מספר מסומן על ציר המספרים?',numOpts(v,[-v,v+1,k]),`הנקודה באמצע בין ${L(sn(k))} ל־${L(sn(k+1))}, כלומר ${L(sn(v))}.`,{svg:lineFig(v),ctx:`נקודה ב־${sn(v)}`})}
   const t=pick(['opp','abs','abs2','cmp','cmp','order','count','line','line','oppopp']);
   if(t==='opp'){const x=R(1,25)*pick([1,-1]);return Q('signed',`מהו המספר הנגדי ל־${L(sn(x))}?`,numOpts(-x,[x,0,1]),`מספר נגדי נמצא באותו מרחק מאפס, אבל בצד השני של ציר המספרים. הנגדי של ${L(sn(x))} הוא ${L(sn(-x))}.`,{ctx:sn(x)})}
   if(t==='abs'){const x=pick([R(-25,-1),R(-25,-1),R(1,25),0]);const a=Math.abs(x);return Q('signed',`כמה זה ${L('|'+sn(x)+'|')}?`,numOpts(a,[-a,a*2,a+1]),`ערך מוחלט הוא המרחק של המספר מאפס – ולכן הוא אף פעם לא שלילי: ${L('|'+sn(x)+'| = '+a)}.`)}
@@ -535,6 +566,14 @@ function addRule(a,b){const s=a+b,A=Math.abs(a),B=Math.abs(b);
   if(A===B)return `אלה מספרים נגדיים – הסכום שלהם 0.`;
   const big=A>B?a:b;return `סימנים שונים ← מחסרים ${L(Math.max(A,B)+' − '+Math.min(A,B)+' = '+Math.abs(s))}, ולוקחים את הסימן של ${L(sn(big))} (הערך המוחלט שלו גדול יותר): ${L(sn(s))}.`}
 G.addsub=()=>{
+  if(Math.random()<0.35){const t=pick(['multi','multi','sign','comm','height']);const nz=()=>R(1,12)*pick([1,-1]);
+    if(t==='multi'){let ns;do{ns=[nz(),nz(),nz(),nz()]}while(ns.every(n=>n>0)||ns.every(n=>n<0));const ans=ns.reduce((a,b)=>a+b,0);const P=ns.filter(n=>n>0).reduce((a,b)=>a+b,0),N=ns.filter(n=>n<0).reduce((a,b)=>a+b,0);
+      const expr=ns.map(sp).join(' + ');return Q('addsub',`כמה זה ${L(expr)}?`,numOpts(ans,[-ans,P-N,ans+2]),`לפי חוק החילוף והקיבוץ, מחברים קודם את החיוביים: ${L(sn(P))}, ואחר כך את השליליים: ${L(sn(N))}. בסוף: ${L(sp(P)+' + '+sp(N)+' = '+sn(ans))}.`,{ctx:expr})}
+    if(t==='sign'){let x,y;do{x=R(-9,9);y=R(-9,9)}while(!x||!y||Math.abs(x)===Math.abs(y)||Math.sign(x)===Math.sign(y)&&Math.random()<.6);const s=x+y;const ci=s>0?0:1;
+      return Q('addsub',`המספרים ${L('x')} ו־${L('y')} מסומנים על ציר המספרים. מה הסימן של ${L('x + y')}?`,['חיובי','שלילי','אפס','אי אפשר לדעת'],Math.sign(x)===Math.sign(y)?`שני המספרים ${x>0?'חיוביים':'שליליים'}, ולכן גם הסכום ${s>0?'חיובי':'שלילי'}.`:`סימנים שונים ← הסימן של הסכום הוא של המספר הרחוק יותר מ־0. ${L(s>0?(x>0?'x':'y'):(x<0?'x':'y'))} רחוק יותר, והוא ${s>0?'חיובי':'שלילי'} – לכן הסכום ${s>0?'חיובי':'שלילי'}.`,{ci,svg:abLine([{v:x,l:'x'},{v:y,l:'y'}]),ctx:`x=${x}, y=${y}`})}
+    if(t==='comm'){const a=nz(),b=nz();return Q('addsub',`איזה תרגיל שווה בדיוק לתרגיל ${L(sp(a)+' + '+sp(b))}?`,uniq(L(sp(b)+' + '+sp(a)),[L(sp(-a)+' + '+sp(-b)),L(sp(a)+' − '+sp(b)),L(sp(-b)+' + '+sp(a))]),`חוק החילוף: אפשר להחליף את סדר המחוברים, והתוצאה לא משתנה: ${L(sp(a)+' + '+sp(b)+' = '+sp(b)+' + '+sp(a))}.`)}
+    const hi=pick([['פסגת החרמון',2814],['פסגת האוורסט',8848],['הר מירון',1204],['הר תבור',588]]),lo=-430;const d=hi[1]-lo;
+    return Q('addsub',`${hi[0]} נמצאת בגובה ${L('+'+hi[1])} מטרים, וחוף ים המלח בגובה ${L('(−430)')} מטרים. מה ההפרש בגובה ביניהם?`,numOpts(d,[hi[1]+lo,hi[1],d+100],x=>L(x+' מ׳'),true),`ההפרש = הגבוה פחות הנמוך: ${L(hi[1]+' − (−430) = '+hi[1]+' + 430 = '+d)} מטרים.`)}
   const t=pick(['add','add','sub','sub','sub','three','missing','word']);const nz=()=>R(1,15)*pick([1,-1]);
   if(t==='add'||t==='sub'){const a=nz(),b=nz(),st=Math.random()<.6;const fa=st?sp(a):sn(a),fb=st?sp(b):par(b);const op=t==='add'?'+':MN;const ans=t==='add'?a+b:a-b;const expr=`${fa} ${op} ${fb}`;
     const ex=t==='sub'?`חיסור = חיבור הנגדי! ${L(expr+' = '+fa+' + '+sp(-b))}. ${addRule(a,-b)}`:addRule(a,b);
@@ -551,7 +590,18 @@ G.addsub=()=>{
   const hot=R(2,30),cold=R(-15,-1),c1=pick(['בתל אביב','באילת','בירושלים']),c2=pick(['במוסקבה','בהלסינקי','בטורונטו','באוסלו']);
   return Q('addsub',`${c1} ${dg(hot)}, ו${c2} ${dg(cold)}. בכמה מעלות חם יותר ${c1}?`,numOpts(hot-cold,[hot+cold,cold-hot,-(hot+cold)],x=>L(sn(x)+'°')),`ההפרש = החם פחות הקר: ${L(hot+' − '+sp(cold)+' = '+hot+' + '+(-cold)+' = '+(hot-cold))}.`);
 };
+function quadFig(lab){const P=[[150,40],[380,22],[430,150],[190,155]];let g=`<polygon points="${P.map(p=>p.join(',')).join(' ')}" fill="rgba(92,204,255,.08)" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>`;
+  const c=[287,92];P.forEach((p,i)=>{const dx=p[0]-c[0],dy=p[1]-c[1],d=Math.hypot(dx,dy);g+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.2" fill="#fff"/>`+txt(p[0]+dx/d*18,p[1]+dy/d*16,lab[i],17)});return wrapSvg(g)}
 G.anglename=()=>{
+  if(Math.random()<0.4){const t=pick(['quad','quad','tri','single','type','type']);
+    if(t==='quad'){const lab=shuffle(['A','B','C','D']);const st=R(0,3),dir=pick([1,-1]);const corr=[0,1,2,3].map(i=>lab[((st+dir*i)%4+4)%4]).join('');
+      const valid=new Set();for(let s0=0;s0<4;s0++)for(const d of[1,-1])valid.add([0,1,2,3].map(i=>lab[((s0+d*i)%4+4)%4]).join(''));
+      const wrong=[];let g=0;while(wrong.length<3&&g++<200){const w=shuffle(lab).join('');if(!valid.has(w)&&!wrong.includes(w))wrong.push(w)}
+      return Q('anglename','איזה סימון מתאים למרובע שבשרטוט?',[L(corr),...wrong.map(L)],`במרובע כותבים את הקודקודים לפי הסדר שלהם מסביב לצורה (עם כיוון השעון או נגדו), כך שכל שתי אותיות סמוכות הן קודקודים סמוכים. למשל: ${L(corr)}.`,{svg:quadFig(lab),ctx:`מרובע ${lab.join('')}`})}
+    if(t==='tri')return Q('anglename','בכמה דרכים שונות אפשר לסמן את המשולש ABC (למשל ΔABC, ΔBCA)?',['6','3','1','4'],`בסימון משולש סדר האותיות לא משנה – כל סידור מתאר אותו משולש: ${L('ΔABC, ΔACB, ΔBAC, ΔBCA, ΔCAB, ΔCBA')} – 6 דרכים.`);
+    if(t==='single')return Q('anglename',`מתי מותר לסמן זווית באות אחת בלבד, למשל ${AN('A')}?`,['כשמהקודקוד יוצאת רק זווית אחת בשרטוט','תמיד','אף פעם','רק כשהזווית ישרה'],`אם מהקודקוד A יוצאות כמה זוויות, ${AN('A')} לא ברור – לאיזו מהן הכוונה? אז חייבים שלוש אותיות.`);
+    const v=pick([R(10,85),R(95,175),90,90,180]);const names=['חדה','ישרה','קהה','שטוחה'];const ci=v<90?0:v===90?1:v<180?2:3;
+    return Q('anglename',`זווית בגודל ${dg(v)} היא זווית:`,names,`חדה – פחות מ־90°. ישרה – בדיוק 90°. קהה – בין 90° ל־180°. שטוחה – בדיוק 180°. לכן ${dg(v)} היא זווית ${names[ci]}.`,{ci})}
   const t=pick(['simple','simple','tri','vertex','rays','arms']);
   const [p1,v,p2]=shuffle(LET).slice(0,3);
   if(t==='simple'){const a1=R(-5,30),op=R(40,120);const corr=Math.random()<.5?p1+v+p2:p2+v+p1;
@@ -574,6 +624,9 @@ function bisFig(total,vals,extraE){
   return angleFig({cx,cy,rays,arcs,vl:'B',vla:a0+total/2+180});
 }
 G.bisector=()=>{
+  if(Math.random()<0.2){const half=Math.random()<.5;
+    if(half)return Q('bisector',`${L('AB ⊥ BC')} (מאונכים), ו־${L('BD')} חוצה את ${AN('ABC')}. מה גודל ${AN('ABD')}?`,numOpts(45,[90,30,60],dg,true),`${L('AB ⊥ BC')} פירושו ש־${AN('ABC')} היא זווית ישרה: ${L('90°')}. החוצה מחלק אותה לשניים: ${L('90° : 2 = 45°')}.`,{svg:bisFig(90,['','?'])});
+    const k=R(10,40);return Q('bisector',`${L('BD')} חוצה את ${AN('ABC')}, ו־${L('BE')} חוצה את ${AN('ABD')}. ${AN('ABE')} = ${dg(k)}. מה גודל ${AN('ABC')}?`,numOpts(4*k,[2*k,3*k,8*k],dg,true),`${AN('ABD')} = ${L('2 · '+k+' = '+2*k+'°')}, ו־${AN('ABC')} = ${L('2 · '+2*k+' = '+4*k+'°')}.`)}
   const t=pick(['half','half','double','double','quarter','concept','statement','adjb']);
   if(t==='half'){const tot=2*R(20,78);return Q('bisector',`${L('BD')} חוצה את ${AN('ABC')}, ו־${AN('ABC')} = ${dg(tot)}. מה גודל ${AN('ABD')}?`,numOpts(tot/2,[tot,180-tot,tot/2+10],dg,true),`חוצה זווית מחלק אותה לשתי זוויות שוות: ${L(tot+'° : 2 = '+tot/2+'°')}.`,{svg:bisFig(tot,['','?']),ctx:`ABC=${tot}`})}
   if(t==='double'){const h=R(20,85);return Q('bisector',`${L('BD')} חוצה את ${AN('ABC')}, ו־${AN('DBC')} = ${dg(h)}. מה גודל ${AN('ABC')}?`,numOpts(2*h,[h,180-h,h+10],dg,true),`${AN('ABD')} שווה ל־${AN('DBC')}, כלומר גם ${L(h+'°')}. ביחד: ${L(h+'° + '+h+'° = '+2*h+'°')}.`,{svg:bisFig(2*h,[h+'°','']),ctx:`DBC=${h}`})}
@@ -589,7 +642,14 @@ function sumFig(parts,labels,showArcs){
   showArcs.forEach(s=>{arcs.push({a1:angs[s.i],a2:angs[s.j],r:s.r,label:s.label,col:s.col})});
   return angleFig({cx,cy,rays,arcs,vl:'O',vla:(angs[0]+angs[angs.length-1])/2+180});
 }
+function aroundFig(a,b,c,lab){const cx=280,cy=86;const angs=[R(0,40)];angs.push(angs[0]+a,angs[0]+a+b);const rays=angs.map(x=>({a:x,len:78}));
+  const arcs=[{a1:angs[0],a2:angs[1],r:30,label:lab[0],col:'#ffd400',lr:26},{a1:angs[1],a2:angs[2],r:36,label:lab[1],col:'#ff9f40',lr:26},{a1:angs[2],a2:angs[0]+360,r:24,label:lab[2],col:'#5cf',lr:26}];return angleFig({cx,cy,rays,arcs})}
 G.anglesum=()=>{
+  if(Math.random()<0.3){const t=pick(['around','around','concept']);
+    if(t==='around'){let a,b,c;do{a=R(6,16)*10;b=R(6,16)*10;c=360-a-b}while(c<40||c>200);
+      return Q('anglesum',`שלוש זוויות סביב נקודה אחת: ${dg(a)}, ${dg(b)} ועוד זווית אחת. מה גודל הזווית השלישית?`,numOpts(c,[180-a-b>0?180-a-b:c+20,a+b,c-10],dg,true),`כל הזוויות סביב נקודה ביחד הן זווית שלמה: ${L('360°')}. לכן ${L('360 − '+a+' − '+b+' = '+c+'°')}.`,{svg:aroundFig(a,b,c,[a+'°',b+'°','?'])})}
+    const q=pick([['כמה זוויות ישרות יוצרות יחד זווית שטוחה (180°)?',['2','3','4','1'],'זווית ישרה היא 90°, ו־90° + 90° = 180°.'],['מה סכום כל הזוויות סביב נקודה (זווית שלמה)?',[dg(360),dg(180),dg(90),dg(270)],'ארבע זוויות ישרות סביב נקודה: 4 · 90° = 360° – זווית שלמה.']]);
+    return Q('anglesum',q[0],q[1],q[2])}
   const t=pick(['sum','sum','diff','diff','three','word']);
   if(t==='sum'){const p=R(20,80),q=R(20,80);return Q('anglesum',`${AN('AOB')} = ${dg(p)}, ${AN('BOC')} = ${dg(q)}. מה גודל ${AN('AOC')}?`,numOpts(p+q,[Math.abs(p-q),180-p-q,p+q+10],dg,true),`${L('OB')} נמצאת בתוך ${AN('AOC')}, ולכן מחברים: ${L(p+'° + '+q+'° = '+(p+q)+'°')}.`,{svg:sumFig([p,q],0,[{i:0,j:1,r:42,label:p+'°'},{i:1,j:2,r:58,label:q+'°',col:'#ff9f40'},{i:0,j:2,r:84,label:'?',col:'#5cf'}])})}
   if(t==='diff'){const p=R(20,80),q=R(20,80);return Q('anglesum',`${AN('AOC')} = ${dg(p+q)}, ${AN('AOB')} = ${dg(p)}. מה גודל ${AN('BOC')}?`,numOpts(q,[p,2*p+q,180-q],dg,true),`${AN('BOC')} = ${AN('AOC')} − ${AN('AOB')} = ${L((p+q)+'° − '+p+'° = '+q+'°')}.`,{svg:sumFig([p,q],0,[{i:0,j:1,r:42,label:p+'°'},{i:1,j:2,r:58,label:'?',col:'#5cf'},{i:0,j:2,r:84,label:(p+q)+'°',col:'#ff9f40'}])})}
