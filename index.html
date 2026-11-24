@@ -716,7 +716,49 @@ G.anglesum=()=>{
   return Q('anglesum',`${AN('AOC')} = ${dg(T)}, והקרן ${L('OB')} בתוכה. ${AN('AOB')} גדולה ב־${dg(d)} מ־${AN('BOC')}. מה גודל ${askBig?AN('AOB'):AN('BOC')}?`,numOpts(askBig?big:small,[askBig?small:big,T-d,T/2],dg,true),`מורידים את ההפרש: ${L(T+' − '+d+' = '+(T-d))}, ומחלקים ל־2: ${AN('BOC')} = ${L(small+'°')}. ${AN('AOB')} = ${L(small+' + '+d+' = '+big+'°')}.`);
 };
 function adjFig(al,lb,la){return angleFig({cx:280,cy:142,rays:[{a:0,len:220,label:'C'},{a:180,len:220,label:'A'},{a:al,len:104,label:'B'}],arcs:[{a1:0,a2:al,r:34,label:lb,col:'#ffd400'},{a1:al,a2:180,r:48,label:la,col:'#5cf'}],vl:'O',vla:270})}
+function lineRaysFig(a1,a2,labs){/* straight line A–O–D with rays OB (a1) and OC (a2); labs for 3 angles */
+  return angleFig({cx:280,cy:142,rays:[{a:0,len:220,label:'D'},{a:180,len:220,label:'A'},{a:a2,len:104,label:'B'},{a:a1,len:104,label:'C'}],
+    arcs:[{a1:0,a2:a1,r:30,label:labs[0],col:'#ffd400'},{a1:a1,a2:a2,r:44,label:labs[1],col:'#ff9f40'},{a1:a2,a2:180,r:30,label:labs[2],col:'#5cf'}],vl:'O',vla:270})}
+function crossLetters(alpha,rot,known,ask){/* lines AB and CD cross at O */
+  const cx=280,cy=86,len=64;const P={A:rot,C:rot+alpha,B:rot+180,D:rot+180+alpha};
+  const rays=Object.entries(P).map(([l,a])=>({a,len,label:l}));
+  const span={AOC:[P.A,P.C],COB:[P.C,P.B],BOD:[P.B,P.D],DOA:[P.D,P.A+360]};
+  const arcs=Object.entries(span).filter(([n])=>n===known||n===ask).map(([n,sg])=>({a1:sg[0]+3,a2:sg[1]-3,r:n===known?24:30,label:n===known?KV+'°':'?',col:n===known?'#ffd400':'#5cf',lr:16,fs:14}));
+  return angleFig({cx,cy,rays,arcs});
+}
+let KV=0;
+const ANAME={AOC:'AOC',COB:'COB',BOD:'BOD',DOA:'AOD'};
+function adjExtra(){
+  const t=pick(['line3','line3','pairfig','ninety','truefalse','obtuse','relation']);
+  if(t==='line3'){let a,b;do{a=R(3,10)*10;b=R(3,10)*10}while(a+b>150);const c=180-a-b;const ask=R(0,2);const vals=[a,b,c];const labs=vals.map((v,i)=>i===ask?'?':v+'°');const kn=vals.filter((v,i)=>i!==ask);
+    return Q('adjacent',`${L('AOD')} הוא ישר, ושתי קרניים יוצאות מ־O. מה גודל הזווית המסומנת ב־?`,numOpts(vals[ask],[180-kn[0],kn[0]+kn[1],360-kn[0]-kn[1]].filter(v=>v>0&&v<180),dg,true),`כל הזוויות על קו ישר ביחד הן ${L('180°')} (זווית שטוחה). לכן ${L('180 − '+kn[0]+' − '+kn[1]+' = '+vals[ask]+'°')}.`,{svg:lineRaysFig(a,a+b,labs)})}
+  if(t==='pairfig'){const a1=R(30,70),a2=a1+R(40,80);
+    return Q('adjacent','בשרטוט, A־O־D הוא ישר. איזה זוג הוא זוג של זוויות צמודות?',uniq(`${AN('AOB')} ו־${AN('BOD')}`,[`${AN('AOB')} ו־${AN('COD')}`,`${AN('AOC')} ו־${AN('BOD')}`,`${AN('BOC')} ו־${AN('COD')}`]),`זוויות צמודות: יש להן שוק משותפת (${L('OB')}), והשוקיים האחרות (${L('OA')} ו־${L('OD')}) יוצרות יחד קו ישר. לכן ${AN('AOB')} ו־${AN('BOD')} צמודות – ביחד ${L('180°')}.`,{svg:lineRaysFig(a1,a2,['','',''])})}
+  if(t==='ninety')return Q('adjacent',`זווית בגודל ${dg(90)} – מה גודל הזווית הצמודה לה?`,[dg(90),dg(180),dg(45),dg(0)],`${L('180° − 90° = 90°')}. הצמודה לזווית ישרה היא גם זווית ישרה.`);
+  if(t==='obtuse'){const v=R(100,170);return Q('adjacent',`זווית קהה בגודל ${dg(v)}. מה גודל הזווית הצמודה לה, ואיזו זווית היא?`,uniq(`${dg(180-v)} – חדה`,[`${dg(180-v)} – קהה`,`${dg(v)} – קהה`,`${dg(360-v)} – קהה`]),`${L('180 − '+v+' = '+(180-v)+'°')} – פחות מ־90°, ולכן חדה. (זווית קהה תמיד צמודה לזווית חדה.)`)}
+  if(t==='relation'){const d=2*R(5,40);const s=(180-d)/2,b=s+d;
+    return Q('adjacent',`${AN('AOB')} ו־${AN('BOC')} צמודות. ${AN('AOB')} גדולה ב־${dg(d)} מ־${AN('BOC')}. מה גודל ${AN('AOB')}?`,numOpts(b,[s,180-d,b+d],dg,true),`ביחד: 180°. מורידים את ההפרש: ${L('180 − '+d+' = '+(180-d))}, וחוצים: ${AN('BOC')} = ${L(s+'°')}. ${AN('AOB')} = ${L(s+' + '+d+' = '+b+'°')}. בדיקה: ${L(s+' + '+b+' = 180')} ✓`,{svg:adjFig(s,'?','?')})}
+  const st=pick([['זוויות צמודות הן תמיד שוות.','לא נכון',' – הן שוות רק כשכל אחת 90°. בדרך כלל אחת חדה והשנייה קהה.'],['סכום זוויות צמודות הוא תמיד 180°.','נכון',' – הן יוצרות יחד קו ישר.'],['שתי זוויות חדות יכולות להיות צמודות.','לא נכון',' – שתי זוויות חדות ביחד פחות מ־180°.'],['אם זווית אחת היא 60°, הצמודה לה היא 120°.','נכון',' – ‎180 − 60 = 120.']]);
+  return Q('adjacent',`נכון או לא נכון? ${st[0]}`,['נכון','לא נכון'],st[1]+st[2],{ci:st[1]==='נכון'?0:1});
+}
+function vertExtra(){
+  const t=pick(['letters','letters','letters','adjpair','sum24','diff','truefalse','all4']);
+  if(t==='letters'){let al;do{al=R(25,155)}while(al===90);const rot=R(-15,15);const names=['AOC','COB','BOD','DOA'];const val={AOC:al,COB:180-al,BOD:al,DOA:180-al};
+    const kn=pick(names);let ask;do{ask=pick(names)}while(ask===kn);KV=val[kn];const opp={AOC:'BOD',BOD:'AOC',COB:'DOA',DOA:'COB'}[kn]===ask;
+    return Q('vertical',`הישרים ${L('AB')} ו־${L('CD')} נחתכים בנקודה O. ${AN(ANAME[kn])} = ${dg(val[kn])}. מה גודל ${AN(ANAME[ask])}?`,numOpts(val[ask],[opp?180-val[kn]:val[kn],90,val[ask]+10],dg,true),opp?`${AN(ANAME[ask])} נמצאת מול ${AN(ANAME[kn])} – הן קודקודיות, ולכן שוות: ${L(val[ask]+'°')}.`:`${AN(ANAME[ask])} ו־${AN(ANAME[kn])} שכנות עם שוק משותפת, והשוקיים האחרות יוצרות ישר – הן צמודות: ${L('180 − '+val[kn]+' = '+val[ask]+'°')}.`,{svg:crossLetters(al,rot,kn,ask)})}
+  if(t==='adjpair'){const al=R(35,145),rot=R(-12,12);const c=pick([[1,2],[2,3],[3,4],[1,4]]);
+    return Q('vertical','איזה זוג הוא זוג של זוויות צמודות?',uniq(`${AN(c[0])} ו־${AN(c[1])}`,[`${AN(1)} ו־${AN(3)}`,`${AN(2)} ו־${AN(4)}`]).concat([`אין זוויות צמודות בשרטוט`]).slice(0,4),`צמודות = שכנות: שוק משותפת, וביחד קו ישר (${L('180°')}). ${AN(c[0])} ו־${AN(c[1])} שכנות. (${AN(1)} ו־${AN(3)} – מול זו – הן קודקודיות.)`,{svg:crossFig(al,rot,null,null)})}
+  if(t==='sum24'){let a;do{a=R(25,155)}while(a===90);const ans=2*(180-a);
+    return Q('vertical',`שני ישרים נחתכים. ${AN(1)} = ${dg(a)}. מה סכום ${L('∢2 + ∢4')}?`,numOpts(ans,[2*a,180-a,360-a],dg,true),`${AN(2)} צמודה ל־${AN(1)}: ${L('180 − '+a+' = '+(180-a)+'°')}. ${AN(4)} קודקודית ל־${AN(2)} – גם ${L((180-a)+'°')}. ביחד: ${L((180-a)+' + '+(180-a)+' = '+ans+'°')}.`,{svg:crossFig(a,R(-10,10),{1:a},null)})}
+  if(t==='diff'){const d=2*R(5,50);const big=(180+d)/2,small=(180-d)/2;const askOpp=Math.random()<.5;
+    return Q('vertical',`שני ישרים נחתכים. ${AN(1)} גדולה ב־${dg(d)} מ־${AN(2)}. מה גודל ${askOpp?AN(3):AN(4)}?`,numOpts(askOpp?big:small,[askOpp?small:big,180-d,d],dg,true),`${AN(1)} ו־${AN(2)} צמודות (ביחד 180°): ${AN(2)} = ${L('(180 − '+d+') : 2 = '+small+'°')}, ${AN(1)} = ${L(small+' + '+d+' = '+big+'°')}. ${askOpp?`${AN(3)} קודקודית ל־${AN(1)} ← ${L(big+'°')}`:`${AN(4)} קודקודית ל־${AN(2)} ← ${L(small+'°')}`}.`)}
+  if(t==='all4'){let a;do{a=R(25,155)}while(a===90);const b=180-a;
+    return Q('vertical',`שני ישרים נחתכים, ו־${AN(1)} = ${dg(a)}. מה הגדלים של ${L('∢2, ∢3, ∢4')} (לפי הסדר)?`,uniq(L(`${b}°, ${a}°, ${b}°`),[L(`${a}°, ${b}°, ${a}°`),L(`${b}°, ${b}°, ${a}°`),L(`${a}°, ${a}°, ${a}°`)]),`${AN(3)} מול ${AN(1)} ← קודקודיות ← ${L(a+'°')}. ${AN(2)} ו־${AN(4)} צמודות ל־${AN(1)} ← ${L('180 − '+a+' = '+b+'°')}.`,{svg:crossFig(a,R(-10,10),{1:a},null)})}
+  const st=pick([['זוויות קודקודיות הן תמיד שוות.','נכון',' – כל זווית שווה לזווית שמולה.'],['זוויות קודקודיות משלימות ל־180°.','לא נכון',' – אלה זוויות צמודות. קודקודיות הן שוות.'],['כששני ישרים נחתכים, סכום ארבע הזוויות הוא 360°.','נכון',' – זו זווית שלמה סביב נקודה.'],['זווית וזו שלצידה (כששני ישרים נחתכים) הן קודקודיות.','לא נכון',' – זוויות שלצד זו הן צמודות. קודקודיות – אחת מול השנייה.']]);
+  return Q('vertical',`נכון או לא נכון? ${st[0]}`,['נכון','לא נכון'],st[1]+st[2],{ci:st[1]==='נכון'?0:1});
+}
 G.adjacent=()=>{
+  if(Math.random()<0.55)return adjExtra();
   const t=pick(['find','find','find','ratio','diff','concept','check']);
   if(t==='find'){let al;do{al=R(15,165)}while(al===90);const flip=Math.random()<.5;
     const given=flip?180-al:al,ans=180-given;
@@ -726,7 +768,7 @@ G.adjacent=()=>{
   if(t==='diff'){const d=2*R(5,60);const s=(180-d)/2,b=(180+d)/2;const askS=Math.random()<.5;
     return Q('adjacent',`ההפרש בין שתי זוויות צמודות הוא ${dg(d)}. מה גודל הזווית ${askS?'הקטנה':'הגדולה'}?`,numOpts(askS?s:b,[askS?b:s,180-d,d],dg,true),`מורידים את ההפרש: ${L('180 − '+d+' = '+(180-d))}, ומחלקים ל־2: הקטנה ${L(s+'°')}. הגדולה: ${L(s+' + '+d+' = '+b+'°')}.`)}
   if(t==='check'){const a=R(20,160);const good=Math.random()<.5;const b=good?180-a:clamp(180-a+pick([-1,1])*R(5,25),5,175);
-    return Q('adjacent',`האם זוויות בגודל ${dg(a)} ו־${dg(b)} יכולות להיות צמודות?`,[good?'כן, כי סכומן 180°':`לא, כי סכומן ${a+b}° ולא 180°`,good?`לא, כי סכומן ${a+b}° ולא 180°`:'כן, כי סכומן 180°','רק אם שתיהן חדות','רק אם הן שוות'],`${L(a+' + '+b+' = '+(a+b)+'°')}. זוויות צמודות חייבות להשלים ל־180° בדיוק.`)}
+    return Q('adjacent',`האם זוויות בגודל ${dg(a)} ו־${dg(b)} יכולות להיות צמודות?`,[good?'כן, כי סכומן 180°':`לא, כי סכומן ${a+b}° ולא 180°`,good?'לא, כי אחת מהן קהה':'כן, כי סכומן 180°','רק אם שתיהן חדות','רק אם הן שוות'],`${L(a+' + '+b+' = '+(a+b)+'°')}. זוויות צמודות חייבות להשלים ל־180° בדיוק.`)}
   const c=pick([
     ['סכום שתי זוויות צמודות הוא:',[dg(180),dg(90),dg(360),'תלוי בזוויות'],'זוויות צמודות יוצרות יחד קו ישר – תמיד 180°.'],
     ['זווית חדה – הזווית הצמודה לה היא:',['קהה','חדה','ישרה','גם היא חדה, תמיד'],'אם זווית קטנה מ־90°, אז 180° פחות הזווית ייתן יותר מ־90° – זווית קהה.'],
@@ -735,6 +777,7 @@ G.adjacent=()=>{
   return Q('adjacent',c[0],c[1],c[2]);
 };
 G.vertical=()=>{
+  if(Math.random()<0.55)return vertExtra();
   const t=pick(['find','find','find','pair','sum13','three','ratio','concept']);
   const val=(al,n)=>n%2===1?al:180-al;const opp=n=>((n+1)%4)+1;
   if(t==='find'){let al;do{al=R(25,155)}while(al===90);const rot=R(-12,12);const i=R(1,4);let j;do{j=R(1,4)}while(j===i);
