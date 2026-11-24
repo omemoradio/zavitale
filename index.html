@@ -27,7 +27,7 @@ button{font-family:inherit;cursor:pointer}
 #dlg.on{display:block}
 
 /* title */
-#titleBtns{position:absolute;left:0;right:0;top:282px;display:flex;flex-direction:column;align-items:center;gap:12px}
+#titleBtns{position:absolute;left:0;right:0;top:246px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .tbtn{background:#000;color:#fff;border:3px solid #fff;font:700 21px Rubik;padding:8px 26px;min-width:260px;display:flex;align-items:center;justify-content:center;gap:10px}
 .tbtn:hover,.tbtn:focus-visible,.tbtn.sel{color:#ff0;border-color:#ff0;outline:none}
 .trow{display:flex;gap:10px}
@@ -120,6 +120,10 @@ button{font-family:inherit;cursor:pointer}
 #menu.off .mbtn{opacity:.35;pointer-events:none}
 #flee{position:absolute;left:8px;top:8px;background:#000;color:#888;border:2px solid #555;font:700 13px Rubik;padding:3px 10px;display:none;z-index:4}
 #flee.on{display:block}
+#wuHud,#wuExit{display:none}
+#scBattle.wu #menu,#scBattle.wu #hud{display:none}
+#scBattle.wu #wuHud{display:block;position:absolute;left:32px;right:32px;top:430px;text-align:center;font:700 19px Rubik;color:#ffd400}
+#scBattle.wu #wuExit{display:block;position:absolute;left:8px;top:8px;background:#000;color:#888;border:2px solid #555;font:700 13px Rubik;padding:3px 10px;z-index:4}
 
 /* game over */
 #overText{position:absolute;left:60px;right:60px;top:300px;text-align:center;font:700 22px/1.6 Rubik}
@@ -187,6 +191,7 @@ tr.psel td{background:#1d1d10}
   <div id="scTitle" class="scene">
     <div id="titleBtns">
       <button class="tbtn" id="btnStart">התחל</button>
+      <button class="tbtn" id="btnWarm">☀️ חימום בוקר – 20 שאלות</button>
       <div class="trow">
         <button class="tbtn" id="btnSound">צליל: פועל</button>
         <button class="tbtn" id="btnDodge">קרבות התחמקות: פועל</button>
@@ -227,6 +232,7 @@ tr.psel td{background:#1d1d10}
       <button class="mbtn" data-i="3"><span class="hrt"></span>רחמים<small>MERCY</small></button>
     </div>
     <button id="flee">🏃 ברח</button>
+    <div id="wuHud"></div><button id="wuExit">✕ יציאה</button>
   </div>
 
   <div id="scOver" class="scene">
@@ -912,8 +918,10 @@ function updTitleBtns(){$('#btnDodge').textContent='קרבות התחמקות: '
 $('#btnDiff').onclick=()=>{const o=['easy','medium','hard'];save.diff=o[(o.indexOf(save.diff)+1)%3];persist();SFX.move();updTitleBtns()};
 $('#btnTimer').onclick=()=>{save.timer=!save.timer;persist();SFX.move();updTitleBtns()};
 $('#btnDodge').onclick=()=>{save.dodge=!save.dodge;persist();SFX.move();$('#btnDodge').textContent='קרבות התחמקות: '+(save.dodge?'פועל':'כבוי')};
+$('#btnWarm').onclick=()=>{audioInit();SFX.ok();warmup()};
+$('#wuExit').onclick=()=>{try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}location.reload()};
 $('#btnMenu').onclick=()=>{SFX.move();goTitle()};
-$('#nameOk').onclick=async()=>{const v=$('#nameIn').value.trim();if(!v){const n=$('#nameIn');n.classList.add('err');n.placeholder='צריך לכתוב שם 🙂';n.focus();SFX.wrong();return}save.name=v;persist();$('#nameIn').blur();SFX.ok();await intro()};
+$('#nameOk').onclick=async()=>{const v=$('#nameIn').value.trim();if(!v){const n=$('#nameIn');n.classList.add('err');n.placeholder='צריך לכתוב שם 🙂';n.focus();SFX.wrong();return}save.name=v;persist();$('#nameIn').blur();SFX.ok();if(wantWarm){warmup();return}await intro()};
 
 async function intro(){
   show('intro');playSong('title');const d=$('#dlg');d.classList.add('on');introAnim=0;
@@ -1238,6 +1246,41 @@ async function openCert(){
 }
 function closeCert(){$('#cert').classList.remove('on');stopSong();goMap()}
 
+/* ================= morning warm-up (20 questions, no battles) ================= */
+let wantWarm=false;
+const WARM_PLAN=['coord','coord','signed','signed','addsub','addsub','mult','mult','brackets','brackets','shapes','anglename','bisector','anglesum','adjacent','adjacent','adjacent','vertical','vertical','vertical'];
+async function warmup(){
+  wantWarm=false;
+  if(!save.name){wantWarm=true;show('name');setTimeout(()=>$('#nameIn').focus(),50);return}
+  B={k:'warmup',mon:{name:'',pitch:520,lines:['']},hp:20,max:20,conv:0,need:99,correct:0,wrong:0,asked:new Set(),start:Date.now(),spared:false};
+  blipPitch=520;show('battle');$('#scBattle').classList.add('wu');playSong('map');monVisible=false;bullets=[];heart.show=false;setBox(FULLBOX);
+  $('#qPanel').classList.remove('on');$('#opts').classList.remove('on');$('#bubble').classList.remove('on');
+  const plan=shuffle(WARM_PLAN);const miss={};let score=0;const wh=$('#wuHud');
+  const upd=n=>{wh.innerHTML=`☀️ חימום בוקר · שאלה <b class="ltr">${n} / ${plan.length}</b> · ✓ <b class="ltr">${score}</b>`};
+  await say([`* בוקר טוב, ${save.name}! ☀️`,'* חימום קצר לפני המבחן: 20 שאלות מכל הנושאים, בלי מפלצות ובלי קרבות.','* מוכנים? מתחילים!']);
+  for(let n=0;n<plan.length;n++){
+    upd(n+1);const k=plan[n];let q,g=0;do{q=G[k]();g++}while(B.asked.has(strip(q.text)+q.ctx)&&g<12);B.asked.add(strip(q.text)+q.ctx);
+    const qp=$('#qPanel');qp.classList.add('on');qp.classList.toggle('nosvg',!q.svg);$('#qText').innerHTML=`<div class="qin">${q.text}</div>`;$('#qSvg').innerHTML=q.svg;fitQ();
+    const t0=Date.now();const i=await chooseOption(q.opts,save.timer?25:0);const ok=i===q.ans,timeout=i<0;const els=[...$('#opts').children];
+    els[q.ans].classList.add('good');if(!ok&&!timeout)els[i].classList.add('bad');
+    recAnswer({t:Date.now(),k:q.topic,wu:true,q:strip(q.text)+(q.ctx?` [${q.ctx}]`:''),a:timeout?'(נגמר הזמן)':strip(q.opts[i]),c:strip(q.opts[q.ans]),ok,ms:Date.now()-t0});
+    if(ok){score++;B.correct++;SFX.correct();upd(n+1);await sleep(750);$('#opts').classList.remove('on')}
+    else{B.wrong++;miss[k]=(miss[k]||0)+1;SFX.wrong();await sleep(800);$('#opts').classList.remove('on');
+      await say([timeout?`* ⏰ נגמר הזמן! התשובה הנכונה: ${q.opts[q.ans]}`:`* לא בדיוק... התשובה הנכונה: ${q.opts[q.ans]}`,'* '+q.explain])}
+    qp.classList.remove('on');
+  }
+  recBattle({t:Date.now(),k:'warmup',res:'done',c:score,w:plan.length-score,sec:Math.round((Date.now()-B.start)/1000)});
+  stopSong();score>=14?playSong('win'):SFX.save();
+  const weak=Object.keys(miss).map(k=>TK[k].name);
+  const msg=score>=18?'* מוכנים לגמרי! 💪':score>=14?'* מצב מצוין! עוד מבט קטן ואתם שם.':'* יופי שהתחממנו! עכשיו יודעים בדיוק על מה לחזור.';
+  const lines=[`* סיימנו! ${score} מתוך ${plan.length} תשובות נכונות.`,msg];
+  if(weak.length)lines.push(`* כדאי להציץ שוב ברמזים של: ${weak.join(', ')}.`);
+  lines.push(`* ${QUOTE} – ${QUOTE_BY}`,`* בהצלחה במבחן, ${save.name}! 🍀`);
+  wh.innerHTML=`☀️ חימום בוקר · <b class="ltr">${score} / ${plan.length}</b>`;
+  await say(lines);
+  $('#scBattle').classList.remove('wu');goTitle();
+}
+
 /* game over */
 let overAnim=null;
 async function gameOver(){
@@ -1292,7 +1335,7 @@ function drawTitle(){
   if(scene==='title'){
     ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font="40px 'Press Start 2P'";ctx.fillText('ZaviTale',320,130);
     ctx.font="700 22px Rubik";ctx.direction='rtl';ctx.fillStyle='#ffd400';ctx.fillText('מסע אל המבחן בחשבון ובגיאומטריה',320,180);ctx.direction='ltr';
-    const p=1+0.08*Math.sin(T*3);drawHeart(320,236,4*p);
+    const p=1+0.08*Math.sin(T*3);drawHeart(320,214,3.4*p);
     ctx.textAlign='start';
   }else if(scene==='intro'){
     ctx.textAlign='center';ctx.font="22px 'Press Start 2P'";ctx.fillStyle='#fff';ctx.fillText('ZaviTale',320,60);
@@ -1364,7 +1407,7 @@ function drawOver(dt){
 
 /* ================= parent dashboard ================= */
 const TOPIC_ORDER=QKEYS;
-function tname(k){return(TK[k]||{}).name||k}
+function tname(k){return k==='warmup'?'חימום בוקר':(TK[k]||{}).name||k}
 let parentData=null;
 async function openParent(){
   SFX.move();$('#parent').classList.add('on');renderParent(Object.values(log.sessions),'local');
@@ -1379,7 +1422,7 @@ async function openParent(){
   }
 }
 function closeParent(){$('#parent').classList.remove('on');if(location.hash==='#parents'){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){location.hash=''}}}
-function route(){if(location.hash==='#parents')openParent();else if($('#parent').classList.contains('on'))$('#parent').classList.remove('on')}
+function route(){if(location.hash==='#warmup'&&scene==='title'){warmup();return}if(location.hash==='#parents')openParent();else if($('#parent').classList.contains('on'))$('#parent').classList.remove('on')}
 addEventListener('hashchange',route);
 const fmtD=t=>new Date(t).toLocaleDateString('he-IL',{day:'numeric',month:'numeric'});
 const fmtDT=t=>new Date(t).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'});
