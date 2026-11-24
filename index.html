@@ -413,36 +413,48 @@ const SPR={
  anglesum:['.......#........','......###.......','.......#........','..############..','..#..........#..','..#.##....##.#..','..#.##....##.#..','..#..........#..','..#...####...#..','..############..','....########....','##.##########.##','##.###.##.###.##','...##########...','....###..###....','....###..###....'],
  adjacent:['...#####......#####...','..#######....#######..','..#.###.#....#.###.#..','..#######....#######..','..##...##....##...##..','...#####......#####...','....###........###....','.#########..#########.','#.#######.##.#######.#','..#######....#######..','..#######....#######..','...##.##......##.##...','...##.##......##.##...'],
  vertical:['##................##','####............####','######........######','.######......######.','..######....######..','...######..######...','....####.##.####....','......###..###......','......###..###......','....####.##.####....','...######..######...','..######....######..','.######......######.','######........######','####............####','##................##'],
+ mult:['....########....','..############..','.##############.','.###.#.##.#.###.','.####.####.####.','.###.#.##.#.###.','.##############.','.#####....#####.','.##############.','..############..','...##......##...','..###......###..'],
+ brackets:['..##........##..','.##..######..##.','.#..########..#.','##..#.####.#..##','#...########...#','#...##....##...#','#...########...#','##..########..##','.#...##..##...#.','.##..##..##..##.','..##........##..'],
+ shapes:['.......##.......','......####......','.....######.....','....##.##.##....','...##########...','..###......###..','.##############.','################','..##........##..','.###........###.'],
  boss:['.##################...','.#................##..','.#.######.........#.#.','.#................####','.#.###########.......#','.#...................#','.#..####.....####....#','.#..#..#.....#..#....#','.#..####.....####....#','.#...................#','.#.......#####.......#','.#......#.....#......#','.#...................#','.#.rrr..r...rrr..r...#','.#...................#','.#.###########.......#','.#...................#','.#####################']
 };
 
 /* ================= topics & monsters ================= */
 const TOPICS=[
- {k:'coord',name:'מערכת הצירים',sub:'קנה מידה, אורכי קטעים, מלבנים',icon:'xy',x:478,y:96,
+ {k:'coord',name:'מערכת הצירים',sub:'קנה מידה, אורכי קטעים, מלבנים',icon:'xy',x:497,y:88,
   mon:{name:'צירון',intro:'* צירון חוסם את הדרך! הוא מצביע לכל הכיוונים בבת אחת.',lines:['קודם x, אחר כך y!','כל משבצת – כמה יחידות?','אני מקביל לציר!','(0, 0) זה הבית שלי.'],spare:'* צירון מצא את הכיוון שלו. הוא כבר לא רוצה להילחם.',glyphs:['x','y','+'],pat:['rain','sides'],tier:1,pitch:600}},
- {k:'signed',name:'מספרים מכוונים',sub:'נגדיים וערך מוחלט',icon:'±',x:362,y:96,
+ {k:'signed',name:'מספרים מכוונים',sub:'נגדיים וערך מוחלט',icon:'±',x:400,y:88,
   mon:{name:'מינוסיק',intro:'* מינוסיק מרחף לעברך. הוא מרגיש קצת... שלילי היום.',lines:['אני תמיד מתחת לאפס...','הערך המוחלט שלי? חיובי!','מינוס מינוס... פלוס?','הנגדי שלי נמצא בצד השני.'],spare:'* מינוסיק חייך. בפעם הראשונה הוא מרגיש חיובי.',glyphs:['−','|','−5','−1'],pat:['rain','aim'],tier:1,pitch:420}},
- {k:'addsub',name:'חיבור וחיסור',sub:'מספרים מכוונים',icon:'+−',x:246,y:96,
+ {k:'addsub',name:'חיבור וחיסור',sub:'מספרים מכוונים',icon:'+−',x:302,y:88,
   mon:{name:'פלוסמינוס',intro:'* פלוסמינוס מופיע! שני ראשים, ושניהם מתווכחים על הסימן.',lines:['פלוס!','לא, מינוס!','חיסור זה חיבור הנגדי!','סימנים שונים – מחסרים!'],spare:'* שני הראשים של פלוסמינוס סוף סוף מסכימים.',glyphs:['+','−','+3','−7'],pat:['sides','rain','aim'],tier:2,pitch:500}},
- {k:'anglename',name:'סימון זוויות',sub:'סימון זוויות, משולשים ומרובעים, סוגי זוויות',icon:'∢',x:116,y:126,
+ {k:'mult',name:'כפל מספרים מכוונים',short:'כפל',sub:'חיבור, חיסור וכפל של מספרים מכוונים',icon:'×',x:205,y:88,
+  mon:{name:'כפליון',intro:'* כפליון מכפיל את עצמו! עכשיו יש... רק אחד. עדיין.',lines:['מינוס כפול מינוס – פלוס!','סימנים שונים – מינוס!','קודם כפל, אחר כך חיבור!','תספרו את המינוסים!'],spare:'* כפליון כבר לא מכפיל צרות.',glyphs:['×','−','+'],pat:['rain','aim','burst'],tier:2,pitch:560}},
+ {k:'brackets',name:'השמטת סוגריים',short:'סוגריים',sub:'תרגילים ארוכים עם סוגריים',icon:'( )',x:105,y:88,
+  mon:{name:'סוגריון',intro:'* סוגריון מסתגר בתוך עצמו. מה מסתתר בפנים?',lines:['מינוס לפני סוגריים – הופכים סימנים!','פלוס לפני סוגריים – לא משנים כלום.','תפתחו אותי בזהירות!','( ... )'],spare:'* סוגריון נפתח. בפנים היה... חיבוק.',glyphs:['(',')','−'],pat:['sides','rain'],tier:2,pitch:480}},
+ {k:'shapes',name:'צורות וישרים בצירים',short:'צורות בצירים',sub:'ישרים מקבילים לצירים, משולשים, ריבועים ומלבנים',icon:'△',x:95,y:205,
+  mon:{name:'משולשון',intro:'* משולשון מתגלגל לעברך... על הצלע.',lines:['שלוש צלעות, אפס דאגות!','בסיס כפול גובה, חלקי 2!','אני מקביל לציר!','y = 3 זה ישר, לא נקודה!'],spare:'* משולשון מתיישב בנחת על הבסיס שלו.',glyphs:['△','□','|'],pat:['rain','sides','burst'],tier:2,pitch:700}},
+ {k:'anglename',name:'סימון זוויות',sub:'סימון זוויות, משולשים ומרובעים, סוגי זוויות',icon:'∢',x:215,y:205,
   mon:{name:'זוויתן',intro:'* זוויתן מזדקר מולך. הקרניים שלו יוצרות זווית מושלמת.',lines:['הקודקוד – באמצע!','צריך לקרוא לי בשם הנכון.','∢ABC או ∢CBA – שניהם אני.','שלוש אותיות, לא פחות.'],spare:'* זוויתן שמח שקראו לו בשם הנכון.',glyphs:['∢','A','B','C'],pat:['rain','burst'],tier:1,pitch:650}},
- {k:'bisector',name:'חוצה זווית',sub:'שתי זוויות שוות',icon:'½',x:150,y:240,
+ {k:'bisector',name:'חוצה זווית',sub:'שתי זוויות שוות',icon:'½',x:335,y:205,
   mon:{name:'אביר החוצה',intro:'* אביר החוצה שולף חרב. הוא חוצה את האוויר לשני חצאים שווים בדיוק.',lines:['חצי לי, חצי לך!','שווה בשווה!','כל זווית – לשניים.','החרב שלי תמיד באמצע.'],spare:'* אביר החוצה מכניס את החרב לנדן ומשתחווה.',glyphs:['½','/','\\'],pat:['sides','aim'],tier:2,pitch:380}},
- {k:'anglesum',name:'סכום והפרש זוויות',sub:'חיבור וחיסור של זוויות',icon:'∢+',x:280,y:250,
+ {k:'anglesum',name:'סכום והפרש זוויות',sub:'חיבור וחיסור של זוויות',icon:'∢+',x:455,y:205,
   mon:{name:'חיבורובוט',intro:'* חיבורובוט מתעורר. ביפ בופ. "מחשב סכומים..."',lines:['ביפ. סכום = חלק + חלק.','בופ. הפרש = שלם − חלק.','מחשב... מחשב...','אהבתי את המעלות שלך.'],spare:'* חיבורובוט מכבה את מערכות הקרב. "ביפ. חבר."',glyphs:['+','°','−'],pat:['rain','burst','sides'],tier:2,pitch:760}},
- {k:'adjacent',name:'זוויות צמודות',sub:'ביחד 180°',icon:'180',x:410,y:240,
+ {k:'adjacent',name:'זוויות צמודות',sub:'ביחד 180°',icon:'180',x:570,y:205,
   mon:{name:'הצמודות',intro:'* הצמודות מתקרבות, יד ביד. הן אף פעם לא נפרדות.',lines:['ביחד אנחנו 180!','אני חדה – היא קהה.','יש לנו שוק משותפת.','אנחנו יוצרות קו ישר!'],spare:'* הצמודות מחבקות אותך. 180 מעלות של חום.',glyphs:['180','°','♥'],pat:['sides','rise','aim'],tier:2,pitch:700}},
- {k:'vertical',name:'זוויות קודקודיות',sub:'זוויות מול זוויות – שוות',icon:'X',x:532,y:278,
+ {k:'vertical',name:'זוויות קודקודיות',sub:'זוויות מול זוויות – שוות',icon:'X',x:470,y:315,
   mon:{name:'פרפר־X',intro:'* פרפר־X פורש כנפיים. כל כנף שווה בדיוק לכנף שמולה.',lines:['מולי – תאומתי!','ארבע כנפיים, 360 מעלות.','קודקודיות – שוות!','שכנות – צמודות.'],spare:'* פרפר־X עף משם בשמחה.',glyphs:['X','×','∢'],pat:['burst','rain','aim'],tier:3,pitch:820}},
- {k:'boss',name:'המבחן',sub:'כל הנושאים – בוס סופי!',icon:'!!',x:330,y:328,
+ {k:'boss',name:'המבחן',sub:'כל הנושאים – בוס סופי!',icon:'!!',x:300,y:315,
   mon:{name:'המבחן',intro:'* המבחן מתנשא מעליך. אווירה של יום רביעי בבוקר...',lines:['תפתחו את הדף!','יש עוד 10 דקות!','לא להעתיק!','בדקת את התשובה?'],spare:'* המבחן מקבל ציון 100. הוא כבר לא מפחיד.',glyphs:['?','!','∢','−','100'],pat:['rain','sides','aim','burst'],tier:3,pitch:300}}
 ];
 const TK={};TOPICS.forEach(t=>TK[t.k]=t);
-const SAVEPT={k:'save',name:'נקודת שמירה',sub:'',icon:'★',x:590,y:96};
+const SAVEPT={k:'save',name:'נקודת שמירה',sub:'',icon:'★',x:592,y:88};
 const MAPN=[SAVEPT,...TOPICS];
 const HINTS={
  coord:['* צירון לוחש לך סוד:','* בנקודה <span class="ltr">(x, y)</span> – קודם x (ימינה), ואחר כך y (למעלה).','* לבדוק את קנה המידה! לפעמים כל משבצת היא 2, 5 או 10 יחידות.','* אורך קטע שמקביל לציר: מחסרים את השיעורים שמשתנים – הגדול פחות הקטן.','* נקודה עם <span class="ltr">y = 0</span> נמצאת על ציר ה־x. נקודה עם <span class="ltr">x = 0</span> – על ציר ה־y.'],
  signed:['* מספרים טבעיים: <span class="ltr">1, 2, 3...</span> · שלמים: הטבעיים, האפס והנגדיים שלהם. 0 – לא חיובי ולא שלילי.','* מספר נגדי: אותו מרחק מאפס, בצד השני. הנגדי של <span class="ltr">−5</span> הוא 5.','* ערך מוחלט = המרחק מאפס. הוא אף פעם לא שלילי: <span class="ltr">|−7| = 7</span>.','* על ציר המספרים – מי שימינה, גדול יותר. לכן <span class="ltr">−2 > −9</span>.'],
+ mult:['* כפל: סימנים זהים ← תוצאה חיובית. סימנים שונים ← תוצאה שלילית.','* <span class="ltr">(−3) · (−4) = 12</span> · <span class="ltr">(−3) · 4 = −12</span>','* הרבה גורמים? סופרים מינוסים: זוגי ← חיובי, אי־זוגי ← שלילי.','* בתרגיל ארוך: קודם כפל, אחר כך חיבור וחיסור.'],
+ brackets:['* פלוס לפני סוגריים: משמיטים אותם, והסימנים בפנים נשארים.','* מינוס לפני סוגריים: משמיטים אותם, והופכים את הסימן של כל מספר בפנים.','* <span class="ltr">7 − (3 − 5) = 7 − 3 + 5 = 9</span>'],
+ shapes:['* ישר מקביל לציר ה־x: לכל הנקודות עליו אותו y. ישר מקביל לציר ה־y: לכל הנקודות אותו x.','* שטח משולש = בסיס × גובה : 2. שטח מלבן = אורך × רוחב.','* ריבוע: כל הצלעות שוות. מלבן: צלעות נגדיות שוות.'],
  addsub:['* סימנים זהים: מחברים ושומרים על הסימן. <span class="ltr">(−3) + (−4) = −7</span>','* סימנים שונים: מחסרים, ולוקחים את הסימן של מי שהערך המוחלט שלו גדול. <span class="ltr">(−8) + (+5) = −3</span>','* חיסור = חיבור הנגדי! <span class="ltr">(−2) − (−6) = (−2) + (+6) = 4</span>'],
  anglename:['* זווית מסמנים בשלוש אותיות, למשל <span class="ltr">∢ABC</span>.','* האות של הקודקוד תמיד באמצע!','* <span class="ltr">∢ABC</span> ו־<span class="ltr">∢CBA</span> – זו אותה זווית. הקודקוד הוא B, והשוקיים הן BA ו־BC.','* מרובע: כותבים את הקודקודים לפי הסדר מסביב. משולש: כל סדר מתאים.','* חדה < 90° · ישרה = 90° · קהה בין 90° ל־180° · שטוחה = 180°.'],
  bisector:['* חוצה זווית = קרן שיוצאת מהקודקוד ומחלקת את הזווית לשתי זוויות שוות.','* אם <span class="ltr">BD</span> חוצה את <span class="ltr">∢ABC</span>, אז <span class="ltr">∢ABD = ∢DBC</span>, וכל אחת היא חצי מ־<span class="ltr">∢ABC</span>.'],
@@ -739,7 +751,60 @@ G.vertical=()=>{
     return Q('vertical',`שני ישרים נחתכים. ${AN(2)} גדולה פי ${k} מ־${AN(1)}. מה גודל ${askOpp?AN(3):AN(4)}?`,numOpts(askOpp?s:b,[askOpp?b:s,180/k,90],dg,true),`${AN(1)} ו־${AN(2)} צמודות: ${L('180 : '+(k+1)+' = '+s+'°')} ← ${AN(1)} = ${L(s+'°')}, ${AN(2)} = ${L(b+'°')}. ${askOpp?`${AN(3)} קודקודית ל־${AN(1)} ← ${L(s+'°')}`:`${AN(4)} קודקודית ל־${AN(2)} ← ${L(b+'°')}`}.`,{svg:crossFig(s,R(-8,8),null,askOpp?3:4)})}
   return Q('vertical','זוויות קודקודיות הן תמיד:',['שוות זו לזו','משלימות ל־180°','חדות','ישרות'],'זוויות קודקודיות (אחת מול השנייה כששני ישרים נחתכים) – תמיד שוות. צמודות – משלימות ל־180°.');
 };
-const QKEYS=['coord','signed','addsub','anglename','bisector','anglesum','adjacent','vertical'];
+G.mult=()=>{
+  const t=pick(['two','two','two','three','sign','missing','mixed','mixed','word']);const nz=(m)=>R(1,m||10)*pick([1,-1]);
+  const rule=(a,b)=>Math.sign(a)===Math.sign(b)?'סימנים זהים ← התוצאה חיובית':'סימנים שונים ← התוצאה שלילית';
+  if(t==='two'){const a=nz(),b=nz();const ans=a*b;const expr=`${sp(a)} · ${sp(b)}`;
+    return Q('mult',`כמה זה ${L(expr)}?`,numOpts(ans,[-ans,a+b,Math.abs(a)+Math.abs(b)]),`${rule(a,b)}. ${L(Math.abs(a)+' · '+Math.abs(b)+' = '+Math.abs(ans))}, ולכן ${L(expr+' = '+sn(ans))}.`,{ctx:expr})}
+  if(t==='three'){const a=nz(6),b=nz(5),c=nz(4);const ans=a*b*c;const neg=[a,b,c].filter(x=>x<0).length;const expr=`${sp(a)} · ${sp(b)} · ${sp(c)}`;
+    return Q('mult',`כמה זה ${L(expr)}?`,numOpts(ans,[-ans,a*b+c,Math.abs(ans)+1]),`סופרים מינוסים: ${neg} – מספר ${neg%2?'אי־זוגי ← התוצאה שלילית':'זוגי ← התוצאה חיובית'}. ${L(Math.abs(a)+' · '+Math.abs(b)+' · '+Math.abs(c)+' = '+Math.abs(ans))}, לכן ${L(sn(ans))}.`,{ctx:expr})}
+  if(t==='sign'){const n=R(2,9);const pos=R(0,3);const neg=n;const ci=neg%2?1:0;
+    return Q('mult',`כופלים ${n} מספרים שליליים${pos===1?' ועוד מספר חיובי אחד':pos?` ועוד ${pos} מספרים חיוביים`:''} (אף אחד מהם לא 0). מה הסימן של המכפלה?`,['חיובי','שלילי','אפס','אי אפשר לדעת'],`רק המספרים השליליים משנים את הסימן. ${n} מינוסים – ${n%2?'מספר אי־זוגי ← שלילי':'מספר זוגי ← חיובי'}.`,{ci})}
+  if(t==='missing'){const a=nz(9),x=nz(9);const c=a*x;
+    return Q('mult',`איזה מספר חסר? ${L(sp(a)+' · ? = '+sn(c))}`,numOpts(x,[-x,c-a,c+a]),`מחפשים מספר שכפול ${L(sp(a))} נותן ${L(sn(c))}. ${L(Math.abs(a)+' · '+Math.abs(x)+' = '+Math.abs(c))}, והסימן: ${c<0?'התוצאה שלילית ← הסימנים שונים':'התוצאה חיובית ← הסימנים זהים'}, לכן ${L(sn(x))}. בדיקה: ${L(sp(a)+' · '+sp(x)+' = '+sn(c))}.`)}
+  if(t==='mixed'){const a=nz(6),b=nz(6),c=nz(6),d=nz(6);const op=pick(['+','−']);const p1=a*b,p2=c*d;const ans=op==='+'?p1+p2:p1-p2;
+    const expr=`${sp(a)} · ${sp(b)} ${op} ${sp(c)} · ${sp(d)}`;const wrong=op==='+'?((a*b+c)*d):((a*b-c)*d);
+    return Q('mult',`כמה זה ${L(expr)}?`,numOpts(ans,[wrong,-ans,op==='+'?p1-p2:p1+p2]),`קודם כפל, אחר כך ${op==='+'?'חיבור':'חיסור'}: ${L(sp(a)+' · '+sp(b)+' = '+sn(p1))}, ${L(sp(c)+' · '+sp(d)+' = '+sn(p2))}. ואז ${L(sn(p1)+' '+op+' '+sp(p2)+' = '+sn(ans))}.`,{ctx:expr})}
+  const k=R(2,5),h=R(3,8);const ans=-k*h;
+  return Q('mult',`בכל שעה הטמפרטורה יורדת ב־${k} מעלות. בכמה מעלות תשתנה הטמפרטורה אחרי ${h} שעות?`,numOpts(ans,[-ans,k+h,-(k+h)],x=>L(sn(x)+'°')),`ירידה של ${k} בכל שעה היא ${L('(−'+k+')')}. אחרי ${h} שעות: ${L(h+' · (−'+k+') = '+sn(ans))} מעלות.`);
+};
+function grp(ns){return ns.map((n,i)=>i===0?sn(n):(n<0?' − ':' + ')+Math.abs(n)).join('')}
+G.brackets=()=>{
+  const t=pick(['calc','calc','calc','long','long','letters','rule','plus']);const nz=(m)=>R(1,m||9)*pick([1,-1]);
+  if(t==='rule')return Q('brackets','כשיש מינוס לפני סוגריים ומשמיטים אותם, מה קורה למספרים שבתוך הסוגריים?',['הסימן של כל מספר בפנים מתהפך','רק הסימן של המספר הראשון מתהפך','שום דבר לא משתנה','כל המספרים הופכים לשליליים'],`מינוס לפני סוגריים "מתחלק" על כל מה שבפנים: ${L('−(a + b − c) = −a − b + c')}. כל סימן בפנים מתהפך.`);
+  if(t==='letters'){const v=pick([[`a − (b − c)`,'a − b + c',['a − b − c','a + b − c','a − b + c − a']],[`a − (b + c)`,'a − b − c',['a − b + c','a + b + c','a + b − c']],[`a + (b − c)`,'a + b − c',['a + b + c','a − b + c','a − b − c']],[`−(a − b) + c`,'−a + b + c',['−a − b + c','a − b + c','−a + b − c']]]);
+    return Q('brackets',`השמיטו סוגריים: ${L(v[0])} = ?`,[L(v[1]),...v[2].map(L)],`${v[0].includes('−(')||v[0].includes('− (')?'מינוס לפני סוגריים ← הופכים את הסימן של כל איבר בפנים':'פלוס לפני סוגריים ← הסימנים בפנים נשארים'}. לכן ${L(v[0]+' = '+v[1])}.`)}
+  // numeric
+  const groups=t==='long'?[{s:1,ns:[nz()]},{s:pick([1,-1]),ns:[nz(),nz()]},{s:pick([1,-1]),ns:[nz(),nz()]}]:t==='plus'?[{s:1,ns:[nz()]},{s:1,ns:[nz(),nz()]}]:[{s:1,ns:[nz()]},{s:-1,ns:[nz(),nz()]}];
+  if(t==='long'&&groups[1].s>0&&groups[2].s>0)groups[2].s=-1;
+  let expr='',flat=[],wrongFlat=[];
+  groups.forEach((g,i)=>{if(i===0){expr+=sn(g.ns[0]);flat.push(g.ns[0]);wrongFlat.push(g.ns[0]);return}
+    expr+=(g.s<0?' − ':' + ')+'('+grp(g.ns)+')';g.ns.forEach((n,j)=>{flat.push(g.s*n);wrongFlat.push(j===0?g.s*n:n)})});
+  const ans=flat.reduce((a,b)=>a+b,0),wrong=wrongFlat.reduce((a,b)=>a+b,0);
+  const hasMinus=groups.some((g,i)=>i>0&&g.s<0);
+  return Q('brackets',`כמה זה ${L(expr)}?`,numOpts(ans,[wrong,-ans,ans+2]),`${hasMinus?'מינוס לפני סוגריים ← הופכים את הסימן של כל מספר בפנים. ':''}${groups.some((g,i)=>i>0&&g.s>0)?'פלוס לפני סוגריים ← משאירים כמו שזה. ':''}בלי סוגריים: ${L(grp(flat))}. התוצאה: ${L(sn(ans))}.`,{ctx:expr})}
+;
+G.shapes=()=>{
+  const t=pick(['online','online','parallel','cross','tri','tri','square','kind','sqper']);
+  if(t==='online'){const hor=Math.random()<.5;const a=R(1,7),b=R(1,7);let k;do{k=R(0,8)}while(k===a||k===b);
+    const corr=hor?pq(k,b):pq(a,k);
+    return Q('shapes',`ישר מקביל לציר ה־${hor?L('x'):L('y')} עובר דרך הנקודה ${pq(a,b)}. איזו נקודה נמצאת גם היא על הישר?`,uniq(corr,hor?[pq(b,k),pq(a,k),pq(k,a)]:[pq(k,b),pq(k,a),pq(b,k)]),hor?`ישר מקביל לציר ה־${L('x')} הוא "אופקי": לכל הנקודות עליו אותו שיעור ${L('y')} – כאן ${b}. רק ל־${corr} יש ${L('y = '+b)}.`:`ישר מקביל לציר ה־${L('y')} הוא "אנכי": לכל הנקודות עליו אותו שיעור ${L('x')} – כאן ${a}. רק ל־${corr} יש ${L('x = '+a)}.`,{svg:gridQ([{x:a,y:b,l:'P'}],{segs:hor?[[0,b,8,b,'#5cf']]:[[a,0,a,8,'#5cf']]})})}
+  if(t==='parallel'){const hor=Math.random()<.5;const c=R(1,7);const xs=shuffle([0,1,2,3,4,5,6,7,8]).slice(0,3).sort((p,q)=>p-q);const pts=xs.map(v=>hor?`(${v}, ${c})`:`(${c}, ${v})`).join('  ');
+    return Q('shapes',`הנקודות ${L(pts)} נמצאות על ישר אחד. הישר הזה:`,[`מקביל לציר ה־${L('x')}`,`מקביל לציר ה־${L('y')}`,'עובר דרך ראשית הצירים','לא מקביל לאף ציר'],hor?`לכל הנקודות אותו ${L('y')} (${c}) ← הישר אופקי, מקביל לציר ה־${L('x')}.`:`לכל הנקודות אותו ${L('x')} (${c}) ← הישר אנכי, מקביל לציר ה־${L('y')}.`,{ci:hor?0:1})}
+  if(t==='cross'){const a=R(1,8),b=R(1,7);
+    return Q('shapes',`ישר מקביל לציר ה־${L('x')} עובר דרך ${pq(0,b)}, וישר מקביל לציר ה־${L('y')} עובר דרך ${pq(a,0)}. באיזו נקודה הם נחתכים?`,uniq(pq(a,b),[pq(b,a),pq(a,0),pq(0,b)]),`על הישר האופקי לכל הנקודות ${L('y = '+b)}, ועל הישר האנכי לכל הנקודות ${L('x = '+a)}. נקודת החיתוך נמצאת על שניהם: ${pq(a,b)}.`,{svg:gridQ([],{segs:[[0,b,8,b,'#5cf'],[a,0,a,8,'#ff9f40']]})})}
+  if(t==='tri'){const x1=R(0,3),y1=R(0,2),w=R(2,5),h=R(2,5);const area=w*h/2;const fmt=v=>L(String(v));
+    const poly=[[x1,y1],[x1+w,y1],[x1,y1+h]];
+    return Q('shapes',`מה השטח של המשולש ${L('ABC')}?`,numOpts(area,[w*h,w+h,area+1].filter(v=>v>0)),`הבסיס ${L('AB')} = ${L((x1+w)+' − '+x1+' = '+w)}, והגובה ${L('AC')} = ${L((y1+h)+' − '+y1+' = '+h)}. שטח משולש = בסיס × גובה : 2 ← ${L(w+' · '+h+' : 2 = '+area)}.`,{svg:gridQ([{x:x1,y:y1,l:'A'},{x:x1+w,y:y1,l:'B'},{x:x1,y:y1+h,l:'C'}],{poly}),ctx:`משולש ${w}×${h}`})}
+  if(t==='square'){const x1=R(0,3),y1=R(0,3),s=R(2,4);const D=[x1,y1+s];
+    return Q('shapes',`${L('ABCD')} הוא ריבוע: ${L(`A(${x1}, ${y1})   B(${x1+s}, ${y1})   C(${x1+s}, ${y1+s})`)}. מה השיעורים של D?`,uniq(pq(D[0],D[1]),[pq(x1+s,y1+2*s),pq(D[1],D[0]),pq(x1,y1+s+1)]),`בריבוע כל הצלעות שוות (${s}). D נמצאת מעל A (אותו ${L('x')}: ${x1}) ובגובה של C (אותו ${L('y')}: ${y1+s}). לכן ${L('D = ')}${pq(D[0],D[1])}.`,{svg:gridQ([{x:x1,y:y1,l:'A'},{x:x1+s,y:y1,l:'B'},{x:x1+s,y:y1+s,l:'C'}],{segs:[[x1,y1,x1+s,y1,'#ffd400'],[x1+s,y1,x1+s,y1+s,'#ffd400']]})})}
+  if(t==='sqper'){const s=R(2,6);const ask=pick(['per','area']);const ans=ask==='per'?4*s:s*s;
+    return Q('shapes',`לריבוע יש קודקודים ב־${pq(0,0)} וב־${pq(s,0)}, וכל הריבוע מעל ציר ה־${L('x')}. מה ${ask==='per'?'ההיקף':'השטח'} שלו?`,numOpts(ans,ask==='per'?[s*s,2*s,4*s+4]:[4*s,2*s,s*s+s],null,true),`אורך הצלע: ${L(s+' − 0 = '+s)}. ${ask==='per'?`היקף ריבוע = 4 צלעות: ${L('4 · '+s+' = '+ans)}.`:`שטח ריבוע = צלע × צלע: ${L(s+' · '+s+' = '+ans)}.`}`,{svg:gridQ([],{poly:[[0,0],[s,0],[s,s],[0,s]]})})}
+  const sq=Math.random()<.5;const x1=R(0,3),y1=R(0,3),w=R(2,5);let h=sq?w:R(2,5);if(!sq&&h===w)h=w+1;
+  const P=[[x1,y1],[x1+w,y1],[x1+w,y1+h],[x1,y1+h]];
+  return Q('shapes',`איזו צורה יוצרות הנקודות ${L(P.map(p=>`(${p[0]}, ${p[1]})`).join('  '))}?`,['ריבוע','מלבן שאינו ריבוע','משולש','טרפז'],`הצלעות: ${L('אורך '+w)}, ${L('רוחב '+h)}, וכל הזוויות ישרות. ${sq?'כל הצלעות שוות ← ריבוע.':'האורך והרוחב שונים ← מלבן שאינו ריבוע.'}`,{ci:sq?0:1,svg:gridQ(P.map((p,i)=>({x:p[0],y:p[1],l:'ABCD'[i]})),{poly:P})});
+};
+const QKEYS=['coord','signed','addsub','mult','brackets','shapes','anglename','bisector','anglesum','adjacent','vertical'];
 G.boss=()=>G[pick(QKEYS)]();
 
 /* ================= input ================= */
@@ -974,7 +1039,7 @@ const SOUL={
   green:{c:'#2ecc40',name:'ירוקה',tip:'💚 נשמה ירוקה – הלב לא זז. מגן: חיצים / WASD'},
   yellow:{c:'#ffd400',name:'צהובה',tip:'💛 נשמה צהובה – תנועה + ירייה: Z / רווח'},
   purple:{c:'#b04cff',name:'סגולה',tip:'💜 נשמה סגולה – חוטים! ↑↓ / W S להחלפת חוט'}};
-const SOULS_BY={coord:['red','blue'],signed:['red','yellow'],addsub:['red','purple'],anglename:['red','green'],bisector:['blue','green'],anglesum:['yellow','purple'],adjacent:['green','blue'],vertical:['purple','yellow'],boss:['red','blue','green','yellow','purple']};
+const SOULS_BY={mult:['red','yellow'],brackets:['purple','red'],shapes:['blue','green'],coord:['red','blue'],signed:['red','yellow'],addsub:['red','purple'],anglename:['red','green'],bisector:['blue','green'],anglesum:['yellow','purple'],adjacent:['green','blue'],vertical:['purple','yellow'],boss:['red','blue','green','yellow','purple']};
 const DIFF={easy:{spd:.72,rate:1.45,dmg:2,label:'קל'},medium:{spd:1,rate:1,dmg:3,label:'בינוני'},hard:{spd:1.3,rate:.7,dmg:4,label:'קשה'}};
 const GREENBOX={x:250,y:262,w:140,h:140};
 const kd=(...c)=>c.some(k=>keysC[k]);
@@ -1066,7 +1131,7 @@ async function spare(){
 }
 
 /* ================= ending & certificate ================= */
-const FAREWELL={coord:'רק לא לשכוח לבדוק את קנה המידה!',signed:'זוכרים? ערך מוחלט אף פעם לא שלילי.',addsub:'חיסור זה חיבור הנגדי – שנינו מסכימים על זה עכשיו!',anglename:'הקודקוד – תמיד באמצע!',bisector:'חצי לך, חצי לי – ובהצלחה שלמה!',anglesum:'ביפ. סביב נקודה: 360°. בופ. בהצלחה.',adjacent:'ביחד אנחנו 180 – ואיתך, 100!',vertical:'מולי – תאומתי. ומולך – הצלחה!',boss:'...טוב, אולי אני לא כל כך מפחיד.'};
+const FAREWELL={mult:'מינוס כפול מינוס – פלוס! וכפל לפני חיבור.',brackets:'מינוס לפני סוגריים? הופכים את כל הסימנים בפנים!',shapes:'שטח משולש: בסיס כפול גובה, חלקי 2!',coord:'רק לא לשכוח לבדוק את קנה המידה!',signed:'זוכרים? ערך מוחלט אף פעם לא שלילי.',addsub:'חיסור זה חיבור הנגדי – שנינו מסכימים על זה עכשיו!',anglename:'הקודקוד – תמיד באמצע!',bisector:'חצי לך, חצי לי – ובהצלחה שלמה!',anglesum:'ביפ. סביב נקודה: 360°. בופ. בהצלחה.',adjacent:'ביחד אנחנו 180 – ואיתך, 100!',vertical:'מולי – תאומתי. ומולך – הצלחה!',boss:'...טוב, אולי אני לא כל כך מפחיד.'};
 const QUOTE='״זה שאיננו יכולים למצוא פתרון, זה לא אומר שאין כזה״';const QUOTE_BY='אבא חופר';
 let endS=null;
 async function ending(){
@@ -1110,7 +1175,7 @@ async function drawCert(){
   x.font="500 24px Rubik, sans-serif";x.fillStyle='#333';x.fillText('על השלמת המסע בממלכת המספרים והזוויות, וניצחון על המבחן!',cw/2,378);
   // areas with stars – two columns
   x.font="700 21px Rubik, sans-serif";
-  TOPICS.forEach((t,i)=>{const col=i<5?0:1,row=i<5?i:i-5;const cx=col===0?cw*0.72:cw*0.30,y=430+row*38;
+  TOPICS.forEach((t,i)=>{const col=i<6?0:1,row=i%6;const cx=col===0?cw*0.72:cw*0.30,y=418+row*35;
     const st=(save.cleared[t.k]||{}).stars||0;x.textAlign='right';x.fillStyle='#222';x.fillText(t.name,cx+150,y);
     x.textAlign='left';x.fillStyle='#d4a017';x.direction='ltr';x.fillText('★'.repeat(st)+'☆'.repeat(3-st),cx-160,y);x.direction='rtl'});
   const st=certStats();x.textAlign='center';x.fillStyle='#333';x.font="700 24px Rubik, sans-serif";
@@ -1121,7 +1186,7 @@ async function drawCert(){
   x.font="500 21px Rubik, sans-serif";x.fillStyle='#777';x.fillText('— '+QUOTE_BY,cw/2,742);
   x.font="500 18px Rubik, sans-serif";x.fillStyle='#888';x.fillText(new Date().toLocaleDateString('he-IL'),cw/2,800);
   // tiny monsters
-  const ks=QKEYS;ks.forEach((k,i)=>{const g=SPR[k],s=2;const w=g[0].length*s;const px=(i<4?190+i*50:cw-190-(i-4)*50)-w/2;g.forEach((row,j)=>{for(let q=0;q<row.length;q++){const ch2=row[q];if(ch2==='.'||ch2===' ')continue;x.fillStyle=ch2==='r'?'#e01e1e':'#444';x.fillRect(px+q*s,780+j*s,s,s)}})});
+  const ks=['coord','signed','mult','brackets','anglename','bisector','adjacent','vertical'];ks.forEach((k,i)=>{const g=SPR[k],s=2;const w=g[0].length*s;const px=(i<4?190+i*50:cw-190-(i-4)*50)-w/2;g.forEach((row,j)=>{for(let q=0;q<row.length;q++){const ch2=row[q];if(ch2==='.'||ch2===' ')continue;x.fillStyle=ch2==='r'?'#e01e1e':'#444';x.fillRect(px+q*s,780+j*s,s,s)}})});
   return c;
 }
 async function openCert(){
@@ -1203,7 +1268,7 @@ function drawMap(){
   ctx.strokeStyle='#555';ctx.setLineDash([6,6]);ctx.lineWidth=3;ctx.beginPath();
   MAPN.forEach((n,i)=>{if(i===0)ctx.moveTo(n.x,n.y);else ctx.lineTo(n.x,n.y)});ctx.stroke();ctx.setLineDash([]);
   // section labels
-  ctx.direction='rtl';ctx.textAlign='center';ctx.font="700 13px Rubik";ctx.fillStyle='#6cf';ctx.fillText('● חשבון',560,378);ctx.fillStyle='#7e7';ctx.fillText('● גיאומטריה',470,378);
+  ctx.direction='rtl';ctx.textAlign='center';ctx.font="700 13px Rubik";ctx.fillStyle='#6cf';ctx.fillText('● חשבון',165,378);ctx.fillStyle='#7e7';ctx.fillText('● גיאומטריה',70,378);
   MAPN.forEach((n,i)=>{
     const sel=i===mapSel;const cl=save.cleared[n.k];const geo=['anglename','bisector','anglesum','adjacent','vertical'].includes(n.k);
     const r=n.k==='boss'?28:24;
@@ -1211,7 +1276,7 @@ function drawMap(){
     ctx.lineWidth=sel?4:3;ctx.strokeStyle=n.k==='save'?'#ffd400':cl?'#ffd400':n.k==='boss'?'#f44':geo?'#7e7':'#6cf';ctx.beginPath();ctx.arc(n.x,n.y,r,0,7);ctx.stroke();
     if(n.k==='save'){ctx.save();ctx.translate(n.x,n.y);ctx.rotate(Math.sin(T*2)*0.2);ctx.fillStyle='#ffd400';ctx.font="26px Rubik";ctx.textBaseline='middle';ctx.fillText('★',0,2);ctx.restore()}
     else{ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.direction='ltr';ctx.font=(n.icon.length>2?"10px":"13px")+" 'Press Start 2P', Rubik";ctx.fillText(n.icon,n.x,n.y+1)}
-    ctx.textBaseline='alphabetic';ctx.direction='rtl';ctx.font="700 13px Rubik";ctx.fillStyle=sel?'#ff0':'#fff';ctx.fillText(n.name,n.x,n.y+r+17);
+    ctx.textBaseline='alphabetic';ctx.direction='rtl';ctx.font="700 12px Rubik";ctx.fillStyle=sel?'#ff0':'#fff';ctx.fillText(n.short||n.name,n.x,n.y+r+16);
     if(n.k!=='save'){ctx.font="13px Rubik";ctx.fillStyle='#ffd400';ctx.fillText(starsStr(n.k),n.x,n.y+r+33)}
     if(sel)drawHeart(n.x,n.y-r-14+Math.sin(T*5)*3,2);
   });
