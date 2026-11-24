@@ -1275,7 +1275,7 @@ async function warmup(){
   const msg=score>=18?'* מוכנים לגמרי! 💪':score>=14?'* מצב מצוין! עוד מבט קטן ואתם שם.':'* יופי שהתחממנו! עכשיו יודעים בדיוק על מה לחזור.';
   const lines=[`* סיימנו! ${score} מתוך ${plan.length} תשובות נכונות.`,msg];
   if(weak.length)lines.push(`* כדאי להציץ שוב ברמזים של: ${weak.join(', ')}.`);
-  lines.push(`* ${QUOTE} – ${QUOTE_BY}`,`* בהצלחה במבחן, ${save.name}! 🍀`);
+  lines.push('* אל תשכח לקחת את החטיפים, חאפ!',`* בהצלחה במבחן, ${save.name}! 🍀`);
   wh.innerHTML=`☀️ חימום בוקר · <b class="ltr">${score} / ${plan.length}</b>`;
   await say(lines);
   $('#scBattle').classList.remove('wu');goTitle();
